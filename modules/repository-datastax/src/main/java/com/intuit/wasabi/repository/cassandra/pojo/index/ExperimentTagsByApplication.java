@@ -49,4 +49,8 @@ public class ExperimentTagsByApplication {
     public Set<String> getTags() {
         return tags != null ? tags : Collections.EMPTY_SET;
     }
+
+    public String getAppName() {
+        return appName;
+    }
 }

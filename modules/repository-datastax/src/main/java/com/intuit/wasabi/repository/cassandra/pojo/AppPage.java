@@ -35,4 +35,8 @@ public class AppPage {
 
     @PartitionKey(1)
     String page;
+
+    public String getPage() {
+        return page;
+    }
 }

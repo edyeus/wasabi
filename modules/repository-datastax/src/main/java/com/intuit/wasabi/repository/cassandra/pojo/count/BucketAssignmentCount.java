@@ -42,4 +42,11 @@ public class BucketAssignmentCount {
     @Column(name = "bucket_assignment_count")
     long count;
 
+    public String getBucketLabel() {
+        return bucketLabel;
+    }
+
+    public long getCount() {
+        return count;
+    }
 }

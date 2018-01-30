@@ -50,4 +50,23 @@ public class ExperimentAuditLog {
     @Column(name = "new_value")
     String newValue;
 
+    public String getAttributeName() {
+        return attributeName;
+    }
+
+    public String getOldValue() {
+        return oldValue;
+    }
+
+    public String getNewValue() {
+        return newValue;
+    }
+
+    public Date getModified() {
+        return modified;
+    }
+
+    public UUID getExperimentId() {
+        return experimentId;
+    }
 }

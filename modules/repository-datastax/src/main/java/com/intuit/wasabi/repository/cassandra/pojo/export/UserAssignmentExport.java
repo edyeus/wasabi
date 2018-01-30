@@ -57,5 +57,25 @@ public class UserAssignmentExport {
     String bucketLabel;
 
     Date created;
+    private String context;
 
+    public UUID getExperimentId() {
+        return experimentId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getContext() {
+        return context;
+    }
+
+    public String getBucketLabel() {
+        return bucketLabel;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
 }

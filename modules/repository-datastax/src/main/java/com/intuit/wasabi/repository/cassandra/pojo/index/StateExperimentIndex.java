@@ -41,4 +41,11 @@ public class StateExperimentIndex {
     @Column(name = "experiment_id")
     UUID experimentId;
 
+    public UUID getExperimentId() {
+        return experimentId;
+    }
+
+    public String getIndexKey() {
+        return indexKey;
+    }
 }

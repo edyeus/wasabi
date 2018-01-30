@@ -36,4 +36,8 @@ public class ApplicationList {
     @Column(name = "app_name")
     String appName;
 
+    public String getAppName(){
+        return appName;
+    }
+
 }

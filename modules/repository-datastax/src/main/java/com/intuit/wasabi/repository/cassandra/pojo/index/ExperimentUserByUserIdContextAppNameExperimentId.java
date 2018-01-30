@@ -49,4 +49,19 @@ public class ExperimentUserByUserIdContextAppNameExperimentId {
 
     String bucket;
 
+    public UUID getExperimentId() {
+        return experimentId;
+    }
+
+    public String getBucket() {
+        return bucket;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getContext() {
+        return context;
+    }
 }

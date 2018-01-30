@@ -53,4 +53,7 @@ public class BucketAuditLog {
     @Column(name = "new_value")
     String newValue;
 
+    public String getLabel() {
+        return label;
+    }
 }

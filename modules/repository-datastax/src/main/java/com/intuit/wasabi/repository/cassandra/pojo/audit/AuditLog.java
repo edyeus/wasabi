@@ -81,4 +81,75 @@ public class AuditLog {
     @Column(name = "property_after")
     String after;
 
+    public Date getTime() {
+        return time;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public String getBucketLabel() {
+        return bucketLabel;
+    }
+
+    public String getExperimentLabel() {
+        return experimentLabel;
+    }
+
+    public UUID getExperimentId() {
+        return experimentId;
+    }
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public String getProperty() {
+        return property;
+    }
+
+    public String getAfter() {
+        return after;
+    }
+
+    public String getBefore() {
+        return before;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
+    }
 }

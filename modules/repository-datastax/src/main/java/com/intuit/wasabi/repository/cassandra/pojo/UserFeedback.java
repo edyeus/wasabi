@@ -49,4 +49,28 @@ public class UserFeedback {
 
     @Column(name = "contact_okay")
     boolean contactOkay;
+
+    public String getComment() {
+        return comment;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public boolean isContactOkay() {
+        return contactOkay;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public Date getSubmitted() {
+        return submitted;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
 }

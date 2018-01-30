@@ -38,4 +38,16 @@ public class UserRole {
     String appName;
 
     String role;
+
+    public String getUserId(){
+        return userId;
+    }
+
+    public String getAppName(){
+        return appName;
+    }
+
+    public String getRole(){
+        return role;
+    }
 }

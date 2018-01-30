@@ -40,4 +40,12 @@ public class Application {
 
     @Singular
     List<UUID> priorities;
+
+    public List<UUID> getPriorities() {
+        return priorities;
+    }
+
+    public void setPriorities(List<UUID> priorities) {
+        this.priorities = priorities;
+    }
 }

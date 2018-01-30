@@ -44,4 +44,16 @@ public class PageExperimentByAppNamePage {
     UUID experimentId;
 
     boolean assign;
+
+    public String getPage() {
+        return page;
+    }
+
+    public boolean isAssign() {
+        return assign;
+    }
+
+    public UUID getExperimentId() {
+        return experimentId;
+    }
 }

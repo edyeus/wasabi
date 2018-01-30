@@ -48,4 +48,32 @@ public class Bucket {
     boolean control;
 
     String payload;
+
+    public UUID getExperimentId() {
+        return experimentId;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public double getAllocation() {
+        return allocation;
+    }
+
+    public boolean isControl() {
+        return control;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getPayload() {
+        return payload;
+    }
+
+    public String getState() {
+        return state;
+    }
 }

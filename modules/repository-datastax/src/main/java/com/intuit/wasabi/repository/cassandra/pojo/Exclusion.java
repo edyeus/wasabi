@@ -31,4 +31,12 @@ import java.util.UUID;
 public class Exclusion {
     UUID base;
     UUID pair;
+
+    public UUID getPair() {
+        return pair;
+    }
+
+    public UUID getBase() {
+        return base;
+    }
 }

@@ -95,4 +95,119 @@ public class Experiment {
     @Column(name = "results")
     private String results;
 
+    public String getState() {
+        return state;
+    }
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getRule() {
+        return rule;
+    }
+
+    public Double getSamplePercent() {
+        return samplePercent;
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public Date getModified() {
+        return modified;
+    }
+
+    public boolean isPersonalized() {
+        return personalized;
+    }
+
+    public String getModelName() {
+        return modelName;
+    }
+
+    public String getModelVersion() {
+        return modelVersion;
+    }
+
+    public boolean isRapidExperiment() {
+        return rapidExperiment;
+    }
+
+    public int getUserCap() {
+        return userCap;
+    }
+
+    public String getCreatorId() {
+        return creatorId;
+    }
+
+    public String getHypothesisIsCorrect() {
+        return hypothesisIsCorrect;
+    }
+
+    public String getResults() {
+        return results;
+    }
+
+    public Set<String> getTags() {
+        return tags;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
+    public void setModified(Date modified) {
+        this.modified = modified;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public void setSamplePercent(double samplePercent) {
+        this.samplePercent = samplePercent;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
 }

@@ -50,4 +50,8 @@ public class ExperimentByAppNameLabel {
     Date endTime;
 
     String state;
+
+    public UUID getId() {
+        return id;
+    }
 }
