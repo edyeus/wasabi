@@ -21,6 +21,7 @@ import com.intuit.wasabi.database.Transaction;
 import com.intuit.wasabi.experimentobjects.Bucket;
 import com.intuit.wasabi.experimentobjects.Experiment;
 import com.intuit.wasabi.experimentobjects.exceptions.WasabiClientException;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -45,7 +46,7 @@ class EventsEnvelope implements Runnable {
         } catch (Exception e) {
             //TODO: Is it ok to just log the exception ??
             if (e instanceof WasabiClientException) {
-                logger.warn("unable to process event, cause: {}, message: {}",
+                LogUtil.warn(logger, "unable to process event, cause: {}, message: {}",
                         e.getCause(), ((WasabiClientException) e).getDetailMessage());
             }
         }

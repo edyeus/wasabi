@@ -54,6 +54,7 @@ import com.intuit.wasabi.repository.cassandra.accessor.index.ExperimentUserIndex
 import com.intuit.wasabi.repository.cassandra.accessor.index.PageExperimentIndexAccessor;
 import com.intuit.wasabi.repository.cassandra.pojo.count.BucketAssignmentCount;
 import com.intuit.wasabi.repository.cassandra.pojo.index.ExperimentUserByUserIdContextAppNameExperimentId;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.cassandra.utils.UUIDGen;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -973,7 +974,7 @@ public class CassandraAssignmentsRepositoryTest {
         try {
             repository.assignUsersInBatch(assignmentPairs, date);
         } catch (Exception e) {
-            logger.error("Failed to execute assignUser test...", e);
+            LogUtil.error(logger, "Failed to execute assignUser test...", e);
             success = false;
         }
         assertThat(success, is(true));

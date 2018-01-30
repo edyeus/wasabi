@@ -19,6 +19,7 @@
 package com.intuit.wasabi.tests.model;
 
 import com.google.common.base.Joiner;
+import com.intuit.wasabi.util.LogUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -49,6 +50,6 @@ public class StatisticsTest {
         jsonObject2.put("love it", 1);
         currentStatistics.increaseCounts(jsonObject1, (p) -> false);
         currentStatistics.increaseCounts(jsonObject2, (p) -> false);
-        logger.info(Joiner.on('&').withKeyValueSeparator("=").join(currentStatistics.getActionCounts()));
+        LogUtil.info(logger, Joiner.on('&').withKeyValueSeparator("=").join(currentStatistics.getActionCounts()));
     }
 }

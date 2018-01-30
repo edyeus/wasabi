@@ -17,6 +17,7 @@ package com.intuit.wasabi.events.impl;
 
 import com.intuit.wasabi.eventobjects.EventEnvelopePayload;
 import com.intuit.wasabi.events.EventIngestionExecutor;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -34,7 +35,7 @@ public class NoOpEventsIngestionExecutor implements EventIngestionExecutor {
      */
     @Override
     public void execute(EventEnvelopePayload eventEnvelopePayload) {
-        logger.debug("Received event envelope: {}", eventEnvelopePayload != null ? eventEnvelopePayload.toJson() : null);
+        LogUtil.debug(logger, "Received event envelope: {}", eventEnvelopePayload != null ? eventEnvelopePayload.toJson() : null);
     }
 
     /**

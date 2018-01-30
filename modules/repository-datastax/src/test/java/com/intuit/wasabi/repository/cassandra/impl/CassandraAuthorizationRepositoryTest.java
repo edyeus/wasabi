@@ -34,6 +34,7 @@ import com.intuit.wasabi.repository.cassandra.pojo.ApplicationList;
 import com.intuit.wasabi.repository.cassandra.pojo.UserInfo;
 import com.intuit.wasabi.repository.cassandra.pojo.UserRole;
 import com.intuit.wasabi.userdirectory.UserDirectory;
+import com.intuit.wasabi.util.LogUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -164,7 +165,7 @@ public class CassandraAuthorizationRepositoryTest {
                 com.intuit.wasabi.authenticationobjects.UserInfo.Username.valueOf("test"),
                 Application.Name.valueOf("test"));
 
-        logger.info(result.toString());
+        LogUtil.info(logger, result.toString());
         assertThat(result.size(), is(1));
     }
 
@@ -218,7 +219,7 @@ public class CassandraAuthorizationRepositoryTest {
         List<com.intuit.wasabi.authorizationobjects.UserRole>
                 result = repository.getSuperAdminRoleList();
 
-        logger.info(result.toString());
+        LogUtil.info(logger, result.toString());
         assertThat(result.size(), is(1));
     }
 
@@ -231,7 +232,7 @@ public class CassandraAuthorizationRepositoryTest {
         List<com.intuit.wasabi.authorizationobjects.UserRole>
                 result = repository.getSuperAdminRoleList();
 
-        logger.info(result.toString());
+        LogUtil.info(logger, result.toString());
         assertThat(result.size(), is(0));
     }
 
@@ -302,7 +303,7 @@ public class CassandraAuthorizationRepositoryTest {
                 com.intuit.wasabi.authenticationobjects.UserInfo.Username.valueOf("test")
         );
 
-        logger.info(result.toString());
+        LogUtil.info(logger, result.toString());
         assertThat(result.size(), is(3));
     }
 

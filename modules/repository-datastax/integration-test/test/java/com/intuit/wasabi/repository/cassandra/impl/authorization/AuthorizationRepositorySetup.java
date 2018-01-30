@@ -55,7 +55,7 @@ public class AuthorizationRepositorySetup {
 
     public void setupDb(String appName, String username, String role) {
         UserInfo userInfo = userDirectory.lookupUser(UserInfo.Username.valueOf(username));
-        logger.info(appName + " " + " " + username + " " + role + " " + userInfo);
+        LogUtil.info(logger, appName + " " + " " + username + " " + role + " " + userInfo);
         if (!"*".equals(appName)) {
             apps.add(appName);
             Set<String> getOrNew = appUser.getOrDefault(appName, new HashSet<>());
@@ -63,7 +63,7 @@ public class AuthorizationRepositorySetup {
             appUser.putIfAbsent(appName, getOrNew);
             applicationListAccessor.insert(appName);
         }
-        logger.debug("inserted: " + appName);
+        LogUtil.debug(logger, "inserted: " + appName);
         appRoleAccessor.insertAppRoleBy(appName, username, role);
         userInfoAccessor.insertUserInfoBy(username, userInfo.getEmail(), userInfo.getFirstName(), userInfo.getLastName());
         userRoleAccessor.insertUserRoleBy(username, appName, role);
@@ -71,13 +71,13 @@ public class AuthorizationRepositorySetup {
 
     @AfterTest
     public void cleanup() {
-        logger.debug("cleaning up applicationlist table");
+        LogUtil.debug(logger, "cleaning up applicationlist table");
         mappingManager.getSession().execute("TRUNCATE TABLE applicationlist");
-        logger.debug("cleaning up app_roles table");
+        LogUtil.debug(logger, "cleaning up app_roles table");
         mappingManager.getSession().execute("TRUNCATE TABLE app_roles");
-        logger.debug("cleaning up user_info table");
+        LogUtil.debug(logger, "cleaning up user_info table");
         mappingManager.getSession().execute("TRUNCATE TABLE user_info");
-        logger.debug("cleaning up user_roles table");
+        LogUtil.debug(logger, "cleaning up user_roles table");
         mappingManager.getSession().execute("TRUNCATE TABLE user_roles");
     }
 }

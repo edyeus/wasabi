@@ -24,6 +24,7 @@ import com.intuit.wasabi.experimentobjects.Bucket;
 import com.intuit.wasabi.experimentobjects.Context;
 import com.intuit.wasabi.experimentobjects.Experiment;
 import com.intuit.wasabi.experimentobjects.exceptions.WasabiClientException;
+import com.intuit.wasabi.util.LogUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -103,7 +104,7 @@ public class EventsEnvelopeTest {
         given(assignment.getExperimentID()).willReturn(experimentID);
         WasabiClientException jce = new ApplicationNotFoundException("");
         given(getLogger(any(Class.class))).willReturn(logger);
-        logger.warn(any(String.class));
+        LogUtil.warn(logger, any(String.class));
         BDDMockito.willThrow(jce).given(transaction).
                 insert(any(String.class), any(String.class), any(Experiment.ID.class),
                         any(Bucket.Label.class), any(String.class), any(Date.class), any(String.class));

@@ -20,6 +20,7 @@ package com.intuit.wasabi.tests.library;
  */
 
 
+import com.intuit.wasabi.util.LogUtil;
 import com.jayway.restassured.response.Response;
 import org.slf4j.Logger;
 import org.testng.Assert;
@@ -100,8 +101,8 @@ public class ServiceTestBase {
                     prettyResponse = prettyResponse.replaceAll("\\\\n", System.getProperty("line.separator"));
                     prettyResponse = prettyResponse.replaceAll("\\\\t", "\t");
                 } catch (Exception ex) {
-                    logger.error("Caught error trying to print response body. Exception: ", ex);
-                    logger.error("response.toString() gives: " + response.toString());
+                    LogUtil.error(logger, "Caught error trying to print response body. Exception: ", ex);
+                    LogUtil.error(logger, "response.toString() gives: " + response.toString());
                 }
             }
         }
@@ -118,7 +119,7 @@ public class ServiceTestBase {
         if (responseLogLengthLimit > 0 && prettyResponse.length() > responseLogLengthLimit) {
             prettyResponse = prettyResponse.substring(0, responseLogLengthLimit) + "... (cut off for the log)";
         }
-        logger.info("Response as string: " + prettyResponse);
+        LogUtil.info(logger, "Response as string: " + prettyResponse);
     }
 
     /**
@@ -150,20 +151,20 @@ public class ServiceTestBase {
     protected void setResponseLogLengthLimit(int responseLogLengthLimit) {
         this.responseLogLengthLimit = responseLogLengthLimit;
         if (this.responseLogLengthLimit > 0) {
-            logger.info("Response log length limited to " + this.responseLogLengthLimit);
+            LogUtil.info(logger, "Response log length limited to " + this.responseLogLengthLimit);
         } else {
-            logger.info("Response log length unlimited.");
+            LogUtil.info(logger, "Response log length unlimited.");
         }
     }
 
     @BeforeClass
     protected void runBeforeClassBase() {
-        logger.debug("======> Base BeforeClass: " + this.getClass().getName() + " <======");
+        LogUtil.debug(logger, "======> Base BeforeClass: " + this.getClass().getName() + " <======");
     }
 
     @AfterClass
     protected void runAfterClassBase() {
-        logger.info(passFailResults.getSummaryString());
+        LogUtil.info(logger, passFailResults.getSummaryString());
     }
 
     /**
@@ -177,7 +178,7 @@ public class ServiceTestBase {
      */
     @BeforeMethod
     protected void runBeforeMethodBase(Method method) {
-        logger.info("======> Base Starting test: " + method.getName() + " <======");
+        LogUtil.info(logger, "======> Base Starting test: " + method.getName() + " <======");
         response = null;
     }
 
@@ -188,11 +189,11 @@ public class ServiceTestBase {
 
     @AfterMethod
     protected void runAfterMethodBase(ITestResult result) throws Exception {
-        logger.debug("======> Base AfterMethod <======");
+        LogUtil.debug(logger, "======> Base AfterMethod <======");
         if (result.getStatus() == ITestResult.FAILURE) {
             infoLogResponse(response);
         }
         String summary = passFailResults.getResultString(result);
-        logger.info(summary);
+        LogUtil.info(logger, summary);
     }
 }

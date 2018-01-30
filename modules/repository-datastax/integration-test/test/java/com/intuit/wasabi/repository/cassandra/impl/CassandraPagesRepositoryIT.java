@@ -176,7 +176,7 @@ public class CassandraPagesRepositoryIT {
 
     @AfterTest
     public void cleanup() {
-        logger.debug("cleaning up experiment table and experiment_audit_log table");
+        LogUtil.debug(logger, "cleaning up experiment table and experiment_audit_log table");
 //        mappingManager.getSession().execute("TRUNCATE TABLE experiment");
 //        mappingManager.getSession().execute("TRUNCATE TABLE experiment_audit_log");
         for (Experiment.ID experimentId : experimentIds) {
@@ -184,11 +184,11 @@ public class CassandraPagesRepositoryIT {
             mappingManager.getSession().execute("DELETE FROM experiment_audit_log where experiment_id=" + experimentId);
         }
 
-        logger.debug("cleaning up page_experiment_index table");
+        LogUtil.debug(logger, "cleaning up page_experiment_index table");
         mappingManager.getSession().execute("TRUNCATE TABLE page_experiment_index");
-        logger.debug("cleaning up experiment_page table");
+        LogUtil.debug(logger, "cleaning up experiment_page table");
         mappingManager.getSession().execute("TRUNCATE TABLE experiment_page");
-//        logger.debug("cleaning up app_page_index table");
+//        LogUtil.debug(logger, "cleaning up app_page_index table");
 //        mappingManager.getSession().execute("TRUNCATE TABLE app_page_index");
     }
 
