@@ -20,6 +20,7 @@ import com.codahale.metrics.health.HealthCheck;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.google.inject.Inject;
 import com.intuit.wasabi.database.impl.DBITransaction;
+import com.intuit.wasabi.util.LogUtil;
 import com.jolbox.bonecp.BoneCPConfig;
 import com.jolbox.bonecp.BoneCPDataSource;
 import org.skife.jdbi.v2.DBI;
@@ -45,7 +46,7 @@ public class DBITransactionFactory extends TransactionFactory {
         // Register for health check
         healthChecks.register("MySql", new PrivateMySqlHealthCheck(this));
 
-        LOGGER.debug("Creating BoneCPDataSource");
+        LogUtil.debug(LOGGER, "Creating BoneCPDataSource");
         this.dataSource = new BoneCPDataSource(config);
         this.dbi = new DBI(dataSource);
 
@@ -83,7 +84,7 @@ public class DBITransactionFactory extends TransactionFactory {
                 trans.select("SELECT 1");
                 res = true;
             } catch (Exception ex) {
-                LOGGER.error("Unable to do check", ex);
+                LogUtil.error(LOGGER, "Unable to do check", ex);
                 msg = ex.getMessage();
             } finally {
                 //No need to close here as it (handle) gets closed as part of select() operation.

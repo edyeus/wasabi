@@ -23,6 +23,7 @@ import com.intuit.wasabi.authenticationobjects.UserInfo;
 import com.intuit.wasabi.authorization.Authorization;
 import com.intuit.wasabi.feedback.Feedback;
 import com.intuit.wasabi.feedbackobjects.UserFeedback;
+import com.intuit.wasabi.util.LogUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -90,7 +91,7 @@ public class FeedbackResource {
 
             return httpHeader.headers().entity(userFeedback).build();
         } catch (Exception exception) {
-            LOGGER.error("getAllUserFeedback failed with error:", exception);
+            LogUtil.error(LOGGER, "getAllUserFeedback failed with error:", exception);
             throw exception;
         }
     }
@@ -120,7 +121,7 @@ public class FeedbackResource {
 
             return httpHeader.headers(CREATED).build();
         } catch (Exception exception) {
-            LOGGER.error("postFeedback failed for userFeedback={} with error:", userFeedback, exception);
+            LogUtil.error(LOGGER, "postFeedback failed for userFeedback={} with error:", userFeedback, exception);
             throw exception;
         }
     }
@@ -155,7 +156,7 @@ public class FeedbackResource {
 
             return httpHeader.headers().entity(userFeedback).build();
         } catch (Exception exception) {
-            LOGGER.error("getUserFeedback failed for username={} with error:", username, exception);
+            LogUtil.error(LOGGER, "getUserFeedback failed for username={} with error:", username, exception);
             throw exception;
         }
     }

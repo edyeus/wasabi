@@ -18,6 +18,7 @@ package com.intuit.wasabi.tests.model;
 import com.google.gson.FieldAttributes;
 import com.intuit.wasabi.tests.library.util.serialstrategies.DefaultNameExclusionStrategy;
 import com.intuit.wasabi.tests.library.util.serialstrategies.SerializationStrategy;
+import com.intuit.wasabi.util.LogUtil;
 
 import java.lang.reflect.Field;
 import java.util.Objects;
@@ -345,7 +346,7 @@ public class Bucket extends ModelItem {
     @Override
     public boolean equals(Object other) {
         if (super.equals(other)) return true;
-        LOGGER.info("Retrying bucket comparison, maybe allocation percentages have floating point inaccuracies.");
+        LogUtil.info(LOGGER, "Retrying bucket comparison, maybe allocation percentages have floating point inaccuracies.");
         if (!this.getClass().isInstance(other)) {
             return false;
         }
@@ -355,15 +356,15 @@ public class Bucket extends ModelItem {
                 try {
                     boolean thisFieldEquals = Objects.equals(field.get(this), field.get(other));
                     if (!thisFieldEquals && field.getName().equals("allocationPercent")) {
-                        LOGGER.debug("Retrying comparison of allocation percentages: " + this.allocationPercent
+                        LogUtil.debug(LOGGER, "Retrying comparison of allocation percentages: " + this.allocationPercent
                                 + " and " + ((Bucket) other).allocationPercent);
                         String allocThis = String.valueOf(this.allocationPercent);
                         String allocOther = String.valueOf(((Bucket) other).allocationPercent);
                         allocThis = allocThis.substring(0, Math.min(allocThis.indexOf(".") + 6, allocThis.length()));
                         allocOther = allocOther.substring(0, Math.min(allocOther.indexOf(".") + 6, allocOther.length()));
-                        LOGGER.debug("\tComparing only " + allocThis + " and " + allocOther);
+                        LogUtil.debug(LOGGER, "\tComparing only " + allocThis + " and " + allocOther);
                         thisFieldEquals = Objects.equals(allocThis, allocOther);
-                        LOGGER.debug("\tResult: " + (thisFieldEquals ? "" : "not ") + "equal.");
+                        LogUtil.debug(LOGGER, "\tResult: " + (thisFieldEquals ? "" : "not ") + "equal.");
                     }
                     if (!thisFieldEquals) {
                         return false;

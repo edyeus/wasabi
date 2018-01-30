@@ -33,6 +33,7 @@ import com.intuit.wasabi.experimentobjects.ExperimentList;
 import com.intuit.wasabi.experimentobjects.Page;
 import com.intuit.wasabi.experimentobjects.PageExperiment;
 import com.intuit.wasabi.experimentobjects.PrioritizedExperimentList;
+import com.intuit.wasabi.util.LogUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -117,7 +118,7 @@ public class ApplicationsResource {
 
             return httpHeader.headers().entity(applications).build();
         } catch (Exception exception) {
-            LOGGER.error("Get applications request failed for provided authorization headers:", exception);
+            LogUtil.error(LOGGER, "Get applications request failed for provided authorization headers:", exception);
             throw exception;
         }
     }
@@ -156,7 +157,7 @@ public class ApplicationsResource {
 
             return httpHeader.headers().entity(experiment).build();
         } catch (Exception exception) {
-            LOGGER.error("getExperiment failed for applicationName={} & experimentLabel={} with error:",
+            LogUtil.error(LOGGER, "getExperiment failed for applicationName={} & experimentLabel={} with error:",
                     applicationName,
                     experimentLabel,
                     exception);
@@ -191,7 +192,7 @@ public class ApplicationsResource {
             return httpHeader.headers().entity(authorizedExperimentGetter
                     .getExperimentsByName(false, authorizationHeader, applicationName)).build();
         } catch (Exception exception) {
-            LOGGER.error("getExperiments failed for applicationName={} with error:", applicationName, exception);
+            LogUtil.error(LOGGER, "getExperiments failed for applicationName={} with error:", applicationName, exception);
             throw exception;
         }
     }
@@ -227,7 +228,7 @@ public class ApplicationsResource {
 
             return httpHeader.headers(NO_CONTENT).build();
         } catch (Exception exception) {
-            LOGGER.error("createPriorities failed for applicationName={} and experimentIDList={} with error:",
+            LogUtil.error(LOGGER, "createPriorities failed for applicationName={} and experimentIDList={} with error:",
                     applicationName,
                     experimentIDList,
                     exception);
@@ -266,7 +267,7 @@ public class ApplicationsResource {
 
             return httpHeader.headers().entity(prioritizedExperiments).build();
         } catch (Exception exception) {
-            LOGGER.error("getPriorities failed for applicationName={} with error:", applicationName, exception);
+            LogUtil.error(LOGGER, "getPriorities failed for applicationName={} with error:", applicationName, exception);
             throw exception;
         }
     }
@@ -299,7 +300,7 @@ public class ApplicationsResource {
 
             return httpHeader.headers().entity(applicationPages).build();
         } catch (Exception exception) {
-            LOGGER.error("getPagesForApplication failed for applicationName={} with error:", applicationName,
+            LogUtil.error(LOGGER, "getPagesForApplication failed for applicationName={} with error:", applicationName,
                     exception);
             throw exception;
         }
@@ -336,7 +337,7 @@ public class ApplicationsResource {
 
             return httpHeader.headers().entity(pageExperiments).build();
         } catch (Exception exception) {
-            LOGGER.error("getExperimentsForPage failed for applicationName={} & pageName={} with error:",
+            LogUtil.error(LOGGER, "getExperimentsForPage failed for applicationName={} & pageName={} with error:",
                     applicationName,
                     pageName,
                     exception);
@@ -372,7 +373,7 @@ public class ApplicationsResource {
 
             return httpHeader.headers().entity(pageExperimentListMap).build();
         } catch (Exception exception) {
-            LOGGER.error("getPagesAndAssociatedExperimentsForApplication failed for applicationName={} with error:",
+            LogUtil.error(LOGGER, "getPagesAndAssociatedExperimentsForApplication failed for applicationName={} with error:",
                     applicationName, exception);
             throw exception;
         }
@@ -410,7 +411,7 @@ public class ApplicationsResource {
 
             return httpHeader.headers().entity(allTags).build();
         } catch (Exception exception) {
-            LOGGER.error("Retrieving the Experiment tags failed with error:",
+            LogUtil.error(LOGGER, "Retrieving the Experiment tags failed with error:",
                     exception);
             throw exception;
         }

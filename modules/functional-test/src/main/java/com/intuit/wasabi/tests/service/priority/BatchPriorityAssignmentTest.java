@@ -24,6 +24,7 @@ import com.intuit.wasabi.tests.data.PriorityDataProvider;
 import com.intuit.wasabi.tests.library.TestBase;
 import com.intuit.wasabi.tests.model.Experiment;
 import com.intuit.wasabi.tests.model.factory.ExperimentFactory;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +46,7 @@ public class BatchPriorityAssignmentTest extends TestBase {
     @Test(groups = {"setup"}, dataProvider = "batchExperiments", dataProviderClass = PriorityDataProvider.class)
     public void setup(String experiment, String redBucket, String blueBucket) {
         response = apiServerConnector.doPost("experiments", experiment);
-        LOGGER.debug(response.jsonPath().prettify());
+        LogUtil.debug(LOGGER, response.jsonPath().prettify());
         Experiment result = ExperimentFactory.createFromJSONString(response.jsonPath().prettify());
         validExperimentsLists.add(result);
         assertReturnCode(response, HttpStatus.SC_CREATED);
@@ -65,7 +66,7 @@ public class BatchPriorityAssignmentTest extends TestBase {
         response = apiServerConnector.doPut("applications/" + validExperimentsLists.get(0).applicationName + "/priorities", exclusion);
         assertReturnCode(response, HttpStatus.SC_NO_CONTENT);
         response = apiServerConnector.doGet("applications/" + validExperimentsLists.get(0).applicationName + "/priorities");
-        LOGGER.info("retrieved priorities: " + response.asString());
+        LogUtil.info(LOGGER, "retrieved priorities: " + response.asString());
         Type listType = new TypeToken<Map<String, ArrayList<Map<String, Object>>>>() {
         }.getType();
         Map<String, List<Map<String, Object>>> result = new Gson().fromJson(response.asString(), listType);
@@ -81,7 +82,7 @@ public class BatchPriorityAssignmentTest extends TestBase {
         String lables = "{\"labels\": [" + validExperimentsLists.stream().map(s -> "\"" + s.label + "\"").collect(Collectors.joining(",")) + "]}";
         response = apiServerConnector.doPost("/assignments/applications/" + validExperimentsLists.get(0).applicationName + "/users/johnDoe", lables);
         assertReturnCode(response, HttpStatus.SC_OK);
-        LOGGER.debug("status: " + response.statusCode() + "\noutput: " + response.asString());
+        LogUtil.debug(LOGGER, "status: " + response.statusCode() + "\noutput: " + response.asString());
         Type listType = new TypeToken<Map<String, ArrayList<Map<String, Object>>>>() {
         }.getType();
         Map<String, List<Map<String, Object>>> result = new Gson().fromJson(response.asString(), listType);
@@ -102,7 +103,7 @@ public class BatchPriorityAssignmentTest extends TestBase {
         String lables = "{\"labels\": [" + validExperimentsLists.stream().map(s -> "\"" + s.label + "\"").collect(Collectors.joining(",")) + "]}";
         response = apiServerConnector.doPost("/assignments/applications/" + validExperimentsLists.get(0).applicationName + "/users/johnDoe2", lables);
         assertReturnCode(response, HttpStatus.SC_OK);
-        LOGGER.info("output: " + response.asString());
+        LogUtil.info(LOGGER, "output: " + response.asString());
         Type listType = new TypeToken<Map<String, ArrayList<Map<String, Object>>>>() {
         }.getType();
         Map<String, List<Map<String, Object>>> result = new Gson().fromJson(response.asString(), listType);
@@ -115,7 +116,7 @@ public class BatchPriorityAssignmentTest extends TestBase {
 
     @AfterClass
     public void t_cleanUp() {
-        LOGGER.info("Clean up experiments");
+        LogUtil.info(LOGGER, "Clean up experiments");
         for (Experiment experiment : validExperimentsLists) {
             response = apiServerConnector.doGet("experiments/" + experiment.id);
             Experiment result = ExperimentFactory.createFromJSONString(response.asString());

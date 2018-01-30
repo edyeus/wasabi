@@ -33,6 +33,7 @@ import com.intuit.wasabi.tests.model.analytics.DailyStatistics;
 import com.intuit.wasabi.tests.model.analytics.ExperimentCumulativeStatistics;
 import com.intuit.wasabi.tests.model.factory.AssignmentFactory;
 import com.intuit.wasabi.tests.model.factory.ExperimentFactory;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +59,7 @@ public class StatisticTest extends TestBase {
     @Test(groups = {"setup"}, dataProvider = "ExperimentAAndB", dataProviderClass = SharedExperimentDataProvider.class)
     public void t_setup(String experiment) {
         response = apiServerConnector.doPost("experiments", experiment);
-        LOGGER.debug(response.jsonPath().prettify());
+        LogUtil.debug(LOGGER, response.jsonPath().prettify());
         Experiment result = ExperimentFactory.createFromJSONString(response.jsonPath().prettify());
         validExperimentsLists.add(result);
         assertReturnCode(response, HttpStatus.SC_CREATED);
@@ -111,7 +112,7 @@ public class StatisticTest extends TestBase {
                     "/users/" + user);
             assertReturnCode(response, HttpStatus.SC_OK);
             Assignment assignment = AssignmentFactory.createFromJSONString(response.asString());
-            LOGGER.info("BucketLable is " + bucketLabel + " assignment Lable is " + assignment.assignment);
+            LogUtil.info(LOGGER, "BucketLable is " + bucketLabel + " assignment Lable is " + assignment.assignment);
             if (bucketLabel.equals(assignment.assignment)) {
                 String url = "events/applications/qbo/experiments/" + experiment.label + "/users/";
                 response = apiServerConnector.doPost(url + user, events);
@@ -122,7 +123,7 @@ public class StatisticTest extends TestBase {
                 userBucketMap.put(user, bucketLabel);
                 assertReturnCode(response, HttpStatus.SC_CREATED);
             } else {
-                LOGGER.info("Bucket " + bucketLabel + " does not match with expected bucket " + assignment.bucket_label
+                LogUtil.info(LOGGER, "Bucket " + bucketLabel + " does not match with expected bucket " + assignment.bucket_label
                         + ", not event is posted for " + user);
             }
         }
@@ -153,7 +154,7 @@ public class StatisticTest extends TestBase {
         JsonObject jsonObject = new JsonParser().parse(response.asString()).getAsJsonObject();
         StatisticsUtils.COMPUTE_COUNT(jsonObject);
 
-        LOGGER.debug(jsonObject.toString());
+        LogUtil.debug(LOGGER, jsonObject.toString());
         Statistics statistics = statisticsMap.getOrDefault(validExperimentsLists.get(0).label, new Statistics());
         Statistics result = new Gson().fromJson(jsonObject, Statistics.class);
         Assert.assertTrue(result.equals(statistics));
@@ -166,7 +167,7 @@ public class StatisticTest extends TestBase {
         assertReturnCode(response, HttpStatus.SC_OK);
         JsonObject jsonObject = new JsonParser().parse(response.asString()).getAsJsonObject();
         StatisticsUtils.COMPUTE_COUNT(jsonObject);
-        LOGGER.info(jsonObject.toString());
+        LogUtil.info(LOGGER, jsonObject.toString());
         Statistics statistics = statisticsMap.getOrDefault(validExperimentsLists.get(0).label, new Statistics());
         Statistics result = new Gson().fromJson(jsonObject, Statistics.class);
         Assert.assertTrue(result.equals(statistics));
@@ -181,7 +182,7 @@ public class StatisticTest extends TestBase {
         assertReturnCode(response, HttpStatus.SC_OK);
         JsonObject jsonObject = new JsonParser().parse(response.asString()).getAsJsonObject();
         StatisticsUtils.COMPUTE_COUNT(jsonObject);
-        LOGGER.info(jsonObject.toString());
+        LogUtil.info(LOGGER, jsonObject.toString());
         Statistics statistics = statisticsMap.getOrDefault(validExperimentsLists.get(0).label, new Statistics());
         Statistics result = new Gson().fromJson(jsonObject, Statistics.class);
         Assert.assertTrue(result.equals(statistics));
@@ -205,7 +206,7 @@ public class StatisticTest extends TestBase {
         assertReturnCode(response, HttpStatus.SC_OK);
         JsonObject jsonObject = new JsonParser().parse(response.asString()).getAsJsonObject();
         StatisticsUtils.COMPUTE_COUNT(jsonObject);
-        LOGGER.info(jsonObject.toString());
+        LogUtil.info(LOGGER, jsonObject.toString());
         Statistics result = new Gson().fromJson(jsonObject, Statistics.class);
         Assert.assertTrue(result.equals(statistics));
     }
@@ -228,7 +229,7 @@ public class StatisticTest extends TestBase {
         assertReturnCode(response, HttpStatus.SC_OK);
         JsonObject jsonObject = new JsonParser().parse(response.asString()).getAsJsonObject();
         StatisticsUtils.COMPUTE_COUNT(jsonObject);
-        LOGGER.info(jsonObject.toString());
+        LogUtil.info(LOGGER, jsonObject.toString());
         Statistics result = new Gson().fromJson(jsonObject, Statistics.class);
         Assert.assertTrue(result.equals(statistics));
     }
@@ -246,7 +247,7 @@ public class StatisticTest extends TestBase {
         assertReturnCode(response, HttpStatus.SC_OK);
         JsonObject jsonObject = new JsonParser().parse(response.asString()).getAsJsonObject();
         StatisticsUtils.COMPUTE_COUNT(jsonObject);
-        LOGGER.debug(jsonObject.toString());
+        LogUtil.debug(LOGGER, jsonObject.toString());
         Statistics statistics = new Statistics();
         for (Map.Entry<String, String> entry : experimentUserBucketMap.get(validExperimentsLists.get(0).label).entrySet()) {
             Map<String, Integer> eventCounts = val.get(entry.getValue());
@@ -271,9 +272,9 @@ public class StatisticTest extends TestBase {
             , dependsOnGroups = {"setup", "experimentStatistic"}
     )
     public void t_dailyStatistics() {
-        LOGGER.info(SharedExperimentDataProvider.todayDT.toString());
+        LogUtil.info(LOGGER, SharedExperimentDataProvider.todayDT.toString());
         response = apiServerConnector.doGet("/analytics/experiments/" + validExperimentsLists.get(0).id + "/statistics/dailies");
-        LOGGER.debug(response.asString());
+        LogUtil.debug(LOGGER, response.asString());
         JsonArray jsonArray = new JsonParser().parse(response.asString()).getAsJsonObject().getAsJsonArray("days");
 
         for (JsonElement element : jsonArray) {
@@ -328,7 +329,7 @@ public class StatisticTest extends TestBase {
                 query);
         assertReturnCode(response, HttpStatus.SC_OK);
         ExperimentCumulativeStatistics stats = new Gson().fromJson(response.asString(), ExperimentCumulativeStatistics.class);
-        LOGGER.info(stats.toString());
+        LogUtil.info(LOGGER, stats.toString());
         Assert.assertEquals(stats.days.size(), numOfDays);
         for (DailyStatistics day : stats.days) {
             if (day.date.equals(SharedExperimentDataProvider.yesterday) ||
@@ -342,7 +343,7 @@ public class StatisticTest extends TestBase {
 
     @AfterClass
     public void t_cleanUp() {
-        LOGGER.info("Clean up experiments");
+        LogUtil.info(LOGGER, "Clean up experiments");
         for (Experiment experiment : validExperimentsLists) {
             response = apiServerConnector.doGet("experiments/" + experiment.id);
             Experiment result = ExperimentFactory.createFromJSONString(response.asString());

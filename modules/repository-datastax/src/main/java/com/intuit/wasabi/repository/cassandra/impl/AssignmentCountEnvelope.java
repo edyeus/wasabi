@@ -24,6 +24,7 @@ import com.intuit.wasabi.eventlog.events.ExperimentChangeEvent;
 import com.intuit.wasabi.experimentobjects.Experiment;
 import com.intuit.wasabi.repository.AssignmentsRepository;
 import com.intuit.wasabi.repository.ExperimentRepository;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import java.util.Date;
@@ -92,7 +93,7 @@ public class AssignmentCountEnvelope implements Runnable {
                 assignmentsRepository.updateBucketAssignmentCount(experiment, assignment, countUp);
             }
         } catch (Exception e) {
-            LOGGER.error("Error updating the assignment counts for experiment: ", experiment.getID() +
+            LogUtil.error(LOGGER, "Error updating the assignment counts for experiment: ", experiment.getID() +
                     " bucket label: " + assignment.getBucketLabel() + " with exception: ", e);
         }
 
@@ -103,7 +104,7 @@ public class AssignmentCountEnvelope implements Runnable {
                 assignmentsRepository.assignUserToExports(assignment, date);
             }
         } catch (Exception e) {
-            LOGGER.error("Error updating the assignment to the user export for experiment: ", experiment.getID() +
+            LogUtil.error(LOGGER, "Error updating the assignment to the user export for experiment: ", experiment.getID() +
                     " bucket label: " + assignment.getBucketLabel() + " with exception: ", e);
         }
     }

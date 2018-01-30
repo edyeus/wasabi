@@ -135,6 +135,28 @@ public class LogUtilTest {
         assertNull(logger.e);
     }
 
+    @Test
+    public void traceTest() throws Exception {
+        TestLogger logger = new TestLogger();
+        String msg = "application={}, user={}, profile={}, error=";
+        String application = "App";
+        String user = "User";
+        String profile = "profile";
+        Exception e = new Exception("Exception");
+
+        trace(logger, msg, application, user, profile, e);
+
+        assertThat(logger.msg, is("application=App, user=User, profile=profile, error="));
+        assertThat(logger.e, is(e));
+
+        logger = new TestLogger();
+
+        trace(logger, msg, application, user, profile);
+
+        assertThat(logger.msg, is("application=App, user=User, profile=profile, error="));
+        assertNull(logger.e);
+    }
+
     class TestLogger implements Logger {
         String msg;
         Exception e;
@@ -159,12 +181,13 @@ public class LogUtilTest {
 
         @Override
         public void trace(String s) {
-
+            msg = s;
         }
 
         @Override
         public void trace(String s, Object o) {
-
+            msg = s;
+            e = (Exception) o;
         }
 
         @Override
@@ -179,7 +202,8 @@ public class LogUtilTest {
 
         @Override
         public void trace(String s, Throwable throwable) {
-
+            msg = s;
+            e = (Exception) throwable;
         }
 
         @Override

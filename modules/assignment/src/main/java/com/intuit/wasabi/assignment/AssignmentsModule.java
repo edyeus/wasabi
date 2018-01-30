@@ -35,6 +35,7 @@ import com.intuit.wasabi.export.Envelope;
 import com.intuit.wasabi.export.WebExport;
 import com.intuit.wasabi.export.rest.impl.ExportModule;
 import com.intuit.wasabi.repository.cassandra.CassandraRepositoryModule;
+import com.intuit.wasabi.util.LogUtil;
 import net.sf.ehcache.CacheManager;
 import org.slf4j.Logger;
 
@@ -77,7 +78,7 @@ public class AssignmentsModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        LOGGER.debug("installing module: {}", AssignmentsModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installing module: {}", AssignmentsModule.class.getSimpleName());
 
         install(new ExportModule());
         install(new CassandraRepositoryModule());
@@ -109,7 +110,7 @@ public class AssignmentsModule extends AbstractModule {
             bind(new TypeLiteral<Envelope<AssignmentEnvelopePayload, WebExport>>() {
             }).to(webAssignmentWebEnvelopeImplClass);
         } catch (ClassNotFoundException e) {
-            LOGGER.error("unable to find class: {}", e.getMessage(), e);
+            LogUtil.error(LOGGER, "unable to find class: {}", e.getMessage(), e);
 
             throw new AssignmentException("unable to find class: " + e.getMessage(), e);
         }
@@ -120,7 +121,7 @@ public class AssignmentsModule extends AbstractModule {
                 AssignmentIngestionExecutor.class
         );
 
-        LOGGER.debug("installed module: {}", AssignmentsModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installed module: {}", AssignmentsModule.class.getSimpleName());
     }
 
     private void bindMetadataCache(final Properties properties) {
@@ -203,7 +204,7 @@ public class AssignmentsModule extends AbstractModule {
 
             bind(Assignments.class).to(assignmentsClass).in(SINGLETON);
         } catch (ClassNotFoundException e) {
-            LOGGER.error("unable to find class: {}", e.getMessage(), e);
+            LogUtil.error(LOGGER, "unable to find class: {}", e.getMessage(), e);
 
             throw new AssignmentException("unable to find class: " + e.getMessage(), e);
         }

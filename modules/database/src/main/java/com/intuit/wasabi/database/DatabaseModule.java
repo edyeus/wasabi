@@ -17,6 +17,7 @@ package com.intuit.wasabi.database;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.intuit.wasabi.util.LogUtil;
 import com.jolbox.bonecp.BoneCPConfig;
 import org.slf4j.Logger;
 
@@ -34,11 +35,11 @@ public class DatabaseModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        LOGGER.debug("installing module: {}", DatabaseModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installing module: {}", DatabaseModule.class.getSimpleName());
 
         bind(TransactionFactory.class).to(DBITransactionFactory.class).asEagerSingleton();
 
-        LOGGER.debug("installed module: {}", DatabaseModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installed module: {}", DatabaseModule.class.getSimpleName());
     }
 
     @Provides

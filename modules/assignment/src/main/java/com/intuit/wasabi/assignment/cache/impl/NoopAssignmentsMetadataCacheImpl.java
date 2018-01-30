@@ -24,6 +24,7 @@ import com.intuit.wasabi.experimentobjects.Experiment;
 import com.intuit.wasabi.experimentobjects.Page;
 import com.intuit.wasabi.experimentobjects.PageExperiment;
 import com.intuit.wasabi.experimentobjects.PrioritizedExperimentList;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +42,7 @@ public class NoopAssignmentsMetadataCacheImpl implements AssignmentsMetadataCach
 
     @Inject
     public NoopAssignmentsMetadataCacheImpl() {
-        LOGGER.info("Noop Assignments metadata cache has been created successfully...");
+        LogUtil.info(LOGGER, "Noop Assignments metadata cache has been created successfully...");
     }
 
     /**

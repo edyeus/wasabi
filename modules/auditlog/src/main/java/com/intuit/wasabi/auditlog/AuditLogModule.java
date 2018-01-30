@@ -19,6 +19,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Binder;
 import com.intuit.wasabi.eventlog.EventLogModule;
 import com.intuit.wasabi.exceptions.AuditLogException;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import java.util.Properties;
@@ -46,7 +47,7 @@ public class AuditLogModule extends AbstractModule {
      */
     @Override
     protected void configure() {
-        LOGGER.debug("installing module: {}", AuditLogModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installing module: {}", AuditLogModule.class.getSimpleName());
 
         install(new EventLogModule());
 
@@ -84,6 +85,6 @@ public class AuditLogModule extends AbstractModule {
             throw new AuditLogException("unable to find class: " + auditLogClass, e);
         }
 
-        LOGGER.debug("installed module: {}", AuditLogModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installed module: {}", AuditLogModule.class.getSimpleName());
     }
 }

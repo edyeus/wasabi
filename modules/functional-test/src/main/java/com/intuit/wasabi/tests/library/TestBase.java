@@ -46,6 +46,7 @@ import com.intuit.wasabi.tests.model.factory.EventFactory;
 import com.intuit.wasabi.tests.model.factory.ExperimentFactory;
 import com.intuit.wasabi.tests.model.factory.PageFactory;
 import com.intuit.wasabi.tests.model.factory.UserFeedbackFactory;
+import com.intuit.wasabi.util.LogUtil;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.exception.JsonPathException;
@@ -111,7 +112,7 @@ public class TestBase extends ServiceTestBase {
      * Initializes the TestBase.
      */
     private void init() {
-        LOGGER.debug("Initializing TestBase");
+        LogUtil.debug(LOGGER, "Initializing TestBase");
         TestBase.pingSuccess = false;
     }
 
@@ -126,7 +127,7 @@ public class TestBase extends ServiceTestBase {
     @Parameters({ "configFile" })
     protected void beforeClassTestWrapper(@Optional(Constants.DEFAULT_CONFIG_FILE) String configFile)
             throws IOException {
-        LOGGER.debug(this.getClass().getName() + "@BeforeClass");
+        LogUtil.debug(LOGGER, this.getClass().getName() + "@BeforeClass");
 
         loadProperties(configFile);
 
@@ -147,9 +148,9 @@ public class TestBase extends ServiceTestBase {
             properties.load(new BufferedReader(
                     new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(configFile))));
             appProperties = properties;
-            LOGGER.debug("Properties loaded: " + appProperties.toString());
+            LogUtil.debug(LOGGER, "Properties loaded: " + appProperties.toString());
         } catch (IOException e) {
-            LOGGER.error("Can not read config file " + configFile, e);
+            LogUtil.error(LOGGER, "Can not read config file " + configFile, e);
             throw e;
         }
 
@@ -184,14 +185,14 @@ public class TestBase extends ServiceTestBase {
      */
     @AfterClass
     protected void afterClassTestWrapper() {
-        LOGGER.debug(this.getClass().getName() + "@AfterClass");
+        LogUtil.debug(LOGGER, this.getClass().getName() + "@AfterClass");
     }
 
     /**
      * Creates an APIServerConnector.
      */
     private void createAPIServerConnector() {
-        LOGGER.info("Creating APIServerConnector");
+        LogUtil.info(LOGGER, "Creating APIServerConnector");
 
         // get values, resort to defaults if needed.
         String userName = appProperties.getProperty("user-name");
@@ -215,7 +216,7 @@ public class TestBase extends ServiceTestBase {
 
         String baseUri = apiServerProtocol + "://" + apiServerName;
         String basePath = "/api/" + apiVersionString + "/";
-        LOGGER.info("API base: " + baseUri + basePath);
+        LogUtil.info(LOGGER, "API base: " + baseUri + basePath);
 
         apiServerConnector = new APIServerConnector(baseUri, basePath, userName, password, headerMap);
     }
@@ -230,7 +231,7 @@ public class TestBase extends ServiceTestBase {
     protected void setPropertyFromSystemProperty(String sysPropKey, String internalPropKey) {
         String systemValueStr = System.getProperty(sysPropKey);
         if (systemValueStr != null && !systemValueStr.isEmpty()) {
-            LOGGER.info("Setting property '" + internalPropKey + "' to: '" + systemValueStr
+            LogUtil.info(LOGGER, "Setting property '" + internalPropKey + "' to: '" + systemValueStr
                     + "' based on system property '" + sysPropKey + "'");
             appProperties.setProperty(internalPropKey, systemValueStr);
         }
@@ -280,7 +281,7 @@ public class TestBase extends ServiceTestBase {
             for (Map temp : list) {
                 String k = (String) temp.get("componentName");
                 Boolean v = (Boolean) temp.get("healthy");
-                LOGGER.info("Ping reports: " + k + ": " + v);
+                LogUtil.info(LOGGER, "Ping reports: " + k + ": " + v);
                 Assert.assertTrue(v, "Component " + k + "'s healthy value");
             }
             TestBase.pingSuccess = true;
@@ -533,7 +534,7 @@ public class TestBase extends ServiceTestBase {
     public List<Map<String, Object>> getSuperAdmins(int expectedStatus, APIServerConnector apiServerConnector) {
         response = apiServerConnector.doGet("authorization/superadmins");
 
-        LOGGER.debug("Response body: " + response.print());
+        LogUtil.debug(LOGGER, "Response body: " + response.print());
 
         List<Map<String, Object>> superadmins = response.jsonPath().getList("");
 
@@ -1357,7 +1358,7 @@ public class TestBase extends ServiceTestBase {
                                 parameters.remove(key);
                             }
                         } catch (ClassCastException ex) { // should never happen...
-                            LOGGER.error("Invalid value, object of key " + key + " is no LIST. Removing it.", ex);
+                            LogUtil.error(LOGGER, "Invalid value, object of key " + key + " is no LIST. Removing it.", ex);
                             parameters.remove(key);
                         }
                         break;

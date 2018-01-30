@@ -22,6 +22,7 @@ import com.intuit.wasabi.authenticationobjects.UserInfo;
 import com.intuit.wasabi.email.EmailLinksList;
 import com.intuit.wasabi.email.EmailService;
 import com.intuit.wasabi.experimentobjects.Application;
+import com.intuit.wasabi.util.LogUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -99,14 +100,14 @@ public class EmailResource {
                         + user + " with links " + emails.toString();
                 return httpHeader.headers().entity(message).build();
             } else {
-                LOGGER.warn("User tried to send an email via API-call, but the service is not active.");
+                LogUtil.warn(LOGGER, "User tried to send an email via API-call, but the service is not active.");
 
                 message = "The email service is not activated at the moment.";
             }
 
             return httpHeader.headers(SERVICE_UNAVAILABLE).entity(message).build();
         } catch (Exception exception) {
-            LOGGER.error("postEmail failed for applicationName={}, user={}, emails={} with error:",
+            LogUtil.error(LOGGER, "postEmail failed for applicationName={}, user={}, emails={} with error:",
                     applicationName, user, emails, exception);
             throw exception;
         }

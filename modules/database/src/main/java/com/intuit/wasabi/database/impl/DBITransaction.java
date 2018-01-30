@@ -21,6 +21,7 @@ import com.intuit.wasabi.exceptions.ConstraintViolationException;
 import com.intuit.wasabi.exceptions.DatabaseException;
 import com.intuit.wasabi.exceptions.WasabiServerException;
 import com.intuit.wasabi.experimentobjects.exceptions.WasabiException;
+import com.intuit.wasabi.util.LogUtil;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
 import org.skife.jdbi.v2.Update;
@@ -63,11 +64,11 @@ public class DBITransaction implements Transaction {
             commit(handle);
             return value;
         } catch (WasabiException | IllegalArgumentException e) {
-            LOGGER.warn("Problem executing block. Trying to rollback...", e);
+            LogUtil.warn(LOGGER, "Problem executing block. Trying to rollback...", e);
             rollback(handle);
             throw e;
         } catch (Exception e) {
-            LOGGER.warn("Unexpected exception executing block. Trying to rollback...", e);
+            LogUtil.warn(LOGGER, "Unexpected exception executing block. Trying to rollback...", e);
             rollback(handle);
             throw new DatabaseException("Unexpected exception when executing block \"" + block + "\"", e);
         } finally {
@@ -143,7 +144,7 @@ public class DBITransaction implements Transaction {
                 }
             });
         } catch (ConstraintViolationException ex) {
-            LOGGER.error("Failed to execute query: " + query, ex);
+            LogUtil.error(LOGGER, "Failed to execute query: " + query, ex);
 
             throw ex;
         }
@@ -231,7 +232,7 @@ public class DBITransaction implements Transaction {
         try {
             handle.commit();
         } catch (Exception e) {
-            LOGGER.error("Failed to commit transaction", e);
+            LogUtil.error(LOGGER, "Failed to commit transaction", e);
         }
     }
 
@@ -244,7 +245,7 @@ public class DBITransaction implements Transaction {
         try {
             handle.rollback();
         } catch (Exception e) {
-            LOGGER.error("Failed rolling back transaction", e);
+            LogUtil.error(LOGGER, "Failed rolling back transaction", e);
         }
     }
 
@@ -257,7 +258,7 @@ public class DBITransaction implements Transaction {
         try {
             handle.close();
         } catch (Exception e) {
-            LOGGER.error("Failed to close handle", e);
+            LogUtil.error(LOGGER, "Failed to close handle", e);
         }
     }
 

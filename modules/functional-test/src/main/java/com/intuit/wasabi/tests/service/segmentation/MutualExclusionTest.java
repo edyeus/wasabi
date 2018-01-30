@@ -19,6 +19,7 @@ import com.intuit.wasabi.tests.data.SegmentationDataProvider;
 import com.intuit.wasabi.tests.library.TestBase;
 import com.intuit.wasabi.tests.model.Experiment;
 import com.intuit.wasabi.tests.model.factory.ExperimentFactory;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.testng.Assert;
@@ -37,9 +38,9 @@ public class MutualExclusionTest extends TestBase {
 
     @Test(groups = {"setup"}, dataProvider = "experimentSetup", dataProviderClass = SegmentationDataProvider.class)
     public void t_setupExperiment(String data) {
-        LOGGER.debug(data);
+        LogUtil.debug(LOGGER, data);
         response = apiServerConnector.doPost("/experiments", data);
-        LOGGER.debug(response.jsonPath().prettify());
+        LogUtil.debug(LOGGER, response.jsonPath().prettify());
         Experiment experiment = ExperimentFactory.createFromJSONString(response.jsonPath().prettify());
         validExperimentsLists.add(experiment);
         assertReturnCode(response, HttpStatus.SC_CREATED);
@@ -63,7 +64,7 @@ public class MutualExclusionTest extends TestBase {
     public void t_setupMutualExclusionRules() {
         String mutex_experiments = "{\"experimentIDs\": [\"" + validExperimentsLists.get(1).id + "\",\"" +
                 validExperimentsLists.get(2).id + "\"]}";
-        LOGGER.debug("experiment mutex is " + mutex_experiments);
+        LogUtil.debug(LOGGER, "experiment mutex is " + mutex_experiments);
         response = apiServerConnector.doPost("/experiments/" + validExperimentsLists.get(0).id + "/exclusions",
                 mutex_experiments);
         assertReturnCode(response, HttpStatus.SC_CREATED);
@@ -75,7 +76,7 @@ public class MutualExclusionTest extends TestBase {
                 validExperimentsLists.get(1).label + "/users";
         String data = "{\"profile\": {\"salary\": 1000, \"state\": \"CA\", \"vet\": true}}";
         response = apiServerConnector.doPost(url + "/Billy", data);
-        LOGGER.debug(response.asString());
+        LogUtil.debug(LOGGER, response.asString());
         assertReturnCode(response, HttpStatus.SC_OK);
         Assert.assertEquals(response.asString().contains("NO_PROFILE_MATCH"), true);
     }
@@ -86,7 +87,7 @@ public class MutualExclusionTest extends TestBase {
                 validExperimentsLists.get(0).label + "/users";
         String data = "{\"profile\": {\"salary\": 80000, \"state\": \"CA\", \"vet\": true}}";
         response = apiServerConnector.doPost(url + "/Billy", data);
-        LOGGER.debug(response.asString());
+        LogUtil.debug(LOGGER, response.asString());
         assertReturnCode(response, HttpStatus.SC_OK);
         Assert.assertEquals(response.asString().contains("NEW_ASSIGNMENT"), true);
     }
@@ -97,7 +98,7 @@ public class MutualExclusionTest extends TestBase {
                 validExperimentsLists.get(0).label + "/users";
         String data = "{\"profile\": {\"salary\": 80000, \"state\": \"CA\", \"vet\": true}}";
         response = apiServerConnector.doPost(url + "/Billy", data);
-        LOGGER.debug(response.asString());
+        LogUtil.debug(LOGGER, response.asString());
         assertReturnCode(response, HttpStatus.SC_OK);
         Assert.assertEquals(response.asString().contains("EXISTING_ASSIGNMENT"), true);
     }
@@ -105,7 +106,7 @@ public class MutualExclusionTest extends TestBase {
 
     @AfterClass
     public void t_cleanUp() {
-        LOGGER.info("Clean up experiments");
+        LogUtil.info(LOGGER, "Clean up experiments");
         for (Experiment experiment : validExperimentsLists) {
             response = apiServerConnector.doPut("experiments/" + experiment.id, "{\"state\": \"TERMINATED\"}");
             assertReturnCode(response, HttpStatus.SC_OK);

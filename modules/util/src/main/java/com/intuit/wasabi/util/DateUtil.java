@@ -72,7 +72,7 @@ public class DateUtil {
 
                 return dateFmt.parse(timestampStr);
             } catch (Exception ex) {
-                LOGGER.error("unable to parse date", ex);
+                LogUtil.error(LOGGER, "unable to parse date", ex);
             }
         }
 

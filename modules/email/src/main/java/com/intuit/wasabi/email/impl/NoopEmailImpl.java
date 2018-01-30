@@ -22,6 +22,7 @@ import com.intuit.wasabi.email.EmailLinksList;
 import com.intuit.wasabi.email.EmailService;
 import com.intuit.wasabi.email.EmailTextProcessor;
 import com.intuit.wasabi.experimentobjects.Application;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import java.util.Arrays;
@@ -51,12 +52,12 @@ public class NoopEmailImpl implements EmailService {
 
     @Override
     public void doSend(String subject, String msg, String... to) {
-        LOGGER.info("SENDING EMAIL WITH SUBJECT \"" + subject + "\" AND MESSAGE: \"" + msg + "\" TO " + Arrays.toString(to));
+        LogUtil.info(LOGGER, "SENDING EMAIL WITH SUBJECT \"" + subject + "\" AND MESSAGE: \"" + msg + "\" TO " + Arrays.toString(to));
     }
 
     @Override
     public void sendEmailForUserPermission(Application.Name appName, UserInfo.Username user, EmailLinksList links) {
-        LOGGER.info("EMAIL IS GETTING SEND FOR USER: \"" + user + "\" FOR THE APPLICATION \" " + appName.toString() + "\"");
+        LogUtil.info(LOGGER, "EMAIL IS GETTING SEND FOR USER: \"" + user + "\" FOR THE APPLICATION \" " + appName.toString() + "\"");
 
         try {
             String subject = emailTextProcessor.getSubject(appName);
@@ -65,7 +66,7 @@ public class NoopEmailImpl implements EmailService {
 
             doSend(subject, msg, addressees.toArray(new String[addressees.size()]));
         } catch (NullPointerException npe) {
-            LOGGER.info("No EmailTextProcessor set in NoopImplementation", npe);
+            LogUtil.info(LOGGER, "No EmailTextProcessor set in NoopImplementation", npe);
         }
     }
 

@@ -22,6 +22,7 @@ import com.intuit.wasabi.email.impl.NoopEmailImpl;
 import com.intuit.wasabi.eventlog.EventLogModule;
 import com.intuit.wasabi.exceptions.AuthenticationException;
 import com.intuit.wasabi.repository.cassandra.CassandraRepositoryModule;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import java.util.Properties;
@@ -51,7 +52,7 @@ public class EmailModule extends AbstractModule {
      */
     @Override
     protected void configure() {
-        LOGGER.debug("installing module: {}", EmailModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installing module: {}", EmailModule.class.getSimpleName());
 
         install(new EventLogModule());
         install(new CassandraRepositoryModule());
@@ -89,11 +90,11 @@ public class EmailModule extends AbstractModule {
 
             bind(EmailService.class).to(emailServiceClass).in(SINGLETON);
         } catch (ClassNotFoundException e) {
-            LOGGER.error("unable to find class: {}", emailServiceClassName, e);
+            LogUtil.error(LOGGER, "unable to find class: {}", emailServiceClassName, e);
 
             throw new AuthenticationException("unable to find class: " + emailServiceClassName, e);
         }
 
-        LOGGER.debug("installed module: {}", EmailModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installed module: {}", EmailModule.class.getSimpleName());
     }
 }

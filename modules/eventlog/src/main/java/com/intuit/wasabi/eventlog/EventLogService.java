@@ -17,6 +17,7 @@ package com.intuit.wasabi.eventlog;
 
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Inject;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -35,7 +36,7 @@ public class EventLogService extends AbstractIdleService {
     @Override
     protected void startUp() throws Exception {
         if (eventLogSystem != null) {
-            LOGGER.info("already started {}", serviceName());
+            LogUtil.info(LOGGER, "already started {}", serviceName());
 
             return;
         }
@@ -48,7 +49,7 @@ public class EventLogService extends AbstractIdleService {
     @Override
     protected void shutDown() throws Exception {
         if (eventLogSystem == null) {
-            LOGGER.info("already stopped {}", serviceName());
+            LogUtil.info(LOGGER, "already stopped {}", serviceName());
 
             return;
         }

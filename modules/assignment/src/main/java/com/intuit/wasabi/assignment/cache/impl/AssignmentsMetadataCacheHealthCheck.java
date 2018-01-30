@@ -22,6 +22,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.intuit.wasabi.assignment.cache.AssignmentMetadataCacheTimeService;
 import com.intuit.wasabi.assignment.cache.AssignmentsMetadataCache;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import java.util.Date;
@@ -92,7 +93,7 @@ public class AssignmentsMetadataCacheHealthCheck extends HealthCheck {
                             .append("Last refresh time was ").append(lastRefreshTime)
                             .append(" and current time is ").append(currentTime).append(".")
                             .toString();
-                    LOGGER.error(msg);
+                    LogUtil.error(LOGGER, msg);
 
                 } else if (diffMS > warnDifferenceMS) {
                     //If cache has NOT been refreshed since last 2 intervals then log an error.
@@ -105,7 +106,7 @@ public class AssignmentsMetadataCacheHealthCheck extends HealthCheck {
 
                     res = true;
                     msg = warnMsg;
-                    LOGGER.warn(warnMsg);
+                    LogUtil.warn(LOGGER, warnMsg);
 
                 } else {
                     //All good, cache had been refreshed in last interval.
@@ -124,7 +125,7 @@ public class AssignmentsMetadataCacheHealthCheck extends HealthCheck {
             }
 
         } catch (Exception ex) {
-            LOGGER.error("Some error happened while checking the health of AssignmentsMetadataCache", ex);
+            LogUtil.error(LOGGER, "Some error happened while checking the health of AssignmentsMetadataCache", ex);
             res = false;
             msg = ex.getMessage();
         }

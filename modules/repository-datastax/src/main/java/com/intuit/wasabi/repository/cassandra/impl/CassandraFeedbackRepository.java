@@ -25,6 +25,7 @@ import com.intuit.wasabi.feedbackobjects.UserFeedback;
 import com.intuit.wasabi.repository.FeedbackRepository;
 import com.intuit.wasabi.repository.RepositoryException;
 import com.intuit.wasabi.repository.cassandra.accessor.UserFeedbackAccessor;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +64,7 @@ public class CassandraFeedbackRepository implements FeedbackRepository {
      */
     @Override
     public void createUserFeedback(UserFeedback userFeedback) {
-        LOGGER.debug("creating user feedback {}", userFeedback);
+        LogUtil.debug(LOGGER, "creating user feedback {}", userFeedback);
 
         try {
 
@@ -71,7 +72,7 @@ public class CassandraFeedbackRepository implements FeedbackRepository {
                     userFeedback.getSubmitted(), userFeedback.getScore(), userFeedback.getComments(),
                     userFeedback.isContactOkay(), userFeedback.getEmail());
         } catch (Exception e) {
-            LOGGER.error("Error while creating user feedback", e);
+            LogUtil.error(LOGGER, "Error while creating user feedback", e);
             throw new RepositoryException("Could not save feedback from user " + userFeedback, e);
         }
     }
@@ -81,7 +82,7 @@ public class CassandraFeedbackRepository implements FeedbackRepository {
      */
     @Override
     public List<UserFeedback> getUserFeedback(UserInfo.Username username) throws RepositoryException {
-        LOGGER.debug("Getting user feedback for {}", username);
+        LogUtil.debug(LOGGER, "Getting user feedback for {}", username);
 
         Preconditions.checkNotNull(username, "Parameter \"username\" cannot be null");
 
@@ -92,7 +93,7 @@ public class CassandraFeedbackRepository implements FeedbackRepository {
 
             feedbacks = makeFeedbacksFromResult(result);
         } catch (Exception e) {
-            LOGGER.error("Error while getting feedback for user " + username.getUsername(), e);
+            LogUtil.error(LOGGER, "Error while getting feedback for user " + username.getUsername(), e);
             throw new RepositoryException("Could not retrieve feedback from user " + username, e);
         }
         return feedbacks;
@@ -103,7 +104,7 @@ public class CassandraFeedbackRepository implements FeedbackRepository {
      */
     @Override
     public List<UserFeedback> getAllUserFeedback() {
-        LOGGER.debug("Getting all user feedbacks ");
+        LogUtil.debug(LOGGER, "Getting all user feedbacks ");
 
         List<UserFeedback> feedbacks = new ArrayList<>();
         try {
@@ -111,7 +112,7 @@ public class CassandraFeedbackRepository implements FeedbackRepository {
                     userFeedbackAccessor.getAllUserFeedback();
             feedbacks = makeFeedbacksFromResult(result);
         } catch (Exception e) {
-            LOGGER.error("Error while getting all user feedback", e);
+            LogUtil.error(LOGGER, "Error while getting all user feedback", e);
             throw new RepositoryException("Could not retrieve feedback from all users", e);
         }
         return feedbacks;

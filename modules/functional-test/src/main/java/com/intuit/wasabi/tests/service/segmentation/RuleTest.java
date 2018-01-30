@@ -21,6 +21,7 @@ import com.intuit.wasabi.tests.model.Assignment;
 import com.intuit.wasabi.tests.model.Experiment;
 import com.intuit.wasabi.tests.model.factory.AssignmentFactory;
 import com.intuit.wasabi.tests.model.factory.ExperimentFactory;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.testng.Assert;
@@ -39,7 +40,7 @@ public class RuleTest extends TestBase {
 
     @Test(groups = {"stage1"}, dataProvider = "validInput", dataProviderClass = SegmentationDataProvider.class)
     public void t_validSegmentationInput(String input) {
-        LOGGER.debug(input);
+        LogUtil.debug(LOGGER, input);
         response = apiServerConnector.doPost("/experiments", input);
         Experiment experiment = ExperimentFactory.createFromJSONString(response.jsonPath().prettify());
         validExperimentsMaps.put(experiment.applicationName, experiment);
@@ -119,22 +120,22 @@ public class RuleTest extends TestBase {
             if (experiment.applicationName.contains("no_rule")) {
                 String baseUrl = String.format("/assignments/applications/%s/experiments/%s/users/",
                         experiment.applicationName, experiment.label);
-                LOGGER.debug("Assign johnDoe to New_ASSIGNMENT");
+                LogUtil.debug(LOGGER, "Assign johnDoe to New_ASSIGNMENT");
                 response = apiServerConnector.doGet(baseUrl + "johnDoe");
                 assertReturnCode(response, HttpStatus.SC_OK);
                 Assert.assertEquals(response.asString().contains("NEW_ASSIGNMENT"), true);
-                LOGGER.debug("Get existing assignment for johnDoe");
+                LogUtil.debug(LOGGER, "Get existing assignment for johnDoe");
                 response = apiServerConnector.doGet(baseUrl + "johnDoe");
                 assertReturnCode(response, HttpStatus.SC_OK);
                 Assert.assertEquals(response.asString().contains("EXISTING_ASSIGNMENT"), true);
 
                 //Assign user with profile
                 String data = "{\"profile\": {\"salary\": 50000, \"state\": \"CA\"}}";
-                LOGGER.debug("Assign janeDoe to New_ASSIGNMENT");
+                LogUtil.debug(LOGGER, "Assign janeDoe to New_ASSIGNMENT");
                 response = apiServerConnector.doPost(baseUrl + "janeDoe", data);
                 assertReturnCode(response, HttpStatus.SC_OK);
                 Assert.assertEquals(response.asString().contains("NEW_ASSIGNMENT"), true);
-                LOGGER.debug("Get existing assignment for janeDoe");
+                LogUtil.debug(LOGGER, "Get existing assignment for janeDoe");
                 response = apiServerConnector.doGet(baseUrl + "janeDoe");
                 assertReturnCode(response, HttpStatus.SC_OK);
                 Assert.assertEquals(response.asString().contains("EXISTING_ASSIGNMENT"), true);
@@ -151,27 +152,27 @@ public class RuleTest extends TestBase {
                 String data = "{\"profile\": {\"salary\": 50000, \"state\": \"CA\", \"vet\": true}}";
                 response = apiServerConnector.doPost(baseUrl + "jack", data);
                 assertReturnCode(response, HttpStatus.SC_OK);
-                LOGGER.debug(response.asString());
+                LogUtil.debug(LOGGER, response.asString());
                 Assert.assertEquals(response.asString().contains("NO_PROFILE_MATCH"), true);
 
-                LOGGER.debug("change the profile, but still fail the rule");
+                LogUtil.debug(LOGGER, "change the profile, but still fail the rule");
                 data = "{\"profile\": {\"salary\": 80000, \"state\": \"CA\", \"vet\": false}}";
                 response = apiServerConnector.doPost(baseUrl + "jill", data);
                 assertReturnCode(response, HttpStatus.SC_OK);
-                LOGGER.debug(response.asString());
+                LogUtil.debug(LOGGER, response.asString());
                 Assert.assertEquals(response.asString().contains("NO_PROFILE_MATCH"), true);
 
-                LOGGER.debug("Null assignment");
+                LogUtil.debug(LOGGER, "Null assignment");
                 data = "{\"profile\": {\"salary\": 80000, \"state\": \"CA\", \"vet\": true}}";
                 response = apiServerConnector.doPost(baseUrl + "jane", data);
-                LOGGER.debug("jane=" + response.asString());
+                LogUtil.debug(LOGGER, "jane=" + response.asString());
                 assertReturnCode(response, HttpStatus.SC_OK);
                 Assignment assignment = AssignmentFactory.createFromJSONString(response.asString());
                 Assert.assertNotNull(assignment.assignment, "Assignment should not be null");
 
                 data = "{\"profile\": {\"salary\": 90000, \"state\": \"CA\", \"vet\": false}}";
                 response = apiServerConnector.doPost(baseUrl + "bill", data);
-                LOGGER.debug("bill=" + response.asString());
+                LogUtil.debug(LOGGER, "bill=" + response.asString());
                 assertReturnCode(response, HttpStatus.SC_OK);
                 assignment = AssignmentFactory.createFromJSONString(response.asString());
                 Assert.assertNotNull(assignment.assignment, "Assignment should not be null");
@@ -179,7 +180,7 @@ public class RuleTest extends TestBase {
 
                 data = "{\"profile\": {\"salary\": 90000, \"state\": \"CA\", \"vet\": false, \"dummy\": true, \"extra\": 5}}";
                 response = apiServerConnector.doPost(baseUrl + "bill", data);
-                LOGGER.debug("bill=" + response.asString());
+                LogUtil.debug(LOGGER, "bill=" + response.asString());
                 assertReturnCode(response, HttpStatus.SC_OK);
                 assignment = AssignmentFactory.createFromJSONString(response.asString());
                 Assert.assertNotNull(assignment.assignment, "Assignment should not be null");
@@ -197,7 +198,7 @@ public class RuleTest extends TestBase {
                 "\",\"label\":\"expLabel_" + SegmentationDataProvider.time + "\",\"samplingPercent\":1," +
                 "\"rule\":\"(State = 'CA')\"}";
         response = apiServerConnector.doPost("/experiments", data);
-        LOGGER.info(response.asString());
+        LogUtil.info(LOGGER, response.asString());
         assertReturnCode(response, HttpStatus.SC_CREATED);
         Experiment experiment = ExperimentFactory.createFromJSONString(response.asString());
         validExperimentsMaps.put(experiment.applicationName, experiment);
@@ -218,12 +219,12 @@ public class RuleTest extends TestBase {
         Experiment experiment = validExperimentsMaps.get(application);
         String url = "/assignments/applications/" + application + "/experiments/" + experiment.label + "/users/user_0";
         response = apiServerConnector.doGet(url);
-        LOGGER.info(response.asString());
+        LogUtil.info(LOGGER, response.asString());
         assertReturnCode(response, HttpStatus.SC_OK);
         Assert.assertEquals(response.asString().contains("NO_PROFILE_MATCH"), true);
         url = "/assignments/applications/" + application + "/pages/ConfirmationPage/users/user_0";
         response = apiServerConnector.doGet(url);
-        LOGGER.info(response.asString());
+        LogUtil.info(LOGGER, response.asString());
         assertReturnCode(response, HttpStatus.SC_OK);
         Assert.assertEquals(response.asString().contains("NO_PROFILE_MATCH"), true);
     }
@@ -231,7 +232,7 @@ public class RuleTest extends TestBase {
 
     @AfterClass
     public void t_cleanUp() {
-        LOGGER.info("Clean up experiments");
+        LogUtil.info(LOGGER, "Clean up experiments");
         for (Experiment experiment : validExperimentsMaps.values()) {
             response = apiServerConnector.doPut("experiments/" + experiment.id, "{\"state\": \"TERMINATED\"}");
             assertReturnCode(response, HttpStatus.SC_OK);

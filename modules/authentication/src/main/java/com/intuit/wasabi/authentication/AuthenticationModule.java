@@ -18,6 +18,7 @@ package com.intuit.wasabi.authentication;
 import com.google.inject.AbstractModule;
 import com.intuit.wasabi.authentication.impl.NoOpAuthenticateByHttpRequestImpl;
 import com.intuit.wasabi.exceptions.AuthenticationException;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import java.util.Properties;
@@ -39,7 +40,7 @@ public class AuthenticationModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        LOGGER.debug("installing module: {}", AuthenticationModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installing module: {}", AuthenticationModule.class.getSimpleName());
 
         Properties properties = create(PROPERTY_NAME, AuthenticationModule.class);
 
@@ -65,11 +66,11 @@ public class AuthenticationModule extends AbstractModule {
             bind(Authentication.class).to(authImplClass).in(SINGLETON);
             bind(AuthenticateByHttpRequest.class).to(NoOpAuthenticateByHttpRequestImpl.class).asEagerSingleton();
         } catch (ClassNotFoundException e) {
-            LOGGER.error("unable to find class: {}", authenticationClassName, e);
+            LogUtil.error(LOGGER, "unable to find class: {}", authenticationClassName, e);
 
             throw new AuthenticationException("unable to find class: " + authenticationClassName, e);
         }
 
-        LOGGER.debug("installed module: {}", AuthenticationModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installed module: {}", AuthenticationModule.class.getSimpleName());
     }
 }

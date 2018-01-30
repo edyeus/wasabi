@@ -22,6 +22,7 @@ import com.intuit.wasabi.tests.library.TestBase;
 import com.intuit.wasabi.tests.model.Assignment;
 import com.intuit.wasabi.tests.model.Experiment;
 import com.intuit.wasabi.tests.model.factory.ExperimentFactory;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.testng.Assert;
@@ -41,9 +42,9 @@ public class MutualExclusionBatchTest extends TestBase {
 
     @Test(groups = {"setup"}, dataProvider = "mutexBatchExperimentSetup", dataProviderClass = SegmentationDataProvider.class)
     public void t_setupExperiment(String data) {
-        LOGGER.debug(data);
+        LogUtil.debug(LOGGER, data);
         response = apiServerConnector.doPost("/experiments", data);
-        LOGGER.debug(response.jsonPath().prettify());
+        LogUtil.debug(LOGGER, response.jsonPath().prettify());
         Experiment experiment = ExperimentFactory.createFromJSONString(response.jsonPath().prettify());
         validExperimentsLists.add(experiment);
         assertReturnCode(response, HttpStatus.SC_CREATED);
@@ -61,7 +62,7 @@ public class MutualExclusionBatchTest extends TestBase {
     public void t_setMutualExclusion() {
         String mutex_experiments = "{\"experimentIDs\": [\"" + validExperimentsLists.get(1).id + "\",\"" +
                 validExperimentsLists.get(2).id + "\"]}";
-        LOGGER.debug("experiment mutex is " + mutex_experiments);
+        LogUtil.debug(LOGGER, "experiment mutex is " + mutex_experiments);
         response = apiServerConnector.doPost("/experiments/" + validExperimentsLists.get(0).id + "/exclusions",
                 mutex_experiments);
         assertReturnCode(response, HttpStatus.SC_CREATED);
@@ -75,7 +76,7 @@ public class MutualExclusionBatchTest extends TestBase {
                 + SegmentationDataProvider.time + "_1\",\"batch_exp_label_" + SegmentationDataProvider.time + "_2\"]," +
                 "\"profile\": {\"state\":\"CA\"}}";
         response = apiServerConnector.doPost(url, data);
-        LOGGER.debug(response.asString());
+        LogUtil.debug(LOGGER, response.asString());
         assertReturnCode(response, HttpStatus.SC_OK);
         Type listType = new TypeToken<Map<String, ArrayList<Assignment>>>() {
         }.getType();
@@ -92,7 +93,7 @@ public class MutualExclusionBatchTest extends TestBase {
 
     @AfterClass
     public void t_cleanUp() {
-        LOGGER.info("Clean up experiments");
+        LogUtil.info(LOGGER, "Clean up experiments");
         for (Experiment experiment : validExperimentsLists) {
             response = apiServerConnector.doPut("experiments/" + experiment.id, "{\"state\": \"TERMINATED\"}");
             assertReturnCode(response, HttpStatus.SC_OK);

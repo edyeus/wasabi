@@ -16,6 +16,7 @@
 package com.intuit.wasabi.tests.library;
 
 import com.google.gson.Gson;
+import com.intuit.wasabi.util.LogUtil;
 import com.jayway.restassured.builder.RequestSpecBuilder;
 import com.jayway.restassured.filter.log.LogDetail;
 import com.jayway.restassured.http.ContentType;
@@ -248,7 +249,7 @@ public class APIServerConnector {
      */
     public Response doPost(String url, Object jsonBody) {
         String formJSON = getJsonString(jsonBody);
-        LOGGER.info(curlCallString("POST", url, formJSON));
+        LogUtil.info(LOGGER, curlCallString("POST", url, formJSON));
         long startTime = System.currentTimeMillis();
 
         Response response;
@@ -265,7 +266,7 @@ public class APIServerConnector {
 
         long endTime = System.currentTimeMillis();
         long duration = (endTime - startTime);
-        LOGGER.info("Duration for POST " + url + ": " + duration);
+        LogUtil.info(LOGGER, "Duration for POST " + url + ": " + duration);
 
         return response;
     }
@@ -289,7 +290,7 @@ public class APIServerConnector {
      */
     public Response doPut(String url, Object jsonBody) {
         String formJSON = getJsonString(jsonBody);
-        LOGGER.info(curlCallString("PUT", url, formJSON));
+        LogUtil.info(LOGGER, curlCallString("PUT", url, formJSON));
         long startTime = System.currentTimeMillis();
 
         Response response;
@@ -306,7 +307,7 @@ public class APIServerConnector {
 
         long endTime = System.currentTimeMillis();
         long duration = (endTime - startTime);
-        LOGGER.info("Duration for PUT " + url + ": " + duration);
+        LogUtil.info(LOGGER, "Duration for PUT " + url + ": " + duration);
 
         return response;
     }
@@ -331,7 +332,7 @@ public class APIServerConnector {
      */
     public Response doGet(String url, Object jsonBody) {
         String formJSON = getJsonString(jsonBody);
-        LOGGER.info(curlCallString("GET", url, formJSON));
+        LogUtil.info(LOGGER, curlCallString("GET", url, formJSON));
 
         long startTime = System.currentTimeMillis();
 
@@ -349,7 +350,7 @@ public class APIServerConnector {
 
         long endTime = System.currentTimeMillis();
         long duration = (endTime - startTime);
-        LOGGER.info("Duration for GET " + url + ": " + duration);
+        LogUtil.info(LOGGER, "Duration for GET " + url + ": " + duration);
 
         return response;
     }
@@ -374,7 +375,7 @@ public class APIServerConnector {
      */
     public Response doDelete(String url, Object jsonBody) {
         String formJSON = getJsonString(jsonBody);
-        LOGGER.info(curlCallString("DELETE", url, formJSON));
+        LogUtil.info(LOGGER, curlCallString("DELETE", url, formJSON));
 
         long startTime = System.currentTimeMillis();
 
@@ -392,7 +393,7 @@ public class APIServerConnector {
 
         long endTime = System.currentTimeMillis();
         long duration = (endTime - startTime);
-        LOGGER.info("Duration for DELETE " + url + ": " + duration);
+        LogUtil.info(LOGGER, "Duration for DELETE " + url + ": " + duration);
 
         return response;
     }
@@ -416,7 +417,7 @@ public class APIServerConnector {
      */
     public Response doPatch(String url, Object jsonBody) {
         String formJSON = getJsonString(jsonBody);
-        LOGGER.info(curlCallString("PATCH", url, formJSON));
+        LogUtil.info(LOGGER, curlCallString("PATCH", url, formJSON));
         long startTime = System.currentTimeMillis();
 
         Response response;
@@ -434,7 +435,7 @@ public class APIServerConnector {
 
         long endTime = System.currentTimeMillis();
         long duration = (endTime - startTime);
-        LOGGER.info("Duration for PATCH " + url + ": " + duration);
+        LogUtil.info(LOGGER, "Duration for PATCH " + url + ": " + duration);
 
         return response;
     }

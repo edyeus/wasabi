@@ -19,6 +19,7 @@ package com.intuit.wasabi.assignment.cache.impl;
 import com.google.inject.Inject;
 import com.intuit.wasabi.assignment.cache.AssignmentMetadataCacheTimeService;
 import com.intuit.wasabi.assignment.cache.AssignmentsMetadataCache;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +50,7 @@ public class AssignmentsMetadataCacheRefreshTask implements Runnable {
     public void run() {
         try {
             Date startTime = timeService.getCurrentTime();
-            LOGGER.debug("AssignmentsMetadataCache refresh started at = {}", startTime);
+            LogUtil.debug(LOGGER, "AssignmentsMetadataCache refresh started at = {}", startTime);
 
             if (!refreshInProgress.get()) {
                 //Mark that refresh has been started...
@@ -61,13 +62,13 @@ public class AssignmentsMetadataCacheRefreshTask implements Runnable {
                 //Update last refresh time
                 lastRefreshTime = timeService.getCurrentTime();
 
-                LOGGER.info("AssignmentsMetadataCache has been refreshed and took = {} ms", (lastRefreshTime.getTime() - startTime.getTime()));
+                LogUtil.info(LOGGER, "AssignmentsMetadataCache has been refreshed and took = {} ms", (lastRefreshTime.getTime() - startTime.getTime()));
             } else {
-                LOGGER.info("AssignmentsMetadataCache refresh is skipped as previous refresh is in progress at = {}", timeService.getCurrentTime());
+                LogUtil.info(LOGGER, "AssignmentsMetadataCache refresh is skipped as previous refresh is in progress at = {}", timeService.getCurrentTime());
             }
         } catch (Exception e) {
             //In case of any exception, clear the cache and mark refresh complete.
-            LOGGER.error("AssignmentsMetadataCache - Exception happened while refreshing cache...", e);
+            LogUtil.error(LOGGER, "AssignmentsMetadataCache - Exception happened while refreshing cache...", e);
             metadataCache.clear();
         } finally {
             //Mark that refresh has been finished...

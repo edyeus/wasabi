@@ -15,6 +15,7 @@
  *******************************************************************************/
 package com.intuit.wasabi.authentication.util;
 
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import java.security.NoSuchAlgorithmException;
@@ -68,7 +69,7 @@ public abstract class Retriable<T> {
             try {
                 Thread.sleep(timeout);
             } catch (InterruptedException interException) {
-                LOGGER.debug("Interrupted during timeout", interException);
+                LogUtil.debug(LOGGER, "Interrupted during timeout", interException);
             }
         }
     }
@@ -100,7 +101,7 @@ public abstract class Retriable<T> {
                     if (trial == times) {
                         throw new RetriableException("Failed after " + times + " tries.", e);
                     }
-                    LOGGER.debug("Retrying (" + (times - trial) + " tries left).");
+                    LogUtil.debug(LOGGER, "Retrying (" + (times - trial) + " tries left).");
                     waitTimeout(timeout);
                 } else {
                     throw new RetriableException(e instanceof NoSuchAlgorithmException ? "Feature not available." : "Can not retry.", e);

@@ -36,6 +36,7 @@ import com.intuit.wasabi.experimentobjects.Application;
 import com.intuit.wasabi.experimentobjects.Bucket;
 import com.intuit.wasabi.experimentobjects.ExperimentBase;
 import com.intuit.wasabi.repository.AuthorizationRepository;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.Logger;
 import org.stringtemplate.v4.ST;
@@ -221,7 +222,7 @@ public class EmailTextProcessorImpl implements EmailTextProcessor {
                 if (EmailValidator.getInstance().isValid(email)) {
                     adressors.add(email);
                 } else {
-                    LOGGER.warn("\"" + email + "\" is not a valid email address for one of the administrators of " + appName);
+                    LogUtil.warn(LOGGER, "\"" + email + "\" is not a valid email address for one of the administrators of " + appName);
                 }
             }
         }
@@ -355,7 +356,7 @@ public class EmailTextProcessorImpl implements EmailTextProcessor {
     private String getUserRepresentation(UserInfo user) {
         String userRep = "nobody";
         if (user == null) {
-            LOGGER.debug("User was null for a given email - setting her to " + userRep);
+            LogUtil.debug(LOGGER, "User was null for a given email - setting her to " + userRep);
         } else {
             userRep = user.getFirstName() + " " + user.getLastName() + " <" + user.getEmail() + ">";
         }

@@ -20,6 +20,7 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
 import com.intuit.wasabi.authenticationobjects.UserInfo;
 import com.intuit.wasabi.exceptions.UserToolsException;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -39,7 +40,7 @@ public class UserDirectoryModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        LOGGER.debug("installing module: {}", UserDirectoryModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installing module: {}", UserDirectoryModule.class.getSimpleName());
 
         Properties properties = create(PROPERTY_NAME, UserDirectoryModule.class);
         String userToolsClassName = getProperty("user.lookup.class.name", properties,
@@ -56,12 +57,12 @@ public class UserDirectoryModule extends AbstractModule {
 
             bind(UserDirectory.class).to(userToolsClass).in(SINGLETON);
         } catch (ClassNotFoundException e) {
-            LOGGER.error("unable to find class: {}", userToolsClassName, e);
+            LogUtil.error(LOGGER, "unable to find class: {}", userToolsClassName, e);
 
             throw new UserToolsException("unable to find class: " + userToolsClassName, e);
         }
 
-        LOGGER.debug("installed module: {}", UserDirectoryModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installed module: {}", UserDirectoryModule.class.getSimpleName());
     }
 
 //    @Provides

@@ -18,6 +18,7 @@ package com.intuit.wasabi.tests.model;
 import com.google.gson.FieldAttributes;
 import com.google.gson.GsonBuilder;
 import com.intuit.wasabi.tests.library.util.serialstrategies.SerializationStrategy;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.slf4j.Logger;
 
@@ -40,7 +41,7 @@ public abstract class ModelItem {
      */
     public void update(ModelItem other) {
         if (!this.getClass().isInstance(other)) {
-            LOGGER.warn("Tried to update " + this + " with " + other + "! No change was done.");
+            LogUtil.warn(LOGGER, "Tried to update " + this + " with " + other + "! No change was done.");
             return;
         }
 
@@ -118,7 +119,7 @@ public abstract class ModelItem {
                 try {
                     boolean thisFieldEquals = Objects.equals(field.get(this), field.get(other));
                     if (!thisFieldEquals) {
-                        LOGGER.debug("Field " + field.getName() + " not equal.");
+                        LogUtil.debug(LOGGER, "Field " + field.getName() + " not equal.");
                     }
                     equal &= thisFieldEquals;
                 } catch (IllegalAccessException ignored) {

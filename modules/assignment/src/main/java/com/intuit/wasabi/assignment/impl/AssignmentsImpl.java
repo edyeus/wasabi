@@ -60,6 +60,7 @@ import com.intuit.wasabi.repository.AssignmentsRepository;
 import com.intuit.wasabi.repository.CassandraRepository;
 import com.intuit.wasabi.repository.ExperimentRepository;
 import com.intuit.wasabi.repository.cassandra.impl.ExperimentRuleCacheUpdateEnvelope;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -469,7 +470,7 @@ public class AssignmentsImpl implements Assignments {
         //Now fetch existing user assignments for given user, application & context
         assignmentsRepository.getAssignments(userID, applicationName, context, experimentMap)
                 .forEach(assignmentPair -> userAssignments.put(assignmentPair.getLeft().getID(), assignmentPair.getLeft().getLabel(), assignmentPair.getRight().toString()));
-        LOGGER.debug("[DB] existingUserAssignments = {}", userAssignments);
+        LogUtil.debug(LOGGER, "[DB] existingUserAssignments = {}", userAssignments);
 
         List<Pair<Experiment, Assignment>> assignmentPairs = new LinkedList<>();
         List<Assignment> allAssignments = new LinkedList<>();
@@ -489,11 +490,11 @@ public class AssignmentsImpl implements Assignments {
 
         // iterate over all experiments in the application in priority order
         for (PrioritizedExperiment experiment : appPriorities.getPrioritizedExperiments()) {
-            LOGGER.debug("Now processing: {}", experiment);
+            LogUtil.debug(LOGGER, "Now processing: {}", experiment);
 
             //check if the experiment was given in experimentBatch
             if (experimentBatch.getLabels().contains(experiment.getLabel())) {
-                LOGGER.debug("Experiment ({}) is part of given ExperimentBatch....", experiment.getLabel());
+                LogUtil.debug(LOGGER, "Experiment ({}) is part of given ExperimentBatch....", experiment.getLabel());
 
                 String labelStr = experiment.getLabel().toString();
                 Experiment.Label label = Experiment.Label.valueOf(labelStr);
@@ -524,14 +525,14 @@ public class AssignmentsImpl implements Assignments {
                     assignmentPairs.add(new ImmutablePair<Experiment, Assignment>(experimentMap.get(experiment.getID()), assignment));
 
                 } catch (WasabiException ex) {
-                    LOGGER.error("Exception happened while executing assignment business logic", ex);
+                    LogUtil.error(LOGGER, "Exception happened while executing assignment business logic", ex);
                     assignment = nullAssignment(userID, applicationName, experiment.getID(), label, ASSIGNMENT_FAILED);
                 }
 
                 allAssignments.add(assignment);
                 experimentBatch.getLabels().remove(experiment.getLabel());
             } else {
-                LOGGER.debug("Experiment ({}) is NOT part of given ExperimentBatch....", experiment.getLabel());
+                LogUtil.debug(LOGGER, "Experiment ({}) is NOT part of given ExperimentBatch....", experiment.getLabel());
             }
         }
 
@@ -543,7 +544,7 @@ public class AssignmentsImpl implements Assignments {
             }
         });
 
-        LOGGER.debug("Finished Execute_Assignments_BL, AllAssignments: {} ", allAssignments);
+        LogUtil.debug(LOGGER, "Finished Execute_Assignments_BL, AllAssignments: {} ", allAssignments);
 
         //Make new assignments in database (cassandra)
         final Date currentDate = new Date();
@@ -551,7 +552,7 @@ public class AssignmentsImpl implements Assignments {
             return (nonNull(pair) && pair.getRight().getStatus() == Assignment.Status.NEW_ASSIGNMENT);
         });
         assignmentsRepository.assignUsersInBatch(newAssignments.collect(Collectors.toList()), currentDate);
-        LOGGER.debug("Finished Create_Assignments_DB...");
+        LogUtil.debug(LOGGER, "Finished Create_Assignments_DB...");
 
         //Ingest data to real time data ingestion systems if executors exist & if asked to update downstream systems
         if (updateDownstreamSystems) {
@@ -566,7 +567,7 @@ public class AssignmentsImpl implements Assignments {
                             experiment.getID(), currentDate, headers));
                 }
             });
-            LOGGER.debug("Finished Ingest_to_downstream_systems...");
+            LogUtil.debug(LOGGER, "Finished Ingest_to_downstream_systems...");
         }
 
         // Updating rule cache, This will cause future assignment calls, on this server, to
@@ -575,7 +576,7 @@ public class AssignmentsImpl implements Assignments {
             Experiment experiment = assignmentPair.getLeft();
             ruleCacheExecutor.execute(new ExperimentRuleCacheUpdateEnvelope(experiment.getRule(), ruleCache, experiment.getID()));
         });
-        LOGGER.debug("Finished update_rule_cache...");
+        LogUtil.debug(LOGGER, "Finished update_rule_cache...");
 
         return allAssignments;
     }
@@ -741,9 +742,9 @@ public class AssignmentsImpl implements Assignments {
                                              Map<Experiment.ID, Experiment> experimentMap,
                                              Map<Experiment.ID, BucketList> bucketMap,
                                              Map<Experiment.ID, List<Experiment.ID>> exclusionMap) {
-        LOGGER.debug("populateAssignmentsMetadata - STARTED: userID={}, appName={}, context={}, experimentBatch={}, experimentIds={}", userID, appName, context, experimentBatch, allowAssignments);
+        LogUtil.debug(LOGGER, "populateAssignmentsMetadata - STARTED: userID={}, appName={}, context={}, experimentBatch={}, experimentIds={}", userID, appName, context, experimentBatch, allowAssignments);
         if (isNull(experimentBatch.getLabels()) && !allowAssignments.isPresent()) {
-            LOGGER.error("Invalid input to AssignmentsImpl.populateAssignmentsMetadata(): Given input: userID={}, appName={}, context={}, experimentBatch={}, allowAssignments={}", userID, appName, context, experimentBatch, allowAssignments);
+            LogUtil.error(LOGGER, "Invalid input to AssignmentsImpl.populateAssignmentsMetadata(): Given input: userID={}, appName={}, context={}, experimentBatch={}, allowAssignments={}", userID, appName, context, experimentBatch, allowAssignments);
             return;
         }
 
@@ -751,7 +752,7 @@ public class AssignmentsImpl implements Assignments {
         if (metadataCacheEnabled) {
             //Populate experiments map of all the experiments of given application
             metadataCache.getExperimentsByAppName(appName).forEach(exp -> experimentMap.put(exp.getID(), exp));
-            LOGGER.debug("[cache] experimentMap = {}", experimentMap);
+            LogUtil.debug(LOGGER, "[cache] experimentMap = {}", experimentMap);
 
             //Populate prioritized experiments list of given application
             Optional<PrioritizedExperimentList> prioritizedExperimentListOptional = metadataCache.getPrioritizedExperimentListMap(appName);
@@ -760,7 +761,7 @@ public class AssignmentsImpl implements Assignments {
             } else {
                 //TODO: 1/30/17  What to do if there are no experiments for given application
             }
-            LOGGER.debug("[cache] prioritizedExperimentList = {}", prioritizedExperimentList.getPrioritizedExperiments());
+            LogUtil.debug(LOGGER, "[cache] prioritizedExperimentList = {}", prioritizedExperimentList.getPrioritizedExperiments());
 
             //Populate experiments ids of given batch
             Set<Experiment.ID> experimentIds = allowAssignments.isPresent() ? allowAssignments.get().keySet() : new HashSet<>();
@@ -771,14 +772,14 @@ public class AssignmentsImpl implements Assignments {
                 bucketMap.put(expId, metadataCache.getBucketList(expId));
                 exclusionMap.put(expId, metadataCache.getExclusionList(expId));
             });
-            LOGGER.debug("[cache] bucketMap = {}", bucketMap);
-            LOGGER.debug("[cache] exclusionMap = {}", exclusionMap);
+            LogUtil.debug(LOGGER, "[cache] bucketMap = {}", bucketMap);
+            LogUtil.debug(LOGGER, "[cache] exclusionMap = {}", exclusionMap);
 
         } else {
             assignmentsRepository.populateAssignmentsMetadata(userID, appName, context, experimentBatch, allowAssignments, prioritizedExperimentList, experimentMap, bucketMap, exclusionMap);
         }
 
-        LOGGER.debug("populateAssignmentsMetadata - FINISHED...");
+        LogUtil.debug(LOGGER, "populateAssignmentsMetadata - FINISHED...");
     }
 
     /**
@@ -837,7 +838,7 @@ public class AssignmentsImpl implements Assignments {
                     experimentIds.add(exp.getID());
                 }
             }
-            LOGGER.debug("Populated experimentIds from given experimentBatch: {}", experimentIds);
+            LogUtil.debug(LOGGER, "Populated experimentIds from given experimentBatch: {}", experimentIds);
         } else {
             //If allowAssignments IS NOT EMPTY means experimentBatch.labels are NOT provided.
             //Use allowAssignments.experimentIds to populate experimentBatch.labels
@@ -849,7 +850,7 @@ public class AssignmentsImpl implements Assignments {
                 }
             }
             experimentBatch.setLabels(expLabels);
-            LOGGER.debug("Populated experimentBatch from given experimentIds: {}", experimentBatch);
+            LogUtil.debug(LOGGER, "Populated experimentBatch from given experimentIds: {}", experimentBatch);
         }
     }
 
@@ -1123,7 +1124,7 @@ public class AssignmentsImpl implements Assignments {
                 }
             }
         } catch (MissingInputException | InvalidInputException | TreeStructureException e) {
-            LOGGER.warn("assignment: profile match exception " + e);
+            LogUtil.warn(LOGGER, "assignment: profile match exception " + e);
             return false;
         }
     }
@@ -1263,7 +1264,7 @@ public class AssignmentsImpl implements Assignments {
                 .withCreated(Optional.ofNullable(date).orElseGet(Date::new))
                 .withCacheable(false)
                 .build();
-        LOGGER.debug("result => {}", result);
+        LogUtil.debug(LOGGER, "result => {}", result);
         return result;
     }
 
@@ -1286,7 +1287,7 @@ public class AssignmentsImpl implements Assignments {
             try {
                 bucketList = assignmentDecorator.getBucketList(experiment, userID, segmentationProfile);
             } catch (BucketDistributionNotFetchableException e) {
-                LOGGER.error("Error obtaining the Bucket List from {} for user_id {}, for experiment: {} due to {}",
+                LogUtil.error(LOGGER, "Error obtaining the Bucket List from {} for user_id {}, for experiment: {} due to {}",
                         assignmentDecorator.getClass().getSimpleName(), userID, experiment.getLabel().toString(), e);
             } finally {
                 //TODO: add some metrics on how often this fails

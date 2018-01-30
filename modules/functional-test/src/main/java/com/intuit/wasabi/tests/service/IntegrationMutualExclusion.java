@@ -28,6 +28,7 @@ import com.intuit.wasabi.tests.model.factory.ApplicationFactory;
 import com.intuit.wasabi.tests.model.factory.BucketFactory;
 import com.intuit.wasabi.tests.model.factory.ExperimentFactory;
 import com.intuit.wasabi.tests.model.factory.UserFactory;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.testng.Assert;
@@ -65,8 +66,8 @@ public class IntegrationMutualExclusion extends TestBase {
     public void t_testMutualExclusion() {
         ArrayList<Experiment> experiments = new ArrayList<>(Constants.EXP_SPAWN_COUNT);
 
-        LOGGER.info("Testing mutual exclusion functionality...");
-        LOGGER.info("Creating " + Constants.EXP_SPAWN_COUNT + " new experiments to test mutual exclusions functionality...");
+        LogUtil.info(LOGGER, "Testing mutual exclusion functionality...");
+        LogUtil.info(LOGGER, "Creating " + Constants.EXP_SPAWN_COUNT + " new experiments to test mutual exclusions functionality...");
 
         for (int i = 0; i < Constants.EXP_SPAWN_COUNT; i++) {
             Experiment experiment = ExperimentFactory.createExperiment();
@@ -78,7 +79,7 @@ public class IntegrationMutualExclusion extends TestBase {
 
             // Make this experiment mutually exclusive with all previous experiment added in this loop.
             if (experiments.size() > 0) {
-                LOGGER.info("Making this experiment " + experiment + " mutually exclusive with all previous experiments: " + experiments.toString());
+                LogUtil.info(LOGGER, "Making this experiment " + experiment + " mutually exclusive with all previous experiments: " + experiments.toString());
                 postExclusions(experiment, experiments);
             }
 

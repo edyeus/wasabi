@@ -42,6 +42,7 @@ import com.intuit.wasabi.repository.cassandra.accessor.index.AppPageIndexAccesso
 import com.intuit.wasabi.repository.cassandra.accessor.index.PageExperimentIndexAccessor;
 import com.intuit.wasabi.repository.cassandra.pojo.AppPage;
 import com.intuit.wasabi.repository.cassandra.pojo.index.PageExperimentByAppNamePage;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,7 +114,7 @@ public class CassandraPagesRepository implements PagesRepository {
     void executeBatchStatement(Experiment.ID experimentID, BatchStatement batch) {
         try {
             ResultSet resultSet = mappingManager.getSession().execute(batch);
-            logger.debug("Batch statement is applied: {} using consistency level: {}",
+            LogUtil.debug(logger, "Batch statement is applied: {} using consistency level: {}",
                     resultSet.wasApplied(),
                     resultSet.getExecutionInfo().getAchievedConsistencyLevel());
         } catch (WriteTimeoutException | UnavailableException | NoHostAvailableException e) {
@@ -265,7 +266,7 @@ public class CassandraPagesRepository implements PagesRepository {
     @Override
     public Map<Pair<Application.Name, Page.Name>, List<PageExperiment>> getExperimentsWithoutLabels
             (Collection<Pair<Application.Name, Page.Name>> appAndPagePairs) {
-        logger.debug("getExperimentsWithoutLabels {}", appAndPagePairs);
+        LogUtil.debug(logger, "getExperimentsWithoutLabels {}", appAndPagePairs);
         Map<Pair<Application.Name, Page.Name>, List<PageExperiment>> resultMap = new HashMap<>();
         try {
             Map<Pair<Application.Name, Page.Name>, ListenableFuture<Result<PageExperimentByAppNamePage>>> expFutureMap = new HashMap<>();
@@ -289,11 +290,11 @@ public class CassandraPagesRepository implements PagesRepository {
                 resultMap.put(pair, pageExperimentsList);
             }
         } catch (Exception e) {
-            logger.error("getExperimentsWithoutLabels for {} failed", appAndPagePairs, e);
+            LogUtil.error(logger, "getExperimentsWithoutLabels for {} failed", appAndPagePairs, e);
             throw new RepositoryException("Could not getExperimentsWithoutLabels", e);
         }
 
-        logger.debug("Returning PageExperimentList map {}", resultMap);
+        LogUtil.debug(logger, "Returning PageExperimentList map {}", resultMap);
         return resultMap;
     }
 
@@ -302,7 +303,7 @@ public class CassandraPagesRepository implements PagesRepository {
         ExperimentPageList experimentPageList = getExperimentPages(experimentID);
         for (ExperimentPage experimentPage : experimentPageList.getPages()) {
             deletePage(applicationName, experimentID, experimentPage.getName());
-            logger.debug("CassandraPagesRepository Removing page: {} from terminated experiment: {} for application: {}",
+            LogUtil.debug(logger, "CassandraPagesRepository Removing page: {} from terminated experiment: {} for application: {}",
                     experimentPage.getName(), experimentID, applicationName);
         }
     }

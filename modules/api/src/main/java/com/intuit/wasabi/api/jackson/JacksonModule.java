@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.inject.AbstractModule;
 import com.intuit.wasabi.experimentobjects.Experiment;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import java.sql.Timestamp;
@@ -37,11 +38,11 @@ public class JacksonModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        LOGGER.debug("installing module: {}", JacksonModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installing module: {}", JacksonModule.class.getSimpleName());
 
         bind(JacksonJsonProvider.class).toInstance(createJacksonJsonProvider());
 
-        LOGGER.debug("installed module: {}", JacksonModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installed module: {}", JacksonModule.class.getSimpleName());
     }
 
     private JacksonJsonProvider createJacksonJsonProvider() {

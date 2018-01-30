@@ -28,6 +28,7 @@ import com.intuit.wasabi.exceptions.EventException;
 import com.intuit.wasabi.export.DatabaseExport;
 import com.intuit.wasabi.export.Envelope;
 import com.intuit.wasabi.repository.cassandra.CassandraRepositoryModule;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import java.util.HashMap;
@@ -53,7 +54,7 @@ public class EventsModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        LOGGER.debug("installing module: {}", EventsModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installing module: {}", EventsModule.class.getSimpleName());
 
         install(new AssignmentsModule());
         install(new CassandraRepositoryModule());
@@ -76,12 +77,12 @@ public class EventsModule extends AbstractModule {
             bind(new TypeLiteral<Envelope<EventEnvelopePayload, DatabaseExport>>() {
             }).to(eventDbEnvelopeClass);
         } catch (ClassNotFoundException e) {
-            LOGGER.error("unable to find class: {}", eventDbEnvelopeClassName, e);
+            LogUtil.error(LOGGER, "unable to find class: {}", eventDbEnvelopeClassName, e);
 
             throw new EventException("unable to find class: " + eventDbEnvelopeClassName, e);
         }
 
-        LOGGER.debug("installed module: {}", EventsModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installed module: {}", EventsModule.class.getSimpleName());
     }
 
     @Provides

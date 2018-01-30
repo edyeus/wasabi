@@ -21,6 +21,7 @@ import com.intuit.wasabi.eventlog.EventLog;
 import com.intuit.wasabi.eventlog.EventLogListener;
 import com.intuit.wasabi.eventlog.events.EventLogEvent;
 import com.intuit.wasabi.repository.AuditLogRepository;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import java.util.concurrent.LinkedBlockingQueue;
@@ -73,10 +74,10 @@ public class AuditLogListenerImpl implements EventLogListener {
     public void postEvent(EventLogEvent event) {
         AuditLogEntryEnvelope auditLogEntryEnvelope = new AuditLogEntryEnvelope(createFromEvent(event), repository);
 
-        LOGGER.debug("posting auditLogEntryEnvelope: {}", auditLogEntryEnvelope);
+        LogUtil.debug(LOGGER, "posting auditLogEntryEnvelope: {}", auditLogEntryEnvelope);
 
         threadPoolExecutor.submit(auditLogEntryEnvelope);
 
-        LOGGER.debug("posted auditLogEntryEnvelope: {}", auditLogEntryEnvelope);
+        LogUtil.debug(LOGGER, "posted auditLogEntryEnvelope: {}", auditLogEntryEnvelope);
     }
 }

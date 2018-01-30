@@ -28,6 +28,7 @@ import com.intuit.wasabi.repository.RepositoryException;
 import com.intuit.wasabi.repository.cassandra.UninterruptibleUtil;
 import com.intuit.wasabi.repository.cassandra.accessor.ExperimentAccessor;
 import com.intuit.wasabi.repository.cassandra.accessor.PrioritiesAccessor;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,14 +74,14 @@ public class CassandraPrioritiesRepository implements PrioritiesRepository {
     public PrioritizedExperimentList getPriorities(
             Application.Name applicationName) {
 
-        LOGGER.debug("Getting priorities for {} ", applicationName);
+        LogUtil.debug(LOGGER, "Getting priorities for {} ", applicationName);
 
         PrioritizedExperimentList prioritizedExperimentList = new PrioritizedExperimentList();
 
         try {
             List<ID> priorityList = getPriorityList(applicationName);
 
-            LOGGER.debug("Received priorities list {} for {} ", new Object[]{
+            LogUtil.debug(LOGGER, "Received priorities list {} for {} ", new Object[]{
                     priorityList, applicationName});
 
             if (priorityList != null) {
@@ -92,7 +93,7 @@ public class CassandraPrioritiesRepository implements PrioritiesRepository {
                         priorityUUIDs.stream().map(uuid -> experimentAccessor.getExperimentById(uuid).one())
                                 .collect(Collectors.toList());
 
-                LOGGER.debug("Received experimentPojos {} for priorityUUIDs {}",
+                LogUtil.debug(LOGGER, "Received experimentPojos {} for priorityUUIDs {}",
                         new Object[]{experimentPojos, priorityUUIDs});
 
                 int priorityValue = 1;
@@ -108,7 +109,7 @@ public class CassandraPrioritiesRepository implements PrioritiesRepository {
             }
 
         } catch (Exception e) {
-            LOGGER.error("Exception while getting priority list for {} ",
+            LogUtil.error(LOGGER, "Exception while getting priority list for {} ",
                     new Object[]{applicationName}, e);
             throw new RepositoryException(
                     "Unable to retrieve the priority list for application: \""
@@ -116,7 +117,7 @@ public class CassandraPrioritiesRepository implements PrioritiesRepository {
 
         }
 
-        LOGGER.debug("Returning prioritizedExperimentList {} ", prioritizedExperimentList);
+        LogUtil.debug(LOGGER, "Returning prioritizedExperimentList {} ", prioritizedExperimentList);
 
         return prioritizedExperimentList;
     }
@@ -137,10 +138,10 @@ public class CassandraPrioritiesRepository implements PrioritiesRepository {
             //Send calls asynchronously
             applicationNames.forEach(appName -> {
                 experimentsFutureMap.put(appName, experimentAccessor.asyncGetExperimentByAppName(appName.toString()));
-                LOGGER.debug("Sent experimentAccessor.asyncGetExperimentByAppName({})", appName);
+                LogUtil.debug(LOGGER, "Sent experimentAccessor.asyncGetExperimentByAppName({})", appName);
 
                 prioritiesFutureMap.put(appName, prioritiesAccessor.asyncGetPriorities(appName.toString()));
-                LOGGER.debug("Sent prioritiesAccessor.asyncGetPriorities ({})", appName);
+                LogUtil.debug(LOGGER, "Sent prioritiesAccessor.asyncGetPriorities ({})", appName);
             });
 
             //Process the Futures in the order that are expected to arrive earlier
@@ -152,7 +153,7 @@ public class CassandraPrioritiesRepository implements PrioritiesRepository {
                     experimentMap.put(exp.getID(), exp);
                 });
             }
-            LOGGER.debug("experimentMap=> {}", experimentMap);
+            LogUtil.debug(LOGGER, "experimentMap=> {}", experimentMap);
 
             for (Application.Name appName : prioritiesFutureMap.keySet()) {
                 ListenableFuture<Result<com.intuit.wasabi.repository.cassandra.pojo.Application>> applicationFuture = prioritiesFutureMap.get(appName);
@@ -165,22 +166,22 @@ public class CassandraPrioritiesRepository implements PrioritiesRepository {
                             prioritizedExperimentList.addPrioritizedExperiment(PrioritizedExperiment.from(exp, priorityValue).build());
                             priorityValue += 1;
                         } else {
-                            LOGGER.error("DATA_INCONSISTENCY: Experiment with ID={} is present in the priority list of 'application' table but there is no respective entry in the 'experiment' table ...", uuid);
+                            LogUtil.error(LOGGER, "DATA_INCONSISTENCY: Experiment with ID={} is present in the priority list of 'application' table but there is no respective entry in the 'experiment' table ...", uuid);
                         }
                     }
                 }
                 if (LOGGER.isDebugEnabled()) {
                     for (PrioritizedExperiment exp : prioritizedExperimentList.getPrioritizedExperiments()) {
-                        LOGGER.debug("prioritizedExperiment=> {} ", exp);
+                        LogUtil.debug(LOGGER, "prioritizedExperiment=> {} ", exp);
                     }
                 }
                 appPrioritiesMap.put(appName, prioritizedExperimentList);
             }
         } catch (Exception e) {
-            LOGGER.error("Error while getting priorities for {}", applicationNames, e);
+            LogUtil.error(LOGGER, "Error while getting priorities for {}", applicationNames, e);
             throw new RepositoryException("Error while getting priorities for given applications", e);
         }
-        LOGGER.debug("Returning app priorities map {}", appPrioritiesMap);
+        LogUtil.debug(LOGGER, "Returning app priorities map {}", appPrioritiesMap);
         return appPrioritiesMap;
     }
 
@@ -190,7 +191,7 @@ public class CassandraPrioritiesRepository implements PrioritiesRepository {
     @Override
     public int getPriorityListLength(Application.Name applicationName) {
 
-        LOGGER.debug("Getting priority list length for {}", applicationName);
+        LogUtil.debug(LOGGER, "Getting priority list length for {}", applicationName);
 
         return getPriorityList(applicationName).size();
     }
@@ -202,17 +203,17 @@ public class CassandraPrioritiesRepository implements PrioritiesRepository {
     public void createPriorities(Application.Name applicationName,
                                  List<Experiment.ID> priorityIds) {
 
-        LOGGER.debug("Creating priority list for {} and ids {}",
+        LogUtil.debug(LOGGER, "Creating priority list for {} and ids {}",
                 applicationName, priorityIds);
 
         if (priorityIds.isEmpty()) {
 
-            LOGGER.debug("Deleting priority list for {} and ids {}",
+            LogUtil.debug(LOGGER, "Deleting priority list for {} and ids {}",
                     applicationName, priorityIds);
             try {
                 prioritiesAccessor.deletePriorities(applicationName.toString());
             } catch (Exception e) {
-                LOGGER.error(
+                LogUtil.error(LOGGER, 
                         "Exception while deleting priority list for {} and ids {}",
                         new Object[]{applicationName, priorityIds}, e);
 
@@ -223,7 +224,7 @@ public class CassandraPrioritiesRepository implements PrioritiesRepository {
 
         } else {
 
-            LOGGER.debug("Updating priority list for {} and ids {}",
+            LogUtil.debug(LOGGER, "Updating priority list for {} and ids {}",
                     applicationName, priorityIds);
 
             List<UUID> experimentIds = new ArrayList<>();
@@ -235,7 +236,7 @@ public class CassandraPrioritiesRepository implements PrioritiesRepository {
                 prioritiesAccessor.updatePriorities(experimentIds,
                         applicationName.toString());
             } catch (Exception e) {
-                LOGGER.error(
+                LogUtil.error(LOGGER, 
                         "Exception while updating priority list for {} and ids {}",
                         new Object[]{applicationName, priorityIds}, e);
 
@@ -253,7 +254,7 @@ public class CassandraPrioritiesRepository implements PrioritiesRepository {
     @Override
     public List<Experiment.ID> getPriorityList(Application.Name applicationName) {
 
-        LOGGER.debug("Getting priority list  for {} ", applicationName);
+        LogUtil.debug(LOGGER, "Getting priority list  for {} ", applicationName);
 
         List<Experiment.ID> experimentIds = new ArrayList<>();
         try {
@@ -267,7 +268,7 @@ public class CassandraPrioritiesRepository implements PrioritiesRepository {
             }
 
         } catch (Exception e) {
-            LOGGER.error("Exception while getting priority list for {} ",
+            LogUtil.error(LOGGER, "Exception while getting priority list for {} ",
                     new Object[]{applicationName}, e);
             throw new RepositoryException(
                     "Unable to retrieve the priority list for application: \""

@@ -19,6 +19,7 @@ import com.intuit.autumn.metrics.MetricsModule;
 import com.intuit.autumn.service.ServiceManager;
 import com.intuit.wasabi.api.ApiModule;
 import com.intuit.wasabi.eventlog.EventLogService;
+import com.intuit.wasabi.util.LogUtil;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 
@@ -46,7 +47,7 @@ public class Main {
      */
 
     public static void main(String[] args) throws Exception {
-        LOGGER.info("starting {}", Main.class.getSimpleName());
+        LogUtil.info(LOGGER, "starting {}", Main.class.getSimpleName());
 
         TimeZone.setDefault(getTimeZone("UTC"));
         DateTimeZone.setDefault(UTC);
@@ -59,6 +60,6 @@ public class Main {
 
         serviceManager.start();
 
-        LOGGER.info("started {}", Main.class.getSimpleName());
+        LogUtil.info(LOGGER, "started {}", Main.class.getSimpleName());
     }
 }

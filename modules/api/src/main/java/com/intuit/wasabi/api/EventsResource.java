@@ -25,6 +25,7 @@ import com.intuit.wasabi.events.Events;
 import com.intuit.wasabi.experimentobjects.Application;
 import com.intuit.wasabi.experimentobjects.Context;
 import com.intuit.wasabi.experimentobjects.Experiment;
+import com.intuit.wasabi.util.LogUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -145,7 +146,7 @@ public class EventsResource {
 
             return httpHeader.headers(CREATED).build();
         } catch (Exception exception) {
-            LOGGER.error("recordEvents failed for applicationName={},"
+            LogUtil.error(LOGGER, "recordEvents failed for applicationName={},"
                             + " experimentLabel={}, userID={}, eventList={} with error:",
                     applicationName, experimentLabel, userID, eventList, exception);
             throw exception;
@@ -174,7 +175,7 @@ public class EventsResource {
             final Experiment.Label experimentLabel,
 
             final Map<User.ID, List<Event>> eventList) {
-        LOGGER.warn("recordUsersEvents is unsupported");
+        LogUtil.warn(LOGGER, "recordUsersEvents is unsupported");
         throw new UnsupportedOperationException("Not implemented");
     }
 
@@ -194,7 +195,7 @@ public class EventsResource {
     public Response recordExperimentsEvents(
             @PathParam("applicationName") final Application.Name applicationName,
             final Map<Experiment.Label, Map<User.ID, List<Event>>> eventList) {
-        LOGGER.warn("recordExperimentsEvents is unsupported");
+        LogUtil.warn(LOGGER, "recordExperimentsEvents is unsupported");
         throw new UnsupportedOperationException("Not implemented");
     }
 
@@ -211,7 +212,7 @@ public class EventsResource {
         try {
             return httpHeader.headers().entity(events.queuesLength()).build();
         } catch (Exception exception) {
-            LOGGER.error("getEventsQueueLength failed with error:", exception);
+            LogUtil.error(LOGGER, "getEventsQueueLength failed with error:", exception);
             throw exception;
         }
     }

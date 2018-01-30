@@ -32,6 +32,7 @@ import com.intuit.wasabi.tests.model.User;
 import com.intuit.wasabi.tests.model.analytics.AnalyticsParameters;
 import com.intuit.wasabi.tests.model.factory.EventFactory;
 import com.intuit.wasabi.tests.service.segmentation.BatchRuleTest;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.testng.annotations.AfterClass;
@@ -93,7 +94,7 @@ public class TimeStampTest extends TestBase {
 
     @Test(dataProvider = "sampleExperiment")
     public void setupExperiment(Experiment experimentData) {
-        LOGGER.debug(format("posting experiment: %s", experimentData.toString()));
+        LogUtil.debug(LOGGER, format("posting experiment: %s", experimentData.toString()));
         response = apiServerConnector.doPost("/experiments", experimentData);
         Experiment experiment = createFromJSONString(response.jsonPath().prettify());
         validExperimentsLists.add(experiment);
@@ -183,20 +184,20 @@ public class TimeStampTest extends TestBase {
             // Check impression count starting at experiment start time
             params.fromTime = EXPERIMENT_START;
             impressionsCount = postExperimentCounts(experiment, params).impressionCounts.eventCount;
-            LOGGER.info("\t\timpressions = " + impressionsCount + ", len(timestamps) = " + timeStamps.size());
+            LogUtil.info(LOGGER, "\t\timpressions = " + impressionsCount + ", len(timestamps) = " + timeStamps.size());
             assertThat(COUNT_ERROR_MESSAGE, impressionsCount, is(timeStamps.size()));
 
             // Check impression count after experiment start time but before impression time
             params.fromTime = TIME_BEFORE_IMPRESSIONS;
             impressionsCount = postExperimentCounts(experiment, params).impressionCounts.eventCount;
-            LOGGER.info("\t\tqueryTime = " + TIME_BEFORE_IMPRESSIONS + ", impressions = " + impressionsCount +
+            LogUtil.info(LOGGER, "\t\tqueryTime = " + TIME_BEFORE_IMPRESSIONS + ", impressions = " + impressionsCount +
                     ", len(timestamps) = " + timeStamps.size());
             assertThat(COUNT_ERROR_MESSAGE, impressionsCount, is(timeStamps.size()));
 
             // Check impression count after impression time
             params.fromTime = TIME_AFTER_IMPRESSIONS;
             impressionsCount = postExperimentCounts(experiment, params).impressionCounts.eventCount;
-            LOGGER.info("\t\tqueryTime = " + TIME_AFTER_IMPRESSIONS + ", impressions = " + impressionsCount +
+            LogUtil.info(LOGGER, "\t\tqueryTime = " + TIME_AFTER_IMPRESSIONS + ", impressions = " + impressionsCount +
                     ", len(timestamps) = " + timeStamps.size());
             assertThat(TIMING_ERROR_MESSAGE, impressionsCount, is(0));
         }
@@ -204,7 +205,7 @@ public class TimeStampTest extends TestBase {
 
     @AfterClass
     public void cleanUp() {
-        LOGGER.info("Setting experiment state to terminated and deleting valid experiments");
+        LogUtil.info(LOGGER, "Setting experiment state to terminated and deleting valid experiments");
         for (Experiment experiment : validExperimentsLists) {
             response = apiServerConnector.doPut("experiments/" + experiment.id, "{\"state\": \"TERMINATED\"}");
             assertThat(response.getStatusCode(), is(OK.getStatusCode()));

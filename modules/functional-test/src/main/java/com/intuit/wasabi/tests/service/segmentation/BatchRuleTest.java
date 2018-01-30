@@ -22,6 +22,7 @@ import com.intuit.wasabi.tests.library.TestBase;
 import com.intuit.wasabi.tests.model.Assignment;
 import com.intuit.wasabi.tests.model.Experiment;
 import com.intuit.wasabi.tests.model.factory.ExperimentFactory;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.testng.Assert;
@@ -42,9 +43,9 @@ public class BatchRuleTest extends TestBase {
     @Test(groups = {"createExperimentWithSegementation"},
             dataProvider = "batchSetup", dataProviderClass = SegmentationDataProvider.class)
     public void t_setupExperiment(String data) {
-        LOGGER.debug(data);
+        LogUtil.debug(LOGGER, data);
         response = apiServerConnector.doPost("/experiments", data);
-        LOGGER.debug(response.jsonPath().prettify());
+        LogUtil.debug(LOGGER, response.jsonPath().prettify());
         Experiment experiment = ExperimentFactory.createFromJSONString(response.jsonPath().prettify());
         validExperimentsLists.add(experiment);
         assertReturnCode(response, HttpStatus.SC_CREATED);
@@ -67,13 +68,13 @@ public class BatchRuleTest extends TestBase {
     @Test(dependsOnGroups = {"createExperimentWithSegementation"}, groups = {"batchAssignment"},
             dataProvider = "batchAssignmentData", dataProviderClass = SegmentationDataProvider.class)
     public void t_batchAssignExperiment(int index, String applicationName, String userId, String data) {
-        LOGGER.debug(data);
+        LogUtil.debug(LOGGER, data);
         clearAssignmentsMetadataCache();
         response = apiServerConnector.doPost("/assignments/applications/" + applicationName + "/users/" + userId, data);
         Type listType = new TypeToken<Map<String, ArrayList<Assignment>>>() {
         }.getType();
         Map<String, List<Assignment>> batchAssignmentResult = new Gson().fromJson(response.asString(), listType);
-        LOGGER.debug(response.asString());
+        LogUtil.debug(LOGGER, response.asString());
         List<Assignment> assignments = batchAssignmentResult.get("assignments");
         for (int i = 0; i < assignments.size(); i++) {
             Assignment assignment = assignments.get(i);
@@ -87,7 +88,7 @@ public class BatchRuleTest extends TestBase {
 
     @AfterClass
     public void t_cleanUp() {
-        LOGGER.info("Clean up experiments");
+        LogUtil.info(LOGGER, "Clean up experiments");
         for (Experiment experiment : validExperimentsLists) {
             response = apiServerConnector.doPut("experiments/" + experiment.id, "{\"state\": \"TERMINATED\"}");
             assertReturnCode(response, HttpStatus.SC_OK);

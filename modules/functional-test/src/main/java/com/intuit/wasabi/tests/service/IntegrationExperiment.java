@@ -29,6 +29,7 @@ import com.intuit.wasabi.tests.model.Page;
 import com.intuit.wasabi.tests.model.factory.ApplicationFactory;
 import com.intuit.wasabi.tests.model.factory.BucketFactory;
 import com.intuit.wasabi.tests.model.factory.ExperimentFactory;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.testng.Assert;
@@ -159,7 +160,7 @@ public class IntegrationExperiment extends TestBase {
                             Assert.assertNull(experimentMap.get(name), name + " should be null!");
                         }
                     } catch (IllegalAccessException e) {
-                        LOGGER.debug("Exception: " + e);
+                        LogUtil.debug(LOGGER, "Exception: " + e);
                     }
                 }
                 for (String key : experimentMap.keySet()) {
@@ -633,7 +634,7 @@ public class IntegrationExperiment extends TestBase {
      */
     @Test(dependsOnMethods = {"t_remainingTransitionTests"}, dataProvider = "dates")
     public void t_validDateBehaviourOnTransitions(String identifier, String start, String end) throws ParseException {
-        LOGGER.info("Testing " + identifier + " behaviour.");
+        LogUtil.info(LOGGER, "Testing " + identifier + " behaviour.");
 
         // use a start time in the near future to make sure nothing goes wrong unexpectedly
         String defaultStart = TestUtils.relativeTimeString(2);

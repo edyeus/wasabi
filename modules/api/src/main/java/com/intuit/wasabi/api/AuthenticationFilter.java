@@ -18,6 +18,7 @@ package com.intuit.wasabi.api;
 
 import com.intuit.wasabi.authentication.AuthenticateByHttpRequest;
 import com.intuit.wasabi.exceptions.AuthenticationException;
+import com.intuit.wasabi.util.LogUtil;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
 import org.slf4j.Logger;
@@ -50,7 +51,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         try {
             this.authenticateByHttpRequest.authenticate(request);
         } catch (Exception exception) {
-            LOGGER.error("Authentication Failure. Exception:", exception);
+            LogUtil.error(LOGGER, "Authentication Failure. Exception:", exception);
             throw new AuthenticationException("Authentication failure.");
         }
         return request;

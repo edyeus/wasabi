@@ -15,6 +15,7 @@
  *******************************************************************************/
 package com.intuit.wasabi.tests.library.util;
 
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 import org.testng.IResultMap;
 import org.testng.ITestContext;
@@ -55,14 +56,14 @@ public class RetryListener extends TestListenerAdapter {
                 } else {
                     long warmUp;
                     if ((warmUp = ((RetryTest) annotation).warmup()) > 0) {
-                        LOGGER.info("WarmUp of " + warmUp + " milliseconds.");
+                        LogUtil.info(LOGGER, "WarmUp of " + warmUp + " milliseconds.");
                         long start = System.currentTimeMillis();
                         try {
                             Thread.sleep(warmUp);
                         } catch (InterruptedException e) {
-                            LOGGER.warn("Interrupted while warming up.", e);
+                            LogUtil.warn(LOGGER, "Interrupted while warming up.", e);
                         }
-                        LOGGER.info("WarmUp took " + (System.currentTimeMillis() - start) + " milliseconds.");
+                        LogUtil.info(LOGGER, "WarmUp took " + (System.currentTimeMillis() - start) + " milliseconds.");
                     }
                 }
             }
@@ -188,6 +189,6 @@ public class RetryListener extends TestListenerAdapter {
                 + String.format("\n  %4d %-10s\n\t", failedButMap.getAllMethods().size(), "failedBut:")
                 + (failedButMap.getAllMethods().size() == 0 ? "" : failedButMap.getAllMethods())
                 + "\n\n\n").replace(search, replace).replace("\t[", "\t").replace("]]", "]");
-        LOGGER.info(resultString);
+        LogUtil.info(LOGGER, resultString);
     }
 }

@@ -21,6 +21,7 @@ package com.intuit.wasabi.tests.library;
  * @since September 13, 2014
  */
 
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 import org.testng.ITestResult;
 
@@ -62,7 +63,7 @@ public class PassFailResults {
                 strStatus = "ERROR: unknown result status code: " + statusCode;
                 break;
         }
-        LOGGER.debug("Status string for code " + statusCode + " set to: " + strStatus);
+        LogUtil.debug(LOGGER, "Status string for code " + statusCode + " set to: " + strStatus);
         return strStatus;
     }
 
@@ -74,7 +75,7 @@ public class PassFailResults {
      * @return The result string
      */
     public String getResultString(ITestResult result) {
-        LOGGER.debug("getResultString");
+        LogUtil.debug(LOGGER, "getResultString");
 
         String methodName = result.getMethod().getMethodName();
         Long durationMilliSeconds = (result.getEndMillis() - result.getStartMillis());
@@ -97,7 +98,7 @@ public class PassFailResults {
                 percentCount++;
                 break;
             default:
-                LOGGER.error("Unknown status: " + status);
+                LogUtil.error(LOGGER, "Unknown status: " + status);
         }
 
         return ("(T:" + totalCount + ",P:" + passedCount + ",F:" + failedCount + ",S:" + skippedCount + ",%S:" + percentCount + ") - "

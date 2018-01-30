@@ -29,6 +29,7 @@ import com.intuit.wasabi.repository.AuditLogRepository;
 import com.intuit.wasabi.repository.RepositoryException;
 import com.intuit.wasabi.repository.cassandra.accessor.audit.AuditLogAccessor;
 import com.intuit.wasabi.repository.cassandra.pojo.audit.AuditLog;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
@@ -70,7 +71,7 @@ public class CassandraAuditLogRepository implements AuditLogRepository {
      */
     @Override
     public List<AuditLogEntry> getCompleteAuditLogEntryList() {
-        LOGGER.debug("Getting complete audit log entries");
+        LogUtil.debug(LOGGER, "Getting complete audit log entries");
 
         try {
 
@@ -78,7 +79,7 @@ public class CassandraAuditLogRepository implements AuditLogRepository {
 
             return makeAuditLogEntries(result.all());
         } catch (Exception e) {
-            LOGGER.error("Error while getting audit log entries list", e);
+            LogUtil.error(LOGGER, "Error while getting audit log entries list", e);
             throw new RepositoryException(
                     "Unable to receive complete audit log entry list");
         }
@@ -129,7 +130,7 @@ public class CassandraAuditLogRepository implements AuditLogRepository {
                 action = auditLog.getAction();
                 ala = AuditLogAction.valueOf(action);
             } catch (Exception e) {
-                LOGGER.warn("Exception while creating audit log action: "
+                LogUtil.warn(LOGGER, "Exception while creating audit log action: "
                         + action, e);
                 ala = AuditLogAction.UNSPECIFIED_ACTION;
             }
@@ -141,7 +142,7 @@ public class CassandraAuditLogRepository implements AuditLogRepository {
                 if (!StringUtils.isBlank(bucketLabelString))
                     bucketLabel = Bucket.Label.valueOf(bucketLabelString);
             } catch (Exception e) {
-                LOGGER.warn("Exception while creating audit log bucket label: "
+                LogUtil.warn(LOGGER, "Exception while creating audit log bucket label: "
                         + bucketLabelString, e);
             }
 
@@ -152,7 +153,7 @@ public class CassandraAuditLogRepository implements AuditLogRepository {
                 if (!StringUtils.isBlank(expLabelString))
                     experimentLabel = Label.valueOf(expLabelString);
             } catch (Exception e) {
-                LOGGER.warn("Exception while creating audit log experiment label: "
+                LogUtil.warn(LOGGER, "Exception while creating audit log experiment label: "
                         + expLabelString, e);
             }
 
@@ -164,7 +165,7 @@ public class CassandraAuditLogRepository implements AuditLogRepository {
                     experimentId = Experiment.ID
                             .valueOf(expId);
             } catch (Exception e) {
-                LOGGER.warn("Exception while creating audit log experiment id: "
+                LogUtil.warn(LOGGER, "Exception while creating audit log experiment id: "
                         + expId, e);
             }
 
@@ -190,7 +191,7 @@ public class CassandraAuditLogRepository implements AuditLogRepository {
      */
     @Override
     public List<AuditLogEntry> getCompleteAuditLogEntryList(int limit) {
-        LOGGER.debug("Getting complete audit log entries with limit {}", limit);
+        LogUtil.debug(LOGGER, "Getting complete audit log entries with limit {}", limit);
         try {
 
             Result<AuditLog> result = accessor
@@ -198,7 +199,7 @@ public class CassandraAuditLogRepository implements AuditLogRepository {
 
             return makeAuditLogEntries(result.all());
         } catch (Exception e) {
-            LOGGER.error(
+            LogUtil.error(LOGGER, 
                     "Error while getting complete audit log entries list with limit",
                     e);
             throw new RepositoryException(
@@ -212,7 +213,7 @@ public class CassandraAuditLogRepository implements AuditLogRepository {
     @Override
     public List<AuditLogEntry> getAuditLogEntryList(
             Application.Name applicationName) {
-        LOGGER.debug("Getting audit log entries for {}", applicationName);
+        LogUtil.debug(LOGGER, "Getting audit log entries for {}", applicationName);
 
         try {
 
@@ -221,7 +222,7 @@ public class CassandraAuditLogRepository implements AuditLogRepository {
 
             return makeAuditLogEntries(result.all());
         } catch (Exception e) {
-            LOGGER.error("Error while getting complete audit log entries list",
+            LogUtil.error(LOGGER, "Error while getting complete audit log entries list",
                     e);
             throw new RepositoryException(
                     "Unable to receive complete audit log entry list");
@@ -235,7 +236,7 @@ public class CassandraAuditLogRepository implements AuditLogRepository {
     @Override
     public List<AuditLogEntry> getAuditLogEntryList(
             Application.Name applicationName, int limit) {
-        LOGGER.debug("Getting audit log entries for application name {} and limit {}",
+        LogUtil.debug(LOGGER, "Getting audit log entries for application name {} and limit {}",
                 applicationName, limit);
         try {
 
@@ -244,7 +245,7 @@ public class CassandraAuditLogRepository implements AuditLogRepository {
 
             return makeAuditLogEntries(result.all());
         } catch (Exception e) {
-            LOGGER.error(
+            LogUtil.error(LOGGER, 
                     "Error while getting audit log entries list for application with limit",
                     e);
             throw new RepositoryException(
@@ -258,7 +259,7 @@ public class CassandraAuditLogRepository implements AuditLogRepository {
      */
     @Override
     public List<AuditLogEntry> getGlobalAuditLogEntryList() {
-        LOGGER.debug("Getting global audit log entries");
+        LogUtil.debug(LOGGER, "Getting global audit log entries");
         try {
 
             Result<AuditLog> result = accessor
@@ -267,7 +268,7 @@ public class CassandraAuditLogRepository implements AuditLogRepository {
 
             return makeAuditLogEntries(result.all());
         } catch (Exception e) {
-            LOGGER.error("Error while getting global audit log entries list", e);
+            LogUtil.error(LOGGER, "Error while getting global audit log entries list", e);
             throw new RepositoryException(
                     "Unable to receive global audit log entry list");
         }
@@ -278,7 +279,7 @@ public class CassandraAuditLogRepository implements AuditLogRepository {
      */
     @Override
     public List<AuditLogEntry> getGlobalAuditLogEntryList(int limit) {
-        LOGGER.debug("Getting global audit log entries with limit {}", limit);
+        LogUtil.debug(LOGGER, "Getting global audit log entries with limit {}", limit);
 
         try {
 
@@ -288,7 +289,7 @@ public class CassandraAuditLogRepository implements AuditLogRepository {
 
             return makeAuditLogEntries(result.all());
         } catch (Exception e) {
-            LOGGER.error(
+            LogUtil.error(LOGGER, 
                     "Error while getting global audit log entries list with limit",
                     e);
             throw new RepositoryException(
@@ -301,7 +302,7 @@ public class CassandraAuditLogRepository implements AuditLogRepository {
      */
     @Override
     public boolean storeEntry(AuditLogEntry entry) {
-        LOGGER.debug("Storing entry {}", entry);
+        LogUtil.debug(LOGGER, "Storing entry {}", entry);
 
         // Note checks for action, time and action are redundant since
         // they are already checked in AuditLogEntry

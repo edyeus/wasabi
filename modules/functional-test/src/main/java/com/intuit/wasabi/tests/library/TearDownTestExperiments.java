@@ -21,6 +21,7 @@ import com.intuit.wasabi.tests.library.util.RetryAnalyzer;
 import com.intuit.wasabi.tests.library.util.RetryTest;
 import com.intuit.wasabi.tests.model.Experiment;
 import com.intuit.wasabi.tests.model.factory.ExperimentFactory;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -86,7 +87,7 @@ public class TearDownTestExperiments extends TestBase {
         this.applicationPrefixes = appNameRegexCore.split("\\|");
         this.appNameRegex = appNameRegexPre + appNameRegexCore + appNameRegexPost;
 
-        LOGGER.info("About to delete experiments which belong to applications starting with any of "
+        LogUtil.info(LOGGER, "About to delete experiments which belong to applications starting with any of "
                 + Arrays.toString(this.applicationPrefixes));
     }
 
@@ -102,10 +103,10 @@ public class TearDownTestExperiments extends TestBase {
         List<Map<String, Object>> listOfExperiments = response.jsonPath().get(appNameRegex);
 
         if (listOfExperiments.size() == 0) {
-            LOGGER.info("No experiments in applications left to delete.");
+            LogUtil.info(LOGGER, "No experiments in applications left to delete.");
         } else {
 
-            LOGGER.info("About to delete " + listOfExperiments.size() + " integration test experiments ....");
+            LogUtil.info(LOGGER, "About to delete " + listOfExperiments.size() + " integration test experiments ....");
             for (Map<String, Object> temp : listOfExperiments) {
                 Experiment currentExperiment = ExperimentFactory.createFromJSONString(new GsonBuilder().create().toJson(temp));
 
@@ -113,7 +114,7 @@ public class TearDownTestExperiments extends TestBase {
                 //  Extra pattern match - just to be safe before potentially running this on prod...
                 for (String prefix : this.applicationPrefixes) {
                     if (currentExperiment.applicationName.startsWith(prefix)) {
-                        LOGGER.info("Deleting Experiment " + currentExperiment);
+                        LogUtil.info(LOGGER, "Deleting Experiment " + currentExperiment);
 
                         // possible terminate first
                         if (!currentExperiment.state.equals(Constants.EXPERIMENT_STATE_DRAFT) && !currentExperiment.state.equals(Constants.EXPERIMENT_STATE_TERMINATED)) {

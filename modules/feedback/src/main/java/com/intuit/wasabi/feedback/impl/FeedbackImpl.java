@@ -20,6 +20,7 @@ import com.intuit.wasabi.feedback.Feedback;
 import com.intuit.wasabi.feedbackobjects.UserFeedback;
 import com.intuit.wasabi.repository.FeedbackRepository;
 import com.intuit.wasabi.userdirectory.UserDirectory;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import javax.inject.Inject;
@@ -55,7 +56,7 @@ public class FeedbackImpl implements Feedback {
             userFeedback.setEmail(userDirectory.lookupUser(userFeedback.getUsername()).getEmail());
         }
 
-        LOGGER.debug("User Feedback: storing feedback from user " + userFeedback.getUsername().toString() + "submitted " +
+        LogUtil.debug(LOGGER, "User Feedback: storing feedback from user " + userFeedback.getUsername().toString() + "submitted " +
                 "at time " + userFeedback.getSubmitted().toString());
         feedbackRepository.createUserFeedback(userFeedback);
     }

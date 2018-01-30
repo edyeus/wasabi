@@ -18,6 +18,7 @@ package com.intuit.wasabi.repository.database;
 import com.google.inject.AbstractModule;
 import com.googlecode.flyway.core.Flyway;
 import com.intuit.wasabi.repository.AnalyticsRepository;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import static com.google.inject.Scopes.SINGLETON;
@@ -32,11 +33,11 @@ public class DatabaseAnalyticsModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        LOGGER.debug("installing module: {}", DatabaseAnalyticsModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installing module: {}", DatabaseAnalyticsModule.class.getSimpleName());
 
         bind(AnalyticsRepository.class).to(DatabaseAnalytics.class).in(SINGLETON);
         bind(Flyway.class).in(SINGLETON);
 
-        LOGGER.debug("installed module: {}", DatabaseAnalyticsModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installed module: {}", DatabaseAnalyticsModule.class.getSimpleName());
     }
 }

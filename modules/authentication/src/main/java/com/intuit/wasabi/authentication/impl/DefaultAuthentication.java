@@ -25,6 +25,7 @@ import com.intuit.wasabi.authenticationobjects.LoginToken;
 import com.intuit.wasabi.authenticationobjects.UserInfo;
 import com.intuit.wasabi.exceptions.AuthenticationException;
 import com.intuit.wasabi.userdirectory.UserDirectory;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import static com.google.common.base.Optional.fromNullable;
@@ -61,7 +62,7 @@ public class DefaultAuthentication implements Authentication {
      */
     @Override
     public LoginToken logIn(final String authHeader) {
-        LOGGER.debug("Authentication header received as: {}", authHeader);
+        LogUtil.debug(LOGGER, "Authentication header received as: {}", authHeader);
 
         UserCredential credential = parseUsernamePassword(fromNullable(authHeader));
 
@@ -83,7 +84,7 @@ public class DefaultAuthentication implements Authentication {
 
             return userInfo.getPassword().equals(credential.password);
         } catch (AuthenticationException ae) {
-            LOGGER.error("Unable to lookup user", ae);
+            LogUtil.error(LOGGER, "Unable to lookup user", ae);
             return false;
         }
     }
@@ -96,7 +97,7 @@ public class DefaultAuthentication implements Authentication {
      */
     @Override
     public LoginToken verifyToken(final String tokenHeader) {
-        LOGGER.debug("Authentication token received as: {}", tokenHeader);
+        LogUtil.debug(LOGGER, "Authentication token received as: {}", tokenHeader);
 
         UserCredential credential = parseUsernamePassword(fromNullable(tokenHeader));
 
@@ -127,7 +128,7 @@ public class DefaultAuthentication implements Authentication {
      */
     @Override
     public UserInfo getUserExists(final String userEmail) {
-        LOGGER.debug("Authentication token received as: {}", userEmail);
+        LogUtil.debug(LOGGER, "Authentication token received as: {}", userEmail);
 
         if (!isBlank(userEmail)) {
             return userDirectory.lookupUserByEmail(userEmail);
@@ -152,7 +153,7 @@ public class DefaultAuthentication implements Authentication {
         final String encodedUserPassword = authHeader.get().substring(authHeader.get().lastIndexOf(SPACE));
         String usernameAndPassword;
 
-        LOGGER.trace("Base64 decoded username and password is: {}", encodedUserPassword);
+        LogUtil.trace(LOGGER, "Base64 decoded username and password is: {}", encodedUserPassword);
 
         try {
             usernameAndPassword = new String(decodeBase64(encodedUserPassword.getBytes()));

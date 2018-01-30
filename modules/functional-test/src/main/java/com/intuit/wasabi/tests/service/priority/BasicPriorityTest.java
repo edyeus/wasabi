@@ -24,6 +24,7 @@ import com.intuit.wasabi.tests.data.PriorityDataProvider;
 import com.intuit.wasabi.tests.library.TestBase;
 import com.intuit.wasabi.tests.model.Experiment;
 import com.intuit.wasabi.tests.model.factory.ExperimentFactory;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +46,7 @@ public class BasicPriorityTest extends TestBase {
     @Test(groups = {"setup"}, dataProvider = "Experiments", dataProviderClass = PriorityDataProvider.class)
     public void setup(String experiment) {
         response = apiServerConnector.doPost("experiments", experiment);
-        LOGGER.debug(response.jsonPath().prettify());
+        LogUtil.debug(LOGGER, response.jsonPath().prettify());
         Experiment result = ExperimentFactory.createFromJSONString(response.jsonPath().prettify());
         validExperimentsLists.add(result);
         assertReturnCode(response, HttpStatus.SC_CREATED);
@@ -59,7 +60,7 @@ public class BasicPriorityTest extends TestBase {
         response = apiServerConnector.doPut("applications/" + appName + "/priorities", exclusion);
         assertReturnCode(response, HttpStatus.SC_NO_CONTENT);
         response = apiServerConnector.doGet("applications/" + appName + "/priorities");
-        LOGGER.info("retrieved priorities: " + response.asString());
+        LogUtil.info(LOGGER, "retrieved priorities: " + response.asString());
         Type listType = new TypeToken<Map<String, ArrayList<Map<String, Object>>>>() {
         }.getType();
         Map<String, List<Map<String, Object>>> result = new Gson().fromJson(response.asString(), listType);
@@ -77,7 +78,7 @@ public class BasicPriorityTest extends TestBase {
         assertReturnCode(response, HttpStatus.SC_CREATED);
         response = apiServerConnector.doGet("applications/" + appName + "/priorities");
         assertReturnCode(response, HttpStatus.SC_OK);
-        LOGGER.info("retrieved priorities: " + response.asString());
+        LogUtil.info(LOGGER, "retrieved priorities: " + response.asString());
         Type listType = new TypeToken<Map<String, ArrayList<Map<String, Object>>>>() {
         }.getType();
         Map<String, List<Map<String, Object>>> result = new Gson().fromJson(response.asString(), listType);
@@ -89,11 +90,11 @@ public class BasicPriorityTest extends TestBase {
             dataProvider = "NewExperiments", dataProviderClass = PriorityDataProvider.class)
     public void addNewExperimentToPriority(String experiment) {
         response = apiServerConnector.doPost("experiments", experiment);
-        LOGGER.debug(response.jsonPath().prettify());
+        LogUtil.debug(LOGGER, response.jsonPath().prettify());
         Experiment newExperiment = ExperimentFactory.createFromJSONString(response.jsonPath().prettify());
         assertReturnCode(response, HttpStatus.SC_CREATED);
         response = apiServerConnector.doGet("applications/" + newExperiment.applicationName + "/priorities");
-        LOGGER.debug("retrieved priorities: " + response.asString());
+        LogUtil.debug(LOGGER, "retrieved priorities: " + response.asString());
         Type listType = new TypeToken<Map<String, ArrayList<Map<String, Object>>>>() {
         }.getType();
         Map<String, List<Map<String, Object>>> result = new Gson().fromJson(response.asString(), listType);
@@ -120,7 +121,7 @@ public class BasicPriorityTest extends TestBase {
         response = apiServerConnector.doPut("applications/" + appName + "/priorities", exclusion);
         assertReturnCode(response, HttpStatus.SC_NO_CONTENT);
         response = apiServerConnector.doGet("applications/" + appName + "/priorities");
-        LOGGER.debug("output: " + response.asString());
+        LogUtil.debug(LOGGER, "output: " + response.asString());
         Type listType = new TypeToken<Map<String, ArrayList<Map<String, Object>>>>() {
         }.getType();
         Map<String, List<Map<String, Object>>> result = new Gson().fromJson(response.asString(), listType);
@@ -132,7 +133,7 @@ public class BasicPriorityTest extends TestBase {
             dataProvider = "differentApp", dataProviderClass = PriorityDataProvider.class)
     public void t_differentApplication(String experiment) {
         response = apiServerConnector.doPost("experiments", experiment);
-        LOGGER.debug(response.jsonPath().prettify());
+        LogUtil.debug(LOGGER, response.jsonPath().prettify());
         Experiment result = ExperimentFactory.createFromJSONString(response.jsonPath().prettify());
         String exclusion = "{\"experimentIDs\": [\"" + result.id + "\"," +
                 validExperimentsLists.stream().map(s -> "\"" + s.id + "\"").collect(Collectors.joining(",")) + "]}";
@@ -140,7 +141,7 @@ public class BasicPriorityTest extends TestBase {
                 exclusion);
         assertReturnCode(response, HttpStatus.SC_NO_CONTENT);
         response = apiServerConnector.doGet("applications/" + validExperimentsLists.get(0).applicationName + "/priorities");
-        LOGGER.debug("output: " + response.asString());
+        LogUtil.debug(LOGGER, "output: " + response.asString());
         assertReturnCode(response, HttpStatus.SC_OK);
         Type listType = new TypeToken<Map<String, ArrayList<Map<String, Object>>>>() {
         }.getType();
@@ -161,7 +162,7 @@ public class BasicPriorityTest extends TestBase {
                 exclusion);
         assertReturnCode(response, HttpStatus.SC_NO_CONTENT);
         response = apiServerConnector.doGet("applications/" + validExperimentsLists.get(0).applicationName + "/priorities");
-        LOGGER.debug("output: " + response.asString());
+        LogUtil.debug(LOGGER, "output: " + response.asString());
         assertReturnCode(response, HttpStatus.SC_OK);
         Type listType = new TypeToken<Map<String, ArrayList<Map<String, Object>>>>() {
         }.getType();
@@ -206,7 +207,7 @@ public class BasicPriorityTest extends TestBase {
                 exclusion);
         assertReturnCode(response, HttpStatus.SC_NO_CONTENT);
         response = apiServerConnector.doGet("applications/" + validExperimentsLists.get(0).applicationName + "/priorities");
-        LOGGER.debug("output: " + response.asString());
+        LogUtil.debug(LOGGER, "output: " + response.asString());
         assertReturnCode(response, HttpStatus.SC_OK);
         Type listType = new TypeToken<Map<String, ArrayList<Map<String, Object>>>>() {
         }.getType();
@@ -218,7 +219,7 @@ public class BasicPriorityTest extends TestBase {
 
     @AfterClass
     public void t_cleanUp() {
-        LOGGER.info("Clean up experiments");
+        LogUtil.info(LOGGER, "Clean up experiments");
         for (Experiment experiment : validExperimentsLists) {
             response = apiServerConnector.doGet("experiments/" + experiment.id);
             Experiment result = ExperimentFactory.createFromJSONString(response.asString());

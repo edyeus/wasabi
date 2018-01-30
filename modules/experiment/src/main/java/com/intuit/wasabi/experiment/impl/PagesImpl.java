@@ -34,6 +34,7 @@ import com.intuit.wasabi.experimentobjects.exceptions.InvalidExperimentStateExce
 import com.intuit.wasabi.repository.CassandraRepository;
 import com.intuit.wasabi.repository.ExperimentRepository;
 import com.intuit.wasabi.repository.PagesRepository;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +84,7 @@ public class PagesImpl implements Pages {
             String pageString = StringUtils.join(pageNames, ", ");
             eventLog.postEvent(new ExperimentChangeEvent(user, experiment, "pages", null, pageString));
 
-            LOGGER.info("event=EXPERIMENT_METADATA_CHANGE, message=PAGES_ADDED, applicationName={}, experimentName={}, configuration=[pages={}]",
+            LogUtil.info(LOGGER, "event=EXPERIMENT_METADATA_CHANGE, message=PAGES_ADDED, applicationName={}, experimentName={}, configuration=[pages={}]",
                     experiment.getApplicationName(), experiment.getLabel(), pageString);
         }
 
@@ -102,7 +103,7 @@ public class PagesImpl implements Pages {
             eventLog.postEvent(new ExperimentChangeEvent(user, experiment, "pages", pageName.toString(), null));
         }
 
-        LOGGER.info("event=EXPERIMENT_METADATA_CHANGE, message=PAGE_REMOVED, applicationName={}, experimentName={}, configuration=[pageName={}, userName={}]",
+        LogUtil.info(LOGGER, "event=EXPERIMENT_METADATA_CHANGE, message=PAGE_REMOVED, applicationName={}, experimentName={}, configuration=[pageName={}, userName={}]",
                 experiment.getApplicationName(), experiment.getLabel(), pageName, user.getUsername());
     }
 

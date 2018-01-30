@@ -25,6 +25,7 @@ import com.intuit.wasabi.tests.library.TestBase;
 import com.intuit.wasabi.tests.model.Assignment;
 import com.intuit.wasabi.tests.model.Experiment;
 import com.intuit.wasabi.tests.model.factory.ExperimentFactory;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,7 +100,7 @@ public class BatchAssignment extends TestBase {
             assertReturnCode(response, HttpStatus.SC_OK);
         }
         response = apiServerConnector.doPost(url, lables);
-        LOGGER.debug("experiment not found State=" + state + " status=" + response.getStatusCode()
+        LogUtil.debug(LOGGER, "experiment not found State=" + state + " status=" + response.getStatusCode()
                 + " response=" + response.asString());
         Type listType = new TypeToken<Map<String, ArrayList<Assignment>>>() {
         }.getType();

@@ -33,6 +33,7 @@ import com.intuit.wasabi.experimentobjects.Context;
 import com.intuit.wasabi.experimentobjects.Experiment;
 import com.intuit.wasabi.experimentobjects.ExperimentBatch;
 import com.intuit.wasabi.experimentobjects.Page;
+import com.intuit.wasabi.util.LogUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -147,7 +148,7 @@ public class AssignmentsResource {
             @javax.ws.rs.core.Context
             final HttpHeaders headers) {
         try {
-            LOGGER.debug("getAssignment userID={}, applicationName={}, experimentLabel={}, context={},"
+            LogUtil.debug(LOGGER, "getAssignment userID={}, applicationName={}, experimentLabel={}, context={},"
                             + " createAssignment={}, ignoreSamplingPercent={}, headers={}",
                     userID, applicationName, experimentLabel, context, createAssignment,
                     ignoreSamplingPercent, headers);
@@ -157,7 +158,7 @@ public class AssignmentsResource {
 
             return httpHeader.headers().entity(toSingleAssignmentResponseMap(assignment)).build();
         } catch (Exception exception) {
-            LOGGER.error("getAssignment failed for applicationName={}, experimentLabel={}, userID={}, context={},"
+            LogUtil.error(LOGGER, "getAssignment failed for applicationName={}, experimentLabel={}, userID={}, context={},"
                             + " createAssignment={}, ignoreSamplingPercent={}, headers={} with error:",
                     applicationName, experimentLabel, userID, context, createAssignment, ignoreSamplingPercent, headers,
                     exception);
@@ -240,7 +241,7 @@ public class AssignmentsResource {
             @javax.ws.rs.core.Context
             final HttpHeaders headers) {
         try {
-            LOGGER.debug("postAssignment userID={}, applicationName={}, experimentLabel={}, context={},"
+            LogUtil.debug(LOGGER, "postAssignment userID={}, applicationName={}, experimentLabel={}, context={},"
                             + " createAssignment={}, ignoreSamplingPercent={}, segmentationProfile={}, headers={}",
                     userID, applicationName, experimentLabel, context, createAssignment, ignoreSamplingPercent,
                     segmentationProfile, headers);
@@ -250,7 +251,7 @@ public class AssignmentsResource {
 
             return httpHeader.headers().entity(toSingleAssignmentResponseMap(assignment)).build();
         } catch (Exception exception) {
-            LOGGER.error("postAssignment failed for applicationName={}, experimentLabel={}, userID={}, context={},"
+            LogUtil.error(LOGGER, "postAssignment failed for applicationName={}, experimentLabel={}, userID={}, context={},"
                             + " createAssignment={}, ignoreSamplingPercent={}," +
                             " segmentationProfile={}, headers={} with error:",
                     applicationName, experimentLabel, userID, context, createAssignment,
@@ -304,7 +305,7 @@ public class AssignmentsResource {
             @javax.ws.rs.core.Context
             final HttpHeaders headers) {
         try {
-            LOGGER.debug("getBatchAssignment userID={}, applicationName={}, context={}, createAssignment={}, "
+            LogUtil.debug(LOGGER, "getBatchAssignment userID={}, applicationName={}, context={}, createAssignment={}, "
                             + "headers={}, experimentBatch={}",
                     userID, applicationName, context, createAssignment, headers, experimentBatch);
 
@@ -315,7 +316,7 @@ public class AssignmentsResource {
             return httpHeader.headers().entity(ImmutableMap.<String, Object>builder().put("assignments",
                     toBatchAssignmentResponseMap(myAssignments)).build()).build();
         } catch (Exception exception) {
-            LOGGER.error("getBatchAssignments failed for applicationName={}, userID={}, context={}, "
+            LogUtil.error(LOGGER, "getBatchAssignments failed for applicationName={}, userID={}, context={}, "
                             + "createAssignment={}, experimentBatch={}, headers={} with error:",
                     applicationName, userID, context, createAssignment, experimentBatch, headers,
                     exception);
@@ -365,7 +366,7 @@ public class AssignmentsResource {
             @ApiParam(value = "context for the experiment, eg \"QA\", \"PROD\"")
             final Context context) {
         try {
-            LOGGER.debug("udpateAssignment userID={}, applicationName={}, experimentLabel={}, context={}, "
+            LogUtil.debug(LOGGER, "udpateAssignment userID={}, applicationName={}, experimentLabel={}, context={}, "
                     + "submittedData={}", userID, applicationName, experimentLabel, context, submittedData);
 
             if (submittedData == null) {
@@ -392,7 +393,7 @@ public class AssignmentsResource {
 
             return httpHeader.headers().entity(toSingleAssignmentResponseMap(response)).build();
         } catch (Exception exception) {
-            LOGGER.error("updateAssignment failed for applicationName={}, experimentLabel={},"
+            LogUtil.error(LOGGER, "updateAssignment failed for applicationName={}, experimentLabel={},"
                             + " userID={}, submittedData={}, context={} with error:",
                     applicationName, experimentLabel, userID, submittedData, context,
                     exception);
@@ -452,7 +453,7 @@ public class AssignmentsResource {
             @javax.ws.rs.core.Context
                     HttpHeaders headers) {
         try {
-            LOGGER.debug("getBatchAssignmentsForPage applicationName={}, pageName={}, userID={},"
+            LogUtil.debug(LOGGER, "getBatchAssignmentsForPage applicationName={}, pageName={}, userID={},"
                             + " context={}, createAssignment={}, ignoreSamplingPercent={}, headers={}",
                     applicationName, pageName, userID, context, createAssignment, ignoreSamplingPercent, headers);
 
@@ -463,7 +464,7 @@ public class AssignmentsResource {
                     .entity(ImmutableMap.<String, Object>builder().put("assignments",
                             toBatchAssignmentResponseMap(assignmentsFromPage)).build()).build();
         } catch (Exception exception) {
-            LOGGER.error("getBatchAssignmentsForPage failed for applicationName={}, pageName={}, userID={},"
+            LogUtil.error(LOGGER, "getBatchAssignmentsForPage failed for applicationName={}, pageName={}, userID={},"
                             + " createAssignment={}, ignoreSamplingPercent={}, context={}, headers={} with error:",
                     applicationName, pageName, userID, createAssignment, ignoreSamplingPercent, context, headers,
                     exception);
@@ -526,7 +527,7 @@ public class AssignmentsResource {
 
             @javax.ws.rs.core.Context final HttpHeaders headers) {
         try {
-            LOGGER.debug("postBatchAssignmentForPage applicationName={}, pageName={}, userID={}, context={}, "
+            LogUtil.debug(LOGGER, "postBatchAssignmentForPage applicationName={}, pageName={}, userID={}, context={}, "
                             + "createAssignment={}, ignoreSamplingPercent={}, headers={}, segmentationProfile={}",
                     applicationName, pageName, userID, context, createAssignment, ignoreSamplingPercent, headers,
                     segmentationProfile);
@@ -539,7 +540,7 @@ public class AssignmentsResource {
                     .entity(ImmutableMap.<String, Object>builder().put("assignments",
                             toBatchAssignmentResponseMap(assignmentsFromPage)).build()).build();
         } catch (Exception exception) {
-            LOGGER.error("postBatchAssignmentForPage failed for applicationName={}, pageName={}, userID={}, "
+            LogUtil.error(LOGGER, "postBatchAssignmentForPage failed for applicationName={}, pageName={}, userID={}, "
                             + "createAssignment={}, ignoreSamplingPercent={}, context={}, segmentationProfile={},"
                             + " headers={} with error:", applicationName, pageName, userID, createAssignment,
                     ignoreSamplingPercent, context, segmentationProfile, headers, exception);
@@ -589,7 +590,7 @@ public class AssignmentsResource {
             return httpHeader.headers().entity(ImmutableMap.<String, Object>builder().put("result", ruleResult).build())
                     .build();
         } catch (Exception exception) {
-            LOGGER.error("postAssignmentRuleTest failed for applicationName={}, experimentLabel={},"
+            LogUtil.error(LOGGER, "postAssignmentRuleTest failed for applicationName={}, experimentLabel={},"
                             + " context={}, segmentationProfile={}, headers={} with error:",
                     applicationName, experimentLabel, context, segmentationProfile, headers,
                     exception);
@@ -609,7 +610,7 @@ public class AssignmentsResource {
         try {
             return httpHeader.headers().entity(assignments.queuesLength()).build();
         } catch (Exception exception) {
-            LOGGER.error("getAssignmentsQueueLength failed with error:", exception);
+            LogUtil.error(LOGGER, "getAssignmentsQueueLength failed with error:", exception);
             throw exception;
         }
     }
@@ -626,7 +627,7 @@ public class AssignmentsResource {
         try {
             return httpHeader.headers().entity(assignments.queuesDetails()).build();
         } catch (Exception exception) {
-            LOGGER.error("getAssignmentsQueueDetails failed with error:", exception);
+            LogUtil.error(LOGGER, "getAssignmentsQueueDetails failed with error:", exception);
             throw exception;
         }
     }
@@ -649,7 +650,7 @@ public class AssignmentsResource {
             assignments.flushMessages();
             return httpHeader.headers(HttpStatus.SC_NO_CONTENT).build();
         } catch (Exception exception) {
-            LOGGER.error("flushMessages failed with error:", exception);
+            LogUtil.error(LOGGER, "flushMessages failed with error:", exception);
             throw exception;
         }
     }
@@ -671,12 +672,12 @@ public class AssignmentsResource {
             try {
                 assignments.clearMetadataCache();
             } catch (Exception e) {
-                LOGGER.error("Exception occurred while clearing assignments metadata cache...", e);
+                LogUtil.error(LOGGER, "Exception occurred while clearing assignments metadata cache...", e);
                 result = Boolean.FALSE;
             }
             return httpHeader.headers().entity(result).build();
         } catch (Exception exception) {
-            LOGGER.error("clearMetadataCache failed with error:", exception);
+            LogUtil.error(LOGGER, "clearMetadataCache failed with error:", exception);
             throw exception;
         }
     }
@@ -695,7 +696,7 @@ public class AssignmentsResource {
         try {
             return httpHeader.headers().entity(assignments.metadataCacheDetails()).build();
         } catch (Exception exception) {
-            LOGGER.error("getMetadataCacheDetails failed with error:", exception);
+            LogUtil.error(LOGGER, "getMetadataCacheDetails failed with error:", exception);
             throw exception;
         }
     }

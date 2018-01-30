@@ -18,6 +18,7 @@ package com.intuit.wasabi.export.rest.impl;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.intuit.wasabi.export.rest.Driver;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -44,7 +45,7 @@ public class DefaultRestDriver implements Driver {
         this.closeableHttpClient = createCloseableHttpClient(httpClientBuilder);
         this.closeableHttpClientWithProxy = createCloseableHttpClientWithProxy(httpClientBuilder, proxyHost, proxyPort);
 
-        LOGGER.info("Initializing Http driver");
+        LogUtil.info(LOGGER, "Initializing Http driver");
     }
 
     private HttpClientBuilder createHttpClientBuilder(final Driver.Configuration configuration) {

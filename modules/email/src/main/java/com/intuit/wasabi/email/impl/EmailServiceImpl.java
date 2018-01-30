@@ -25,6 +25,7 @@ import com.intuit.wasabi.email.EmailTextProcessor;
 import com.intuit.wasabi.exceptions.WasabiEmailException;
 import com.intuit.wasabi.experimentobjects.Application;
 import com.intuit.wasabi.experimentobjects.exceptions.ErrorCode;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
@@ -122,7 +123,7 @@ public class EmailServiceImpl implements EmailService {
      */
     @Override
     public void sendEmailForUserPermission(Application.Name appName, UserInfo.Username user, EmailLinksList links) {
-        LOGGER.debug("Sending an email to the administrators of " + appName + " for user " + user + "with links" + links.toString());
+        LogUtil.debug(LOGGER, "Sending an email to the administrators of " + appName + " for user " + user + "with links" + links.toString());
         String subject = emailTextProcessor.getSubject(appName);
         String msg = emailTextProcessor.getMessage(appName, user, links);
         Set<String> addressees = emailTextProcessor.getAddressees(appName);
@@ -142,7 +143,7 @@ public class EmailServiceImpl implements EmailService {
             if (emailVal.isValid(emailTo)) {
                 cleanAddresses.add(emailTo);
             } else {
-                LOGGER.warn("Remove email address: [" + emailTo + "] from email recipients, because it is not valid");
+                LogUtil.warn(LOGGER, "Remove email address: [" + emailTo + "] from email recipients, because it is not valid");
             }
         }
         return cleanAddresses.toArray(new String[cleanAddresses.size()]);
@@ -166,12 +167,12 @@ public class EmailServiceImpl implements EmailService {
                 email.setSSLOnConnect(sslEnabled);
                 email.send();
             } catch (EmailException mailExcp) {
-                LOGGER.error("Email could not be send because of " + mailExcp.getMessage(),mailExcp);
+                LogUtil.error(LOGGER, "Email could not be send because of " + mailExcp.getMessage(),mailExcp);
                 throw new WasabiEmailException("Email: " + emailToString(subject, msg, to) + " could not be sent.", mailExcp);
             }
         } else {
             //if the service is not active log the email that would have been send and throw error
-            LOGGER.info("EmailService would have sent: " + emailToString(subject, msg, to));
+            LogUtil.info(LOGGER, "EmailService would have sent: " + emailToString(subject, msg, to));
             throw new WasabiEmailException(ErrorCode.EMAIL_NOT_ACTIVE_ERROR, "The EmailService is not active.");
         }
     }
@@ -213,7 +214,7 @@ public class EmailServiceImpl implements EmailService {
      */
     public void setFrom(String from) {
         if (!emailVal.isValid(from)) {
-            LOGGER.warn("The from-value for the email service is set to the default value: wasabi-service@example.com");
+            LogUtil.warn(LOGGER, "The from-value for the email service is set to the default value: wasabi-service@example.com");
 
             // FIXME: inject
             this.from = "wasabi-service@example.com";

@@ -20,6 +20,7 @@ import com.google.inject.name.Named;
 import com.intuit.wasabi.eventlog.EventLog;
 import com.intuit.wasabi.eventlog.EventLogListener;
 import com.intuit.wasabi.eventlog.events.EventLogEvent;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -108,7 +109,7 @@ public class EventLogImpl implements EventLog {
             try {
                 eventLogClass = (Class<? extends EventLogEvent>) forName(event);
             } catch (ClassNotFoundException e) {
-                LOGGER.debug("Event class: {} not found, trying: {} ", event, packagePrefix + event, e);
+                LogUtil.debug(LOGGER, "Event class: {} not found, trying: {} ", event, packagePrefix + event, e);
 
                 eventLogClass = (Class<? extends EventLogEvent>) forName(packagePrefix + event);
             }
@@ -125,7 +126,7 @@ public class EventLogImpl implements EventLog {
     @Override
     public void postEvent(EventLogEvent event) {
         if (event == null) {
-            LOGGER.warn("skipping null EventLogEvent");
+            LogUtil.warn(LOGGER, "skipping null EventLogEvent");
 
             return;
         }
@@ -176,12 +177,12 @@ public class EventLogImpl implements EventLog {
                     try {
                         sleep(500);
                     } catch (InterruptedException e) {
-                        LOGGER.warn("Interrupted while sleeping.", e);
+                        LogUtil.warn(LOGGER, "Interrupted while sleeping.", e);
                     }
                 }
             }
         } finally {
-            LOGGER.info("Shutting down event system, posting remaining events -- new events will not be processed.");
+            LogUtil.info(LOGGER, "Shutting down event system, posting remaining events -- new events will not be processed.");
 
             if (!eventDeque.isEmpty()) {
                 eventDeque.forEach(this::prepareEnvelope);
@@ -196,27 +197,27 @@ public class EventLogImpl implements EventLog {
      * @param event the vent to prepare
      */
     /*test*/ void prepareEnvelope(final EventLogEvent event) {
-        LOGGER.debug("preparing event: {}", event);
+        LogUtil.debug(LOGGER, "preparing event: {}", event);
 
         if (event != null) {
-            LOGGER.debug("preparing event is not null");
+            LogUtil.debug(LOGGER, "preparing event is not null");
 
             for (EventLogListener eventLogListener : listeners.keySet()) {
                 boolean isEventSubscribed = isSubscribed(eventLogListener, event);
 
-                LOGGER.debug("preparing event {}, is subscribed: {}, with eventLogListener: {}", isEventSubscribed,
+                LogUtil.debug(LOGGER, "preparing event {}, is subscribed: {}, with eventLogListener: {}", isEventSubscribed,
                         event, eventLogListener);
 
                 if (isEventSubscribed) {
-                    LOGGER.debug("preparing subscribed event {}, with eventLogListener", event, eventLogListener);
+                    LogUtil.debug(LOGGER, "preparing subscribed event {}, with eventLogListener", event, eventLogListener);
 
                     eventPostThreadPoolExecutor.submit(new EventLogEventEnvelope(event, eventLogListener));
 
-                    LOGGER.debug("prepared subscribed event {}, with eventLogListener", event, eventLogListener);
+                    LogUtil.debug(LOGGER, "prepared subscribed event {}, with eventLogListener", event, eventLogListener);
                 }
             }
         }
 
-        LOGGER.debug("prepared event: {}", event);
+        LogUtil.debug(LOGGER, "prepared event: {}", event);
     }
 }

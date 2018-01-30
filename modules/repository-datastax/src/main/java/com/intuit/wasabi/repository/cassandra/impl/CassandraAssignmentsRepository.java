@@ -65,6 +65,7 @@ import com.intuit.wasabi.repository.cassandra.accessor.index.ExperimentUserIndex
 import com.intuit.wasabi.repository.cassandra.accessor.index.PageExperimentIndexAccessor;
 import com.intuit.wasabi.repository.cassandra.pojo.export.UserAssignmentExport;
 import com.intuit.wasabi.repository.cassandra.pojo.index.ExperimentUserByUserIdContextAppNameExperimentId;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.cassandra.utils.UUIDGen;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -219,9 +220,9 @@ public class CassandraAssignmentsRepository implements AssignmentsRepository {
                                             Map<Experiment.ID, List<Experiment.ID>> exclusionMap
     ) {
         if (LOGGER.isDebugEnabled())
-            LOGGER.debug("populateExperimentMetadata - STARTED: userID={}, appName={}, context={}, experimentBatch={}, experimentIds={}", userID, appName, context, experimentBatch, allowAssignments);
+            LogUtil.debug(LOGGER, "populateExperimentMetadata - STARTED: userID={}, appName={}, context={}, experimentBatch={}, experimentIds={}", userID, appName, context, experimentBatch, allowAssignments);
         if (isNull(experimentBatch.getLabels()) && !allowAssignments.isPresent()) {
-            LOGGER.error("Invalid input to CassandraAssignmentsRepository.populateExperimentMetadata(): Given input: userID={}, appName={}, context={}, experimentBatch={}, allowAssignments={}", userID, appName, context, experimentBatch, allowAssignments);
+            LogUtil.error(LOGGER, "Invalid input to CassandraAssignmentsRepository.populateExperimentMetadata(): Given input: userID={}, appName={}, context={}, experimentBatch={}, allowAssignments={}", userID, appName, context, experimentBatch, allowAssignments);
             return;
         }
 
@@ -235,7 +236,7 @@ public class CassandraAssignmentsRepository implements AssignmentsRepository {
         //Based on given experiment ids, populate experiment buckets and exclusions..
         populateBucketsAndExclusions(experimentIds, bucketMap, exclusionMap);
 
-        if (LOGGER.isDebugEnabled()) LOGGER.debug("populateExperimentMetadata - FINISHED...");
+        if (LOGGER.isDebugEnabled()) LogUtil.debug(LOGGER, "populateExperimentMetadata - FINISHED...");
     }
 
     /**
@@ -254,21 +255,21 @@ public class CassandraAssignmentsRepository implements AssignmentsRepository {
 
         //Send calls asynchronously
         experimentsFuture = experimentAccessor.asyncGetExperimentByAppName(appName.toString());
-        if (LOGGER.isDebugEnabled()) LOGGER.debug("Sent experimentAccessor.asyncGetExperimentByAppName({})", appName);
+        if (LOGGER.isDebugEnabled()) LogUtil.debug(LOGGER, "Sent experimentAccessor.asyncGetExperimentByAppName({})", appName);
 
         applicationFuture = prioritiesAccessor.asyncGetPriorities(appName.toString());
-        if (LOGGER.isDebugEnabled()) LOGGER.debug("Sent prioritiesAccessor.asyncGetPriorities({})", appName);
+        if (LOGGER.isDebugEnabled()) LogUtil.debug(LOGGER, "Sent prioritiesAccessor.asyncGetPriorities({})", appName);
 
         userAssignmentsFuture = experimentUserIndexAccessor.asyncSelectBy(userID.toString(), appName.toString(), context.toString());
         if (LOGGER.isDebugEnabled())
-            LOGGER.debug("Sent experimentUserIndexAccessor.asyncSelectBy({}, {}, {})", userID, appName, context);
+            LogUtil.debug(LOGGER, "Sent experimentUserIndexAccessor.asyncSelectBy({}, {}, {})", userID, appName, context);
 
         //Process the Futures in the order that are expected to arrive earlier
         UninterruptibleUtil.getUninterruptibly(experimentsFuture).all().stream().forEach(expPojo -> {
             Experiment exp = ExperimentHelper.makeExperiment(expPojo);
             experimentMap.put(exp.getID(), exp);
         });
-        if (LOGGER.isDebugEnabled()) LOGGER.debug("experimentMap=> {}", experimentMap);
+        if (LOGGER.isDebugEnabled()) LogUtil.debug(LOGGER, "experimentMap=> {}", experimentMap);
 
         int priorityValue = 1;
         for (com.intuit.wasabi.repository.cassandra.pojo.Application priority : UninterruptibleUtil.getUninterruptibly(applicationFuture).all()) {
@@ -280,7 +281,7 @@ public class CassandraAssignmentsRepository implements AssignmentsRepository {
         }
         if (LOGGER.isDebugEnabled()) {
             for (PrioritizedExperiment exp : prioritizedExperimentList.getPrioritizedExperiments()) {
-                LOGGER.debug("prioritizedExperiment=> {} ", exp);
+                LogUtil.debug(LOGGER, "prioritizedExperiment=> {} ", exp);
             }
         }
     }
@@ -298,11 +299,11 @@ public class CassandraAssignmentsRepository implements AssignmentsRepository {
         experimentIds.stream().forEach(experimentId -> {
             bucketFutureMap.put(experimentId, bucketAccessor.asyncGetBucketByExperimentId(experimentId.getRawID()));
             if (LOGGER.isDebugEnabled())
-                LOGGER.debug("Sent bucketAccessor.asyncGetBucketByExperimentId ({})", experimentId.getRawID());
+                LogUtil.debug(LOGGER, "Sent bucketAccessor.asyncGetBucketByExperimentId ({})", experimentId.getRawID());
 
             exclusionFutureMap.put(experimentId, exclusionAccessor.asyncGetExclusions(experimentId.getRawID()));
             if (LOGGER.isDebugEnabled())
-                LOGGER.debug("Sent exclusionAccessor.asyncGetExclusions ({})", experimentId.getRawID());
+                LogUtil.debug(LOGGER, "Sent exclusionAccessor.asyncGetExclusions ({})", experimentId.getRawID());
         });
 
         //Process the Futures in the order that are expected to arrive earlier
@@ -314,7 +315,7 @@ public class CassandraAssignmentsRepository implements AssignmentsRepository {
                     }
             );
         }
-        if (LOGGER.isDebugEnabled()) LOGGER.debug("bucketMap=> {} ", bucketMap);
+        if (LOGGER.isDebugEnabled()) LogUtil.debug(LOGGER, "bucketMap=> {} ", bucketMap);
 
         for (Experiment.ID expId : exclusionFutureMap.keySet()) {
             ListenableFuture<Result<com.intuit.wasabi.repository.cassandra.pojo.Exclusion>> exclusionFuture = exclusionFutureMap.get(expId);
@@ -324,7 +325,7 @@ public class CassandraAssignmentsRepository implements AssignmentsRepository {
                     }
             );
         }
-        if (LOGGER.isDebugEnabled()) LOGGER.debug("exclusionMap=> {} ", exclusionMap);
+        if (LOGGER.isDebugEnabled()) LogUtil.debug(LOGGER, "exclusionMap=> {} ", exclusionMap);
     }
 
     /**
@@ -348,7 +349,7 @@ public class CassandraAssignmentsRepository implements AssignmentsRepository {
                     experimentIds.add(exp.getID());
                 }
             }
-            if (LOGGER.isDebugEnabled()) LOGGER.debug("experimentIds for given experiment labels ({})", experimentIds);
+            if (LOGGER.isDebugEnabled()) LogUtil.debug(LOGGER, "experimentIds for given experiment labels ({})", experimentIds);
         } else {
             //If allowAssignments IS NOT EMPTY means experimentBatch.labels are NOT provided.
             //Use allowAssignments.experimentIds to populate experimentBatch.labels
@@ -360,7 +361,7 @@ public class CassandraAssignmentsRepository implements AssignmentsRepository {
                 }
             }
             experimentBatch.setLabels(expLabels);
-            if (LOGGER.isDebugEnabled()) LOGGER.debug("experimentBatch after updating labels ({})", experimentBatch);
+            if (LOGGER.isDebugEnabled()) LogUtil.debug(LOGGER, "experimentBatch after updating labels ({})", experimentBatch);
         }
     }
 
@@ -387,7 +388,7 @@ public class CassandraAssignmentsRepository implements AssignmentsRepository {
             if (nonNull(exp)) {
                 result.add(new ImmutablePair<>(exp, Optional.ofNullable(t.getBucket()).orElseGet(() -> "null")));
             } else {
-                LOGGER.debug("{} experiment id is not present in the experimentMap...", t.getExperimentId());
+                LogUtil.debug(LOGGER, "{} experiment id is not present in the experimentMap...", t.getExperimentId());
             }
         });
         return result;
@@ -485,7 +486,7 @@ public class CassandraAssignmentsRepository implements AssignmentsRepository {
         assignments.forEach(pair -> assignmentsCountExecutor.execute(new AssignmentCountEnvelope(
                 this, experimentRepository, dbRepository, pair.getLeft(),
                 pair.getRight(), countUp, eventLog, date, assignUserToExport, assignBucketCount)));
-        LOGGER.debug("Finished assignmentsCountExecutor");
+        LogUtil.debug(LOGGER, "Finished assignmentsCountExecutor");
     }
 
     /**
@@ -499,7 +500,7 @@ public class CassandraAssignmentsRepository implements AssignmentsRepository {
             final BatchStatement batchStatement = new BatchStatement(BatchStatement.Type.UNLOGGED);
             assignments.forEach(pair -> {
                 Assignment assignment = pair.getRight();
-                LOGGER.debug("assignment={}", assignment);
+                LogUtil.debug(LOGGER, "assignment={}", assignment);
                 BoundStatement bs;
                 if (isNull(assignment.getBucketLabel())) {
                     bs = experimentUserIndexAccessor.insertBoundStatement(assignment.getUserID().toString(), assignment.getContext().toString(), assignment.getApplicationName().toString(), assignment.getExperimentID().getRawID());
@@ -509,9 +510,9 @@ public class CassandraAssignmentsRepository implements AssignmentsRepository {
                 batchStatement.add(bs);
             });
             session.execute(batchStatement);
-            LOGGER.debug("Finished experiment_user_index");
+            LogUtil.debug(LOGGER, "Finished experiment_user_index");
         } catch (Exception e) {
-            LOGGER.error("Error occurred while adding data in to experiment_user_index", e);
+            LogUtil.error(LOGGER, "Error occurred while adding data in to experiment_user_index", e);
         }
     }
 
@@ -630,7 +631,7 @@ public class CassandraAssignmentsRepository implements AssignmentsRepository {
                 writer.write(header);
                 for (Date dateHour : dateHours) {
                     Result<UserAssignmentExport> result;
-                    LOGGER.debug("Query user assignment export for experimentID={}, at dateHour={}", experimentID.getRawID(), dateHour);
+                    LogUtil.debug(LOGGER, "Query user assignment export for experimentID={}, at dateHour={}", experimentID.getRawID(), dateHour);
                     if (ignoreNullBucket) {
                         result = userAssignmentExportAccessor.selectBy(experimentID.getRawID(), dateHour, context.getContext(), false);
                     } else {
@@ -692,13 +693,13 @@ public class CassandraAssignmentsRepository implements AssignmentsRepository {
             final BatchStatement batchStatement = new BatchStatement(BatchStatement.Type.UNLOGGED);
             final UUID timeUUID = UUIDGen.getTimeUUID();
             data.forEach(message -> {
-                LOGGER.debug("message={}", message);
+                LogUtil.debug(LOGGER, "message={}", message);
                 batchStatement.add(stagingAccessor.batchInsertBy(timeUUID, type, exception, message));
             });
             session.execute(batchStatement);
-            LOGGER.debug("Finished pushAssignmentsToStaging");
+            LogUtil.debug(LOGGER, "Finished pushAssignmentsToStaging");
         } catch (Exception e) {
-            LOGGER.error("Error occurred while pushAssignmentsToStaging", e);
+            LogUtil.error(LOGGER, "Error occurred while pushAssignmentsToStaging", e);
             throw new RepositoryException("Error occurred while pushAssignmentsToStaging", e);
         }
     }

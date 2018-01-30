@@ -29,6 +29,7 @@ import com.intuit.wasabi.repository.cassandra.UninterruptibleUtil;
 import com.intuit.wasabi.repository.cassandra.accessor.ExclusionAccessor;
 import com.intuit.wasabi.repository.cassandra.accessor.ExperimentAccessor;
 import com.intuit.wasabi.repository.cassandra.pojo.Exclusion;
+import com.intuit.wasabi.util.LogUtil;
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +76,7 @@ public class CassandraMutexRepository implements MutexRepository {
     @Override
     public List<Experiment.ID> getExclusionList(Experiment.ID experimentID) {
 
-        LOGGER.debug("Getting exclusions for {}", experimentID);
+        LogUtil.debug(LOGGER, "Getting exclusions for {}", experimentID);
 
         List<Experiment.ID> exclusionIds = new ArrayList<>();
 
@@ -88,11 +89,11 @@ public class CassandraMutexRepository implements MutexRepository {
 
 
         } catch (Exception e) {
-            LOGGER.error("Error while getting exclusions for {}", experimentID, e);
+            LogUtil.error(LOGGER, "Error while getting exclusions for {}", experimentID, e);
             throw new RepositoryException("Could not fetch exclusions for experiment \"" + experimentID + "\" ", e);
         }
 
-        LOGGER.debug("Getting exclusions list of size {}", exclusionIds);
+        LogUtil.debug(LOGGER, "Getting exclusions list of size {}", exclusionIds);
 
         return exclusionIds;
     }
@@ -102,7 +103,7 @@ public class CassandraMutexRepository implements MutexRepository {
      */
     @Override
     public void deleteExclusion(Experiment.ID base, Experiment.ID pair) throws RepositoryException {
-        LOGGER.debug("Deleting exclusions for base {} pair {}", new Object[]{base, pair});
+        LogUtil.debug(LOGGER, "Deleting exclusions for base {} pair {}", new Object[]{base, pair});
 
         try {
             BatchStatement batchStatement = new BatchStatement();
@@ -112,7 +113,7 @@ public class CassandraMutexRepository implements MutexRepository {
                     base.getRawID()));
             session.execute(batchStatement);
         } catch (Exception e) {
-            LOGGER.error("Error while deleting exclusions for base {} pair {}",
+            LogUtil.error(LOGGER, "Error while deleting exclusions for base {} pair {}",
                     new Object[]{base, pair}, e);
             throw new RepositoryException("Could not delete the exclusion \"" + base + "\", \"" + pair + "\"", e);
         }
@@ -124,7 +125,7 @@ public class CassandraMutexRepository implements MutexRepository {
     @Override
     public void createExclusion(Experiment.ID baseID, Experiment.ID pairID) throws RepositoryException {
 
-        LOGGER.debug("Create exclusions for {}", new Object[]{baseID, pairID});
+        LogUtil.debug(LOGGER, "Create exclusions for {}", new Object[]{baseID, pairID});
         try {
 
             BatchStatement batchStatement = new BatchStatement();
@@ -135,7 +136,7 @@ public class CassandraMutexRepository implements MutexRepository {
             session.execute(batchStatement);
 
         } catch (Exception e) {
-            LOGGER.error("Error while create exclusions for {}",
+            LogUtil.error(LOGGER, "Error while create exclusions for {}",
                     new Object[]{baseID, pairID}, e);
             throw new RepositoryException("Could not insert the exclusion \"" + baseID + "\"", e);
         }
@@ -147,7 +148,7 @@ public class CassandraMutexRepository implements MutexRepository {
     @Override
     public ExperimentList getExclusions(Experiment.ID base) {
 
-        LOGGER.debug("Getting exclusion list for {}", base);
+        LogUtil.debug(LOGGER, "Getting exclusion list for {}", base);
 
         try {
 
@@ -170,7 +171,7 @@ public class CassandraMutexRepository implements MutexRepository {
 
             return experimentList;
         } catch (Exception e) {
-            LOGGER.error("Error whil getting exclusion list for {}", base, e);
+            LogUtil.error(LOGGER, "Error whil getting exclusion list for {}", base, e);
             throw new RepositoryException("Could not retrieve the exclusions for \"" + base + "\"", e);
         }
     }
@@ -181,7 +182,7 @@ public class CassandraMutexRepository implements MutexRepository {
     @Override
     public ExperimentList getNotExclusions(Experiment.ID base) {
 
-        LOGGER.debug("Getting not exclusions list for {}", base);
+        LogUtil.debug(LOGGER, "Getting not exclusions list for {}", base);
 
         try {
             List<Exclusion> exclusions = mutexAccessor.getExclusions(base.getRawID()).all();
@@ -211,11 +212,11 @@ public class CassandraMutexRepository implements MutexRepository {
             ExperimentList result = new ExperimentList();
             result.setExperiments(notMutex);
 
-            LOGGER.debug("Returning exclusions list {} for {}", new Object[]{result, base});
+            LogUtil.debug(LOGGER, "Returning exclusions list {} for {}", new Object[]{result, base});
 
             return result;
         } catch (Exception e) {
-            LOGGER.debug("Error while getting not exclusions list for {}", base, e);
+            LogUtil.debug(LOGGER, "Error while getting not exclusions list for {}", base, e);
             throw new RepositoryException("Could not retrieve the exclusions for \"" + base + "\"", e);
         }
     }
@@ -225,7 +226,7 @@ public class CassandraMutexRepository implements MutexRepository {
      */
     @Override
     public Map<Experiment.ID, List<Experiment.ID>> getExclusivesList(Collection<Experiment.ID> experimentIds) {
-        LOGGER.debug("Getting exclusions for {}", experimentIds);
+        LogUtil.debug(LOGGER, "Getting exclusions for {}", experimentIds);
         Map<Experiment.ID, ListenableFuture<Result<Exclusion>>> exclusionFutureMap = new HashMap<>(experimentIds.size());
         Map<Experiment.ID, List<Experiment.ID>> exclusionMap = new HashMap<>(experimentIds.size());
 
@@ -233,7 +234,7 @@ public class CassandraMutexRepository implements MutexRepository {
             //Send calls asynchronously
             experimentIds.stream().forEach(experimentId -> {
                 exclusionFutureMap.put(experimentId, mutexAccessor.asyncGetExclusions(experimentId.getRawID()));
-                LOGGER.debug("Sent exclusionAccessor.asyncGetExclusions ({})", experimentId.getRawID());
+                LogUtil.debug(LOGGER, "Sent exclusionAccessor.asyncGetExclusions ({})", experimentId.getRawID());
             });
 
             //Process the Futures in the order that are expected to arrive earlier
@@ -246,10 +247,10 @@ public class CassandraMutexRepository implements MutexRepository {
                 );
             }
         } catch (Exception e) {
-            LOGGER.error("Error while getting exclusions for {}", experimentIds, e);
+            LogUtil.error(LOGGER, "Error while getting exclusions for {}", experimentIds, e);
             throw new RepositoryException("Could not fetch mutually exclusive experiments for the list of experiments", e);
         }
-        LOGGER.debug("Returning exclusions map {}", exclusionMap);
+        LogUtil.debug(LOGGER, "Returning exclusions map {}", exclusionMap);
         return exclusionMap;
     }
 }

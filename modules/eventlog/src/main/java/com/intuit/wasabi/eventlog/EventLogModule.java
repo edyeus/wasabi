@@ -17,6 +17,7 @@ package com.intuit.wasabi.eventlog;
 
 import com.google.inject.AbstractModule;
 import com.intuit.wasabi.exceptions.EventLogException;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import java.util.Properties;
@@ -42,7 +43,7 @@ public class EventLogModule extends AbstractModule {
      */
     @Override
     protected void configure() {
-        LOGGER.debug("installing module: {}", EventLogModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installing module: {}", EventLogModule.class.getSimpleName());
 
         Properties properties = create(PROPERTY_NAME, EventLogModule.class);
 
@@ -65,6 +66,6 @@ public class EventLogModule extends AbstractModule {
 
         bind(EventLogSystem.class).in(SINGLETON);
 
-        LOGGER.debug("installed module: {}", EventLogModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installed module: {}", EventLogModule.class.getSimpleName());
     }
 }

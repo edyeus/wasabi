@@ -17,6 +17,7 @@ package com.intuit.wasabi.auditlog.impl;
 
 import com.intuit.wasabi.auditlogobjects.AuditLogEntry;
 import com.intuit.wasabi.repository.AuditLogRepository;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -49,10 +50,10 @@ import static org.slf4j.LoggerFactory.getLogger;
      */
     @Override
     public void run() {
-        LOGGER.debug("storing auditLogEntry: {}", entry);
+        LogUtil.debug(LOGGER, "storing auditLogEntry: {}", entry);
 
         repository.storeEntry(entry);
 
-        LOGGER.debug("stored auditLogEntry: {}", entry);
+        LogUtil.debug(LOGGER, "stored auditLogEntry: {}", entry);
     }
 }

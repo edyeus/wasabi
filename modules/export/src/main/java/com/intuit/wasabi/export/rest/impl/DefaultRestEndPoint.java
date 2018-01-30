@@ -17,6 +17,7 @@ package com.intuit.wasabi.export.rest.impl;
 
 import com.google.inject.Inject;
 import com.intuit.wasabi.export.rest.RestEndPoint;
+import com.intuit.wasabi.util.LogUtil;
 import net.jodah.failsafe.RetryPolicy;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
@@ -50,7 +51,7 @@ public class DefaultRestEndPoint implements RestEndPoint {
             }
             assignmentURI = uriBuilder.build();
         } catch (URISyntaxException e) {
-            LOGGER.error("URL Syntax Error: ", e);
+            LogUtil.error(LOGGER, "URL Syntax Error: ", e);
         }
         return assignmentURI;
     }

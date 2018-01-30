@@ -38,6 +38,7 @@ import com.datastax.driver.core.policies.TokenAwarePolicy;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.intuit.wasabi.cassandra.datastax.health.DefaultCassandraHealthCheck;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -79,7 +80,7 @@ public class DefaultCassandraDriver implements CassandraDriver {
 
         this.configuration = config;
 
-        LOGGER.info("Initializing driver");
+        LogUtil.info(LOGGER, "Initializing driver");
         initialize();
         // Register for health check
         healthCheckRegistry.register(instanceName, new DefaultCassandraHealthCheck(getSession()));
@@ -168,12 +169,12 @@ public class DefaultCassandraDriver implements CassandraDriver {
                                 .withSSLContext(context)
                                 .withCipherSuites(CIPHER_SUITES).build());
                     } catch (Exception ex) {
-                        LOGGER.error("General exception while construct SSL Context: ", ex);
+                        LogUtil.error(LOGGER, "General exception while construct SSL Context: ", ex);
                         //TODO: should we fail fast if no ssl is configured correctly? I think yes, but it is open.
                     }
                 }
 
-                LOGGER.info("Connecting to nodes {}, on port {}", nodes, getConfiguration().getPort());
+                LogUtil.info(LOGGER, "Connecting to nodes {}, on port {}", nodes, getConfiguration().getPort());
                 this.cluster = builder.build();
 
                 synchronized (this) {
@@ -183,7 +184,7 @@ public class DefaultCassandraDriver implements CassandraDriver {
                         session = cluster.connect(); // have to attach to the root keyspace first
                         initializeKeyspace();
                     } catch (Exception e) {
-                        LOGGER.error("Exception occurred while connecting to the cluster...", e);
+                        LogUtil.error(LOGGER, "Exception occurred while connecting to the cluster...", e);
                         throw e;
                     }
 
@@ -198,38 +199,38 @@ public class DefaultCassandraDriver implements CassandraDriver {
                         }
 
                     } catch (DriverException e) {
-                        LOGGER.warn("Keyspace " + getConfiguration().getKeyspaceName() + " doesn't exist", e);
+                        LogUtil.warn(LOGGER, "Keyspace " + getConfiguration().getKeyspaceName() + " doesn't exist", e);
                         keyspaceInitialized = false;
                     }
                 }
 
                 try {
                     Metadata metadata = cluster.getMetadata();
-                    LOGGER.info("Connected to cluster: {}\n", metadata.getClusterName());
+                    LogUtil.info(LOGGER, "Connected to cluster: {}\n", metadata.getClusterName());
                     for (Host host : metadata.getAllHosts()) {
-                        LOGGER.info("Datatacenter: {}; Host: {}; Rack: {}\n",
+                        LogUtil.info(LOGGER, "Datatacenter: {}; Host: {}; Rack: {}\n",
                                 host.getDatacenter(),
                                 host.getAddress(),
                                 host.getRack());
                     }
                 } catch (Exception e) {
-                    LOGGER.error("Failed to connect to cluster\n", e);
+                    LogUtil.error(LOGGER, "Failed to connect to cluster\n", e);
                 }
 
                 if (getConfiguration().isSlowQueryLoggingEnabled()) {
 
-                    LOGGER.warn("Enabling slow query logging could have performance impact!!");
+                    LogUtil.warn(LOGGER, "Enabling slow query logging could have performance impact!!");
                     QueryLogger queryLogger = QueryLogger.builder()
                             .withConstantThreshold(getConfiguration().getSlowQueryLoggingThresholdMilli())
                             .build();
                     cluster.register(queryLogger);
-                    LOGGER.warn("Slow query logging threshold is set to be {} milliseconds",
+                    LogUtil.warn(LOGGER, "Slow query logging threshold is set to be {} milliseconds",
                             getConfiguration().getSlowQueryLoggingThresholdMilli());
 
                     poolingMonitoring(poolingOptions);
                 }
 
-                LOGGER.info("Connected to the {} keyspace", getConfiguration().getKeyspaceName());
+                LogUtil.info(LOGGER, "Connected to the {} keyspace", getConfiguration().getKeyspaceName());
             }
         }
     }
@@ -268,7 +269,7 @@ public class DefaultCassandraDriver implements CassandraDriver {
         synchronized (DefaultCassandraDriver.class) {
             if (!keyspaceInitialized) {
 
-                LOGGER.info("Creating keyspace \"{}\"", config.getKeyspaceName());
+                LogUtil.info(LOGGER, "Creating keyspace \"{}\"", config.getKeyspaceName());
                 StringBuilder sb = new StringBuilder("CREATE KEYSPACE "
                         + config.getKeyspaceName()
                         + " WITH replication = { 'class' : ");
@@ -315,7 +316,7 @@ public class DefaultCassandraDriver implements CassandraDriver {
 
                 session.execute(sb.toString());
 
-                LOGGER.info("Successfully created keyspace \"{}\"", getConfiguration().getKeyspaceName());
+                LogUtil.info(LOGGER, "Successfully created keyspace \"{}\"", getConfiguration().getKeyspaceName());
                 //reset session to point to the keyspace
                 session = cluster.connect(getConfiguration().getKeyspaceName());
 
@@ -363,7 +364,7 @@ public class DefaultCassandraDriver implements CassandraDriver {
                 HostDistance distance = loadBalancingPolicy.distance(host);
                 int connections = state.getOpenConnections(host);
                 int inFlightQueries = state.getInFlightQueries(host);
-                LOGGER.info("{} connections={}, current load={}, max load={}",
+                LogUtil.info(LOGGER, "{} connections={}, current load={}, max load={}",
                         host, connections, inFlightQueries,
                         connections * poolingOptions.getMaxRequestsPerConnection(distance));
             }

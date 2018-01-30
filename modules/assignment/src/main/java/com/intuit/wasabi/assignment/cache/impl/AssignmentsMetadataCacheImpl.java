@@ -33,6 +33,7 @@ import com.intuit.wasabi.repository.ExperimentRepository;
 import com.intuit.wasabi.repository.MutexRepository;
 import com.intuit.wasabi.repository.PagesRepository;
 import com.intuit.wasabi.repository.PrioritiesRepository;
+import com.intuit.wasabi.util.LogUtil;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
@@ -111,7 +112,7 @@ public class AssignmentsMetadataCacheImpl implements AssignmentsMetadataCache {
             cacheManager.addCache(name.toString());
         }
 
-        LOGGER.info("Assignments metadata cache has been created successfully...");
+        LogUtil.info(LOGGER, "Assignments metadata cache has been created successfully...");
     }
 
     /**
@@ -123,10 +124,10 @@ public class AssignmentsMetadataCacheImpl implements AssignmentsMetadataCache {
             for (CACHE_NAME name : CACHE_NAME.values()) {
                 cacheManager.getCache(name.toString()).removeAll();
             }
-            LOGGER.info("Assignments metadata cache has been cleared successfully...");
+            LogUtil.info(LOGGER, "Assignments metadata cache has been cleared successfully...");
             return Boolean.TRUE;
         } catch (Exception e) {
-            LOGGER.error("Exception occurred while clearing a cache...", e);
+            LogUtil.error(LOGGER, "Exception occurred while clearing a cache...", e);
         }
         return Boolean.FALSE;
     }
@@ -160,7 +161,7 @@ public class AssignmentsMetadataCacheImpl implements AssignmentsMetadataCache {
         cacheManager.getCache(EXPERIMENT_ID_TO_BUCKET_CACHE.toString()).putAll(expIdsToBuckets);
         cacheManager.getCache(APP_NAME_N_PAGE_TO_EXPERIMENTS_CACHE.toString()).putAll(appNPageToExperiments);
 
-        LOGGER.debug("Assignments metadata cache has been refreshed successfully...");
+        LogUtil.debug(LOGGER, "Assignments metadata cache has been refreshed successfully...");
         return Boolean.TRUE;
     }
 

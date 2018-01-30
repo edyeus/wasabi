@@ -15,6 +15,7 @@
  *******************************************************************************/
 package com.intuit.wasabi.tests.library;
 
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -36,43 +37,43 @@ public class ForcedFailureTest {
 
     @Test()
     public void jenkins_report_failure_test() {
-        LOGGER.info("=====> Temp experiment to force failure, want to see Jenkins correctly report it <======");
+        LogUtil.info(LOGGER, "=====> Temp experiment to force failure, want to see Jenkins correctly report it <======");
         Assert.assertFalse(true, "Forcing a failed assert");
     }
 
     @Test()
     public void jenkins_report_failure_test2() {
-        LOGGER.info("=====> Temp experiment to force failure, want to see Jenkins correctly report it <======");
+        LogUtil.info(LOGGER, "=====> Temp experiment to force failure, want to see Jenkins correctly report it <======");
         Assert.assertFalse(true, "Forcing a failed assert");
     }
 
     @Test()
     public void jenkins_report_failure_test3() {
-        LOGGER.info("=====> Temp experiment to force failure, want to see Jenkins correctly report it <======");
+        LogUtil.info(LOGGER, "=====> Temp experiment to force failure, want to see Jenkins correctly report it <======");
         Assert.assertFalse(true, "Forcing a failed assert");
     }
 
     @Test(dependsOnMethods = {"jenkins_report_failure_test"})
     public void jenkins_report_skip_me_test() {
-        LOGGER.info("=====> Temp experiment to force skipped tests, want to see Jenkins correctly report it <======");
+        LogUtil.info(LOGGER, "=====> Temp experiment to force skipped tests, want to see Jenkins correctly report it <======");
         Assert.assertFalse(true, "Should not run");
     }
 
     @Test(dependsOnMethods = {"jenkins_report_failure_test"})
     public void jenkins_report_skip_me_test2() {
-        LOGGER.info("=====> Temp experiment to force skipped tests, want to see Jenkins correctly report it <======");
+        LogUtil.info(LOGGER, "=====> Temp experiment to force skipped tests, want to see Jenkins correctly report it <======");
         Assert.assertFalse(true, "Should not run");
     }
 
     @Test(dependsOnMethods = {"jenkins_report_failure_test"})
     public void jenkins_report_skip_me_test3() {
-        LOGGER.info("=====> Temp experiment to force skipped tests, want to see Jenkins correctly report it <======");
+        LogUtil.info(LOGGER, "=====> Temp experiment to force skipped tests, want to see Jenkins correctly report it <======");
         Assert.assertFalse(true, "Should not run");
     }
 
     @Test(dependsOnMethods = {"jenkins_report_failure_test"})
     public void jenkins_report_skip_me_test4() {
-        LOGGER.info("=====> Temp experiment to force skipped tests, want to see Jenkins correctly report it <======");
+        LogUtil.info(LOGGER, "=====> Temp experiment to force skipped tests, want to see Jenkins correctly report it <======");
         Assert.assertFalse(true, "Should not run");
     }
 

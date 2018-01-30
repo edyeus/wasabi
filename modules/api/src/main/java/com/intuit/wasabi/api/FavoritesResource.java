@@ -22,6 +22,7 @@ import com.intuit.wasabi.authenticationobjects.UserInfo;
 import com.intuit.wasabi.authorization.Authorization;
 import com.intuit.wasabi.experiment.Favorites;
 import com.intuit.wasabi.experimentobjects.Experiment;
+import com.intuit.wasabi.util.LogUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -104,7 +105,7 @@ public class FavoritesResource {
 
             return httpHeader.headers(Response.Status.OK).entity(prepareResponseEntity(favoriteList)).build();
         } catch (Exception exception) {
-            LOGGER.error("postFavorite failed for experiment={} with error:", experiment, exception);
+            LogUtil.error(LOGGER, "postFavorite failed for experiment={} with error:", experiment, exception);
             throw exception;
         }
     }
@@ -132,7 +133,7 @@ public class FavoritesResource {
 
             return httpHeader.headers(Response.Status.OK).entity(prepareResponseEntity(favoriteList)).build();
         } catch (Exception exception) {
-            LOGGER.error("getFavorites failed with error:", exception);
+            LogUtil.error(LOGGER, "getFavorites failed with error:", exception);
             throw exception;
         }
     }
@@ -166,7 +167,7 @@ public class FavoritesResource {
 
             return httpHeader.headers(Response.Status.OK).entity(prepareResponseEntity(favoriteList)).build();
         } catch (Exception exception) {
-            LOGGER.error("deleteFavorite failed for experimentID={} with error:", experimentID, exception);
+            LogUtil.error(LOGGER, "deleteFavorite failed for experimentID={} with error:", experimentID, exception);
             throw exception;
         }
     }

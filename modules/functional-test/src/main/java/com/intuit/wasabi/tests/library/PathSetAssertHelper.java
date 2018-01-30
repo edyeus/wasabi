@@ -17,6 +17,7 @@ package com.intuit.wasabi.tests.library;
 
 
 import com.intuit.wasabi.tests.library.util.Constants;
+import com.intuit.wasabi.util.LogUtil;
 import com.jayway.restassured.response.Response;
 import org.slf4j.Logger;
 import org.testng.Assert;
@@ -55,7 +56,7 @@ public class PathSetAssertHelper {
             actualValue = response.jsonPath().get(path);
         } catch (Exception e) {
             actualValue = "Error: Could not get value from path!";
-            LOGGER.info("ERROR: " + e.toString());
+            LogUtil.info(LOGGER, "ERROR: " + e.toString());
         }
         actualStrAL.add(path + ": " + actualValue);
     }
@@ -69,7 +70,7 @@ public class PathSetAssertHelper {
             actualValue = actualValueInt.toString();
         } catch (Exception e) {
             actualValue = "Error: Could not get value from path!";
-            LOGGER.info("ERROR: " + e.toString());
+            LogUtil.info(LOGGER, "ERROR: " + e.toString());
         }
         actualStrAL.add(path + ": " + actualValue);
     }
@@ -83,7 +84,7 @@ public class PathSetAssertHelper {
             actualValue = Integer.toString(actualValueInt);
         } catch (Exception e) {
             actualValue = "Error: Could not get value from path!";
-            LOGGER.info("ERROR: " + e.toString());
+            LogUtil.info(LOGGER, "ERROR: " + e.toString());
         }
         actualStrAL.add(path + ": " + actualValue);
     }
@@ -97,7 +98,7 @@ public class PathSetAssertHelper {
             actualValue = Float.toString(actualValueFloat);
         } catch (Exception e) {
             actualValue = "Error: Could not get value from path!";
-            LOGGER.info("ERROR: " + e.toString());
+            LogUtil.info(LOGGER, "ERROR: " + e.toString());
         }
         actualStrAL.add(path + ": " + actualValue);
     }

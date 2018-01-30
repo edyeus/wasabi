@@ -19,6 +19,7 @@ import com.intuit.wasabi.tests.data.AssignmentDataProvider;
 import com.intuit.wasabi.tests.library.TestBase;
 import com.intuit.wasabi.tests.model.Experiment;
 import com.intuit.wasabi.tests.model.factory.ExperimentFactory;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +68,7 @@ public class PutAssignment extends TestBase {
 
     private void assignUserStateFromNullToBucket(String state, String url) {
         response = apiServerConnector.doPut(url + "user-" + state + "-1", "{\"assignment\": null}");
-        LOGGER.info("State=" + state + " status=" + response.getStatusCode() + " response=" + response.asString());
+        LogUtil.info(LOGGER, "State=" + state + " status=" + response.getStatusCode() + " response=" + response.asString());
         Assert.assertEquals(response.asString().contains("NEW_ASSIGNMENT"), true);
         Assert.assertEquals(response.asString().contains("null"), true);
 
@@ -82,12 +83,12 @@ public class PutAssignment extends TestBase {
         assertReturnCode(response, HttpStatus.SC_OK);
         Assert.assertEquals(response.asString().contains("NEW_ASSIGNMENT"), true);
         Assert.assertEquals(response.asString().contains("onlybucket"), true);
-        LOGGER.debug("State=" + state + " status=" + response.getStatusCode() + " response=" + response.asString());
+        LogUtil.debug(LOGGER, "State=" + state + " status=" + response.getStatusCode() + " response=" + response.asString());
     }
 
     private void assignUserStateFromBucketToNull(String state, String url) {
         response = apiServerConnector.doPut(url + "user-" + state + "-2", "{\"assignment\": \"onlybucket\"}");
-        LOGGER.debug("State=" + state + " status=" + response.getStatusCode() + " response=" + response.asString());
+        LogUtil.debug(LOGGER, "State=" + state + " status=" + response.getStatusCode() + " response=" + response.asString());
         Assert.assertEquals(response.asString().contains("NEW_ASSIGNMENT"), true);
         Assert.assertEquals(response.asString().contains("onlybucket"), true);
 
@@ -102,7 +103,7 @@ public class PutAssignment extends TestBase {
         assertReturnCode(response, HttpStatus.SC_OK);
         Assert.assertEquals(response.asString().contains("NEW_ASSIGNMENT"), true);
         Assert.assertEquals(response.asString().contains("null"), true);
-        LOGGER.debug("State=" + state + " status=" + response.getStatusCode() + " response=" + response.asString());
+        LogUtil.debug(LOGGER, "State=" + state + " status=" + response.getStatusCode() + " response=" + response.asString());
     }
 
     @AfterClass

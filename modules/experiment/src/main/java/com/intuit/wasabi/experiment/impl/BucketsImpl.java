@@ -36,6 +36,7 @@ import com.intuit.wasabi.repository.CassandraRepository;
 import com.intuit.wasabi.repository.DatabaseRepository;
 import com.intuit.wasabi.repository.ExperimentRepository;
 import com.intuit.wasabi.repository.RepositoryException;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import javax.inject.Inject;
@@ -107,7 +108,7 @@ public class BucketsImpl implements Buckets {
         validateExperimentState(experiment);
         checkBucketConstraint(experiment, newBucket);
 
-        LOGGER.debug("Add Bucket: adding new bucket to running experiment" + experiment.getID());
+        LogUtil.debug(LOGGER, "Add Bucket: adding new bucket to running experiment" + experiment.getID());
         cassandraRepository.createBucket(newBucket);
         try {
             databaseRepository.createBucket(newBucket);
@@ -161,7 +162,7 @@ public class BucketsImpl implements Buckets {
     @Override
     public BucketList updateBucketAllocBatch(Experiment.ID experimentID, BucketList bucketList) {
 
-        LOGGER.debug("Add Bucket: saving new allocation percentages for experiment" + experimentID);
+        LogUtil.debug(LOGGER, "Add Bucket: saving new allocation percentages for experiment" + experimentID);
         // Update both repositories
         cassandraRepository.updateBucketBatch(experimentID, bucketList);
         databaseRepository.updateBucketBatch(experimentID, bucketList);
@@ -183,7 +184,7 @@ public class BucketsImpl implements Buckets {
                 continue;
             }
             double newAlloc = roundToTwo(remainingAlloc * bucket.getAllocationPercent());
-            LOGGER.debug("Add Bucket: setting allocation percentage for bucket " + bucket.getLabel() +
+            LogUtil.debug(LOGGER, "Add Bucket: setting allocation percentage for bucket " + bucket.getLabel() +
                     " in experiment " + experiment.getID() + " to: " + newAlloc);
             Bucket.Builder builder = Bucket.from(bucket).withAllocationPercent(newAlloc);
             Bucket updatedBucket = builder.build();
@@ -218,7 +219,7 @@ public class BucketsImpl implements Buckets {
         // Save the state of the bucket; used for reverting the cassandra changes
         Bucket oldBucket = bucket;
 
-        LOGGER.info("event=EXPERIMENT_METADATA_CHANGE, message=UPDATING_BUCKET, applicationName={}, experimentName={}, configuration=[{}]",
+        LogUtil.info(LOGGER, "event=EXPERIMENT_METADATA_CHANGE, message=UPDATING_BUCKET, applicationName={}, experimentName={}, configuration=[{}]",
                 experiment.getApplicationName(), experiment.getLabel(), oldBucket);
 
         buckets.validateBucketChanges(bucket, updates);
@@ -254,7 +255,7 @@ public class BucketsImpl implements Buckets {
             }
         }
 
-        LOGGER.info("event=EXPERIMENT_METADATA_CHANGE, message=BUCKET_UPDATED, applicationName={}, experimentName={}, configuration=[{}]",
+        LogUtil.info(LOGGER, "event=EXPERIMENT_METADATA_CHANGE, message=BUCKET_UPDATED, applicationName={}, experimentName={}, configuration=[{}]",
                 experiment.getApplicationName(), experiment.getLabel(), bucket);
 
         return bucket;
@@ -404,7 +405,7 @@ public class BucketsImpl implements Buckets {
             }
         }
 
-        LOGGER.info("event=EXPERIMENT_METADATA_CHANGE, message=BUCKET_STATE_UPDATED, applicationName={}, experimentName={}, configuration=[oldState={}, newState={}]",
+        LogUtil.info(LOGGER, "event=EXPERIMENT_METADATA_CHANGE, message=BUCKET_STATE_UPDATED, applicationName={}, experimentName={}, configuration=[oldState={}, newState={}]",
                 experiment.getApplicationName(), experiment.getLabel(), bucket.getState(),desiredState);
 
         //return the updated closed bucket
@@ -463,7 +464,7 @@ public class BucketsImpl implements Buckets {
             }
             throw e;
         }
-        LOGGER.info("event=EXPERIMENT_METADATA_CHANGE, message=BUCKET_DELETED, applicationName={}, experimentName={}, configuration=[{}]",
+        LogUtil.info(LOGGER, "event=EXPERIMENT_METADATA_CHANGE, message=BUCKET_DELETED, applicationName={}, experimentName={}, configuration=[{}]",
                 experiment.getApplicationName(), experiment.getLabel(), bucket);
     }
 

@@ -21,6 +21,7 @@ import com.google.inject.Singleton;
 import com.intuit.wasabi.authentication.Authentication;
 import com.intuit.wasabi.authorization.Authorization;
 import com.intuit.wasabi.exceptions.AuthenticationException;
+import com.intuit.wasabi.util.LogUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -98,7 +99,7 @@ public class AuthenticationResource {
             //pass the headers along to try and log the user in
             return httpHeader.headers().entity(authentication.logIn(authorizationHeader)).build();
         } catch (Exception exception) {
-            LOGGER.error("logUserIn failed for grantType={} with error:", grantType, exception);
+            LogUtil.error(LOGGER, "logUserIn failed for grantType={} with error:", grantType, exception);
             throw exception;
         }
     }
@@ -121,7 +122,7 @@ public class AuthenticationResource {
         try {
             return httpHeader.headers().entity(authentication.verifyToken(tokenHeader)).build();
         } catch (Exception exception) {
-            LOGGER.error("verifyToken failed with error:", exception);
+            LogUtil.error(LOGGER, "verifyToken failed with error:", exception);
             throw exception;
         }
     }
@@ -145,7 +146,7 @@ public class AuthenticationResource {
             authentication.logOut(tokenHeader);
             return httpHeader.headers(NO_CONTENT).build();
         } catch (Exception exception) {
-            LOGGER.error("logUserOut failed with error:", exception);
+            LogUtil.error(LOGGER, "logUserOut failed with error:", exception);
             throw exception;
         }
     }
@@ -174,7 +175,7 @@ public class AuthenticationResource {
             authorization.getUser(authorizationHeader);
             return httpHeader.headers().entity(authentication.getUserExists(userEmail)).build();
         } catch (Exception exception) {
-            LOGGER.error("getUserExists failed for userEmail={} with error:", userEmail, exception);
+            LogUtil.error(LOGGER, "getUserExists failed for userEmail={} with error:", userEmail, exception);
             throw exception;
         }
     }

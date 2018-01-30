@@ -21,6 +21,7 @@ import com.intuit.wasabi.tests.model.Experiment;
 import com.intuit.wasabi.tests.model.factory.ApplicationFactory;
 import com.intuit.wasabi.tests.model.factory.BucketFactory;
 import com.intuit.wasabi.tests.model.factory.ExperimentFactory;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.testng.Assert;
@@ -67,14 +68,14 @@ public class IntegrationMetadata extends TestBase {
         Assert.assertNotNull(exp.id, "Experiment creation failed (No id).");
         Assert.assertNotNull(exp.applicationName, "Experiment creation failed (No applicationName).");
         Assert.assertNotNull(exp.label, "Experiment creation failed (No label).");
-        LOGGER.info("Testing non-null default experiment description...");
+        LogUtil.info(LOGGER, "Testing non-null default experiment description...");
         Assert.assertEquals(exp.description, expected.description, "Default experiment description should match");
 
         // create a bucket, 100% allocation, description and payload missing
         Bucket bucket = postBucket(BucketFactory.createBucket(exp));
-        LOGGER.info("Testing null default bucket description...");
+        LogUtil.info(LOGGER, "Testing null default bucket description...");
         Assert.assertNull(bucket.description, "Default bucket description should be null");
-        LOGGER.info("Testing null default bucket payload...");
+        LogUtil.info(LOGGER, "Testing null default bucket payload...");
         Assert.assertNull(bucket.payload, "default bucket payload should be null");
 
         // cleanup
@@ -90,14 +91,14 @@ public class IntegrationMetadata extends TestBase {
         // create Experiment with given description
         String description = "Non-null metadata";
         Experiment exp = postExperiment(createExperiment().setDescription(description));
-        LOGGER.info("Testing non-default experiment description...");
+        LogUtil.info(LOGGER, "Testing non-default experiment description...");
         Assert.assertEquals(exp.description, description, "Experiment description does not match the supplied description");
 
         // create a bucket, 100% allocation, and explicitly supply description and payload
         String bucketDescription = "Non-null description";
         String bucketPayload = "Non-null payload";
         Bucket bucket = postBucket(BucketFactory.createBucket(exp).setDescription(bucketDescription).setPayload(bucketPayload));
-        LOGGER.info("Testing non-default bucket description and payload...");
+        LogUtil.info(LOGGER, "Testing non-default bucket description and payload...");
         Assert.assertEquals(bucket.description, bucketDescription, "Bucket description does not match the supplied description");
         Assert.assertEquals(bucket.payload, bucketPayload, "Bucket payload does not match the supplied payload string");
 

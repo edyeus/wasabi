@@ -42,6 +42,7 @@ import com.intuit.wasabi.experiment.Pages;
 import com.intuit.wasabi.experiment.Priorities;
 import com.intuit.wasabi.experimentobjects.*;
 import com.intuit.wasabi.repository.RepositoryException;
+import com.intuit.wasabi.util.LogUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -234,7 +235,7 @@ public class ExperimentsResource {
                             authorizedExperiments.addExperiment(experiment);
                             allowed.add(applicationName);
                         } catch (AuthenticationException ignored) {
-                            LOGGER.trace("ignoring authentication exception", ignored);
+                            LogUtil.trace(LOGGER, "ignoring authentication exception", ignored);
                         }
                     }
                 }
@@ -265,7 +266,7 @@ public class ExperimentsResource {
             }
             return httpHeader.headers().entity(experimentResponse).build();
         } catch (Exception exception) {
-            LOGGER.error("getExperiments failed for page={}, perPage={}, "
+            LogUtil.error(LOGGER, "getExperiments failed for page={}, perPage={}, "
                             + "filter={}, sort={}, timezoneOffset={} with error:",
                     page, perPage, filter, sort, timezoneOffset,
                     exception);
@@ -323,7 +324,7 @@ public class ExperimentsResource {
 
             return httpHeader.headers(CREATED).entity(experiment).build();
         } catch (Exception exception) {
-            LOGGER.error("postExperiment failed for newExperiment={}, createNewApplication={} with error:",
+            LogUtil.error(LOGGER, "postExperiment failed for newExperiment={}, createNewApplication={} with error:",
                     newExperiment, createNewApplication, exception);
             throw exception;
         }
@@ -366,7 +367,7 @@ public class ExperimentsResource {
 
             return httpHeader.headers().entity(experiment).type(APPLICATION_JSON_TYPE).build();
         } catch (Exception exception) {
-            LOGGER.error("getExperiment failed for experimentID={} with error:", experimentID, exception);
+            LogUtil.error(LOGGER, "getExperiment failed for experimentID={} with error:", experimentID, exception);
             throw exception;
         }
     }
@@ -432,7 +433,7 @@ public class ExperimentsResource {
                     httpHeader.headers(NO_CONTENT).build() :
                     httpHeader.headers().entity(experiment).build();
         } catch (Exception exception) {
-            LOGGER.error("putExperiment failed for experimentID={}, experimentEntity={}, "
+            LogUtil.error(LOGGER, "putExperiment failed for experimentID={}, experimentEntity={}, "
                             + "createNewApplication={} with error:",
                     experimentID, experimentEntity, createNewApplication,
                     exception);
@@ -486,7 +487,7 @@ public class ExperimentsResource {
 
             return httpHeader.headers(NO_CONTENT).build();
         } catch (Exception exception) {
-            LOGGER.error("deleteExperiment failed for experimentID={} with error:", experimentID, exception);
+            LogUtil.error(LOGGER, "deleteExperiment failed for experimentID={} with error:", experimentID, exception);
             throw exception;
         }
     }
@@ -523,7 +524,7 @@ public class ExperimentsResource {
 
             return httpHeader.headers().entity(buckets.getBuckets(experimentID, true)).build();
         } catch (Exception exception) {
-            LOGGER.error("getBuckets failed for experimentID={} with error:", experimentID, exception);
+            LogUtil.error(LOGGER, "getBuckets failed for experimentID={} with error:", experimentID, exception);
             throw exception;
         }
     }
@@ -573,12 +574,12 @@ public class ExperimentsResource {
 
             assert bucket != null : "Created bucket was null";
 
-            LOGGER.info("event=EXPERIMENT_METADATA_CHANGE, message=BUCKET_EDITED, applicationName={}, configuration=[userName={}, experimentName={}, bucket={}]",
+            LogUtil.info(LOGGER, "event=EXPERIMENT_METADATA_CHANGE, message=BUCKET_EDITED, applicationName={}, configuration=[userName={}, experimentName={}, bucket={}]",
                     experiment.getApplicationName(), userName.toString(), experiment.getLabel(), newBucket.toString());
 
             return httpHeader.headers(CREATED).entity(bucket).build();
         } catch (Exception exception) {
-            LOGGER.error("postBucket failed for experimentID={}, newBucketEntity={} with error:",
+            LogUtil.error(LOGGER, "postBucket failed for experimentID={}, newBucketEntity={} with error:",
                     experimentID, newBucketEntity, exception);
             throw exception;
         }
@@ -625,12 +626,12 @@ public class ExperimentsResource {
             UserInfo user = authorization.getUserInfo(userName);
             BucketList bucketList1 = buckets.updateBucketBatch(experimentID, bucketList, user);
 
-            LOGGER.info("event=EXPERIMENT_METADATA_CHANGE, message=BUCKETS_EDITED_BATCH, applicationName={}, configuration:[userName={}, experimentName={}, buckets={}]",
+            LogUtil.info(LOGGER, "event=EXPERIMENT_METADATA_CHANGE, message=BUCKETS_EDITED_BATCH, applicationName={}, configuration:[userName={}, experimentName={}, buckets={}]",
                     experiment.getApplicationName(), userName.toString(), experiment.getLabel(), bucketList.toString());
 
             return httpHeader.headers().entity(bucketList1).build();
         } catch (Exception exception) {
-            LOGGER.error("putBucket failed for experimentID={}, bucketList={} with error:",
+            LogUtil.error(LOGGER, "putBucket failed for experimentID={}, bucketList={} with error:",
                     experimentID, bucketList, exception);
             throw exception;
         }
@@ -684,7 +685,7 @@ public class ExperimentsResource {
 
             return httpHeader.headers().entity(bucket).build();
         } catch (Exception exception) {
-            LOGGER.error("getBucket failed for experimentID={}, bucketLabel={} with error:",
+            LogUtil.error(LOGGER, "getBucket failed for experimentID={}, bucketLabel={} with error:",
                     experimentID, bucketLabel, exception);
             throw exception;
         }
@@ -741,7 +742,7 @@ public class ExperimentsResource {
 
             return httpHeader.headers().entity(bucket).build();
         } catch (Exception exception) {
-            LOGGER.error("putBucket failed for experimentID={}, bucketLabel={}, bucketEntity={} with error:",
+            LogUtil.error(LOGGER, "putBucket failed for experimentID={}, bucketLabel={}, bucketEntity={} with error:",
                     experimentID, bucketLabel, bucketEntity,
                     exception);
             throw exception;
@@ -800,7 +801,7 @@ public class ExperimentsResource {
 
             return httpHeader.headers().entity(bucket).build();
         } catch (Exception exception) {
-            LOGGER.error("putBucketState failed for experimentID={}, bucketLabel={}, desiredState={} with error:",
+            LogUtil.error(LOGGER, "putBucketState failed for experimentID={}, bucketLabel={}, desiredState={} with error:",
                     experimentID, bucketLabel, desiredState,
                     exception);
             throw exception;
@@ -851,7 +852,7 @@ public class ExperimentsResource {
 
             return httpHeader.headers(NO_CONTENT).build();
         } catch (Exception exception) {
-            LOGGER.error("deleteBucket failed for experimentID={}, bucketLabel={} with error:",
+            LogUtil.error(LOGGER, "deleteBucket failed for experimentID={}, bucketLabel={} with error:",
                     experimentID, bucketLabel, exception);
             throw exception;
         }
@@ -896,7 +897,7 @@ public class ExperimentsResource {
 
             return exportActions(experimentID, new Parameters(), authorizationHeader);
         } catch (Exception exception) {
-            LOGGER.error("exportActions_get failed for experimentID={} with error:", experimentID, exception);
+            LogUtil.error(LOGGER, "exportActions_get failed for experimentID={} with error:", experimentID, exception);
             throw exception;
         }
     }
@@ -944,7 +945,7 @@ public class ExperimentsResource {
                     header("Content-Disposition", "attachment; filename=\"events.csv\"").
                     entity(stream).type(TEXT_PLAIN).build();
         } catch (Exception exception) {
-            LOGGER.error("exportActions failed for experimentID={} with error:", experimentID, exception);
+            LogUtil.error(LOGGER, "exportActions failed for experimentID={} with error:", experimentID, exception);
             throw exception;
         }
     }
@@ -996,7 +997,7 @@ public class ExperimentsResource {
             return httpHeader.headers(CREATED)
                     .entity(ImmutableMap.<String, Object>builder().put("exclusions", exclusions).build()).build();
         } catch (Exception exception) {
-            LOGGER.error("createExclusions failed for experimentID={}, experimentIDList={} with error:",
+            LogUtil.error(LOGGER, "createExclusions failed for experimentID={}, experimentIDList={} with error:",
                     experimentID, experimentIDList, exception);
             throw exception;
         }
@@ -1046,7 +1047,7 @@ public class ExperimentsResource {
 
             return httpHeader.headers(NO_CONTENT).build();
         } catch (Exception exception) {
-            LOGGER.error("removeExclusions failed for experimentID_1={}, experimentID_2={} with error:",
+            LogUtil.error(LOGGER, "removeExclusions failed for experimentID_1={}, experimentID_2={} with error:",
                     experimentID_1, experimentID_2, exception);
             throw exception;
         }
@@ -1118,7 +1119,7 @@ public class ExperimentsResource {
 
             return httpHeader.headers().entity(returnedExperiments).build();
         } catch (Exception exception) {
-            LOGGER.error("getExclusions failed for experimentID={}, showAll={}, exclusive={} with error:",
+            LogUtil.error(LOGGER, "getExclusions failed for experimentID={}, showAll={}, exclusive={} with error:",
                     experimentID, showAll, exclusive,
                     exception);
             throw exception;
@@ -1165,7 +1166,7 @@ public class ExperimentsResource {
 
             return httpHeader.headers(CREATED).build();
         } catch (Exception exception) {
-            LOGGER.error("setPriority failed for experimentID={}, priorityNum={} with error:",
+            LogUtil.error(LOGGER, "setPriority failed for experimentID={}, priorityNum={} with error:",
                     experimentID, priorityNum, exception);
             throw exception;
         }
@@ -1291,7 +1292,7 @@ public class ExperimentsResource {
                     .header("Content-Disposition", "attachment; filename =\"assignments.csv\"")
                     .entity(streamAssignment).build();
         } catch (Exception exception) {
-            LOGGER.error("exportAssignments failed for experimentID={}, context={}, ignoreStringNullBucket={}," +
+            LogUtil.error(LOGGER, "exportAssignments failed for experimentID={}, context={}, ignoreStringNullBucket={}," +
                             " fromStringDate={}, toStringDate={}, timeZoneString={} with error:",
                     experimentID, context, ignoreStringNullBucket, fromStringDate, toStringDate, timeZoneString,
                     exception);
@@ -1337,7 +1338,7 @@ public class ExperimentsResource {
 
             return httpHeader.headers(CREATED).build();
         } catch (Exception exception) {
-            LOGGER.error("postPages failed for experimentID={}, experimentPageList={} with error:",
+            LogUtil.error(LOGGER, "postPages failed for experimentID={}, experimentPageList={} with error:",
                     experimentID, experimentPageList, exception);
             throw exception;
         }
@@ -1382,7 +1383,7 @@ public class ExperimentsResource {
 
             return httpHeader.headers(NO_CONTENT).build();
         } catch (Exception exception) {
-            LOGGER.error("deletePage failed for experimentID={}, pageName={} with error:",
+            LogUtil.error(LOGGER, "deletePage failed for experimentID={}, pageName={} with error:",
                     experimentID, pageName, exception);
             throw exception;
         }
@@ -1424,7 +1425,7 @@ public class ExperimentsResource {
 
             return httpHeader.headers().entity(experimentPages).build();
         } catch (Exception exception) {
-            LOGGER.error("getExperimentPages failed for experimentID={} with error:", experimentID, exception);
+            LogUtil.error(LOGGER, "getExperimentPages failed for experimentID={} with error:", experimentID, exception);
             throw exception;
         }
     }
@@ -1452,7 +1453,7 @@ public class ExperimentsResource {
         try {
             return httpHeader.headers().entity(pages.getPageExperiments(applicationName, pageName)).build();
         } catch (Exception exception) {
-            LOGGER.error("getPageExperiments failed for applicationName={}, pageName={} with error:",
+            LogUtil.error(LOGGER, "getPageExperiments failed for applicationName={}, pageName={} with error:",
                     applicationName, pageName, exception);
             throw exception;
         }

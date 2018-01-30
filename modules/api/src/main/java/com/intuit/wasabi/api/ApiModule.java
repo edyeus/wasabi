@@ -41,6 +41,7 @@ import com.intuit.wasabi.experimentobjects.Experiment;
 import com.intuit.wasabi.feedback.FeedbackModule;
 import com.intuit.wasabi.repository.database.DatabaseExperimentRepositoryModule;
 import com.intuit.wasabi.userdirectory.UserDirectoryModule;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import java.util.Properties;
@@ -116,7 +117,7 @@ public class ApiModule extends AbstractModule {
     }
 
     private void installModules() {
-        LOGGER.debug("installing module: {}", ApiModule.class.getCanonicalName());
+        LogUtil.debug(LOGGER, "installing module: {}", ApiModule.class.getCanonicalName());
 
         //these modules are either free of other dependencies or they are required by later modules
         install(new com.intuit.autumn.api.ApiModule());
@@ -133,6 +134,6 @@ public class ApiModule extends AbstractModule {
         install(new FeedbackModule());
         install(new AnalyticsModule());
 
-        LOGGER.debug("installed module: {}", ApiModule.class.getCanonicalName());
+        LogUtil.debug(LOGGER, "installed module: {}", ApiModule.class.getCanonicalName());
     }
 }

@@ -36,6 +36,7 @@ import com.intuit.wasabi.experiment.Favorites;
 import com.intuit.wasabi.experimentobjects.Application;
 import com.intuit.wasabi.experimentobjects.Context;
 import com.intuit.wasabi.experimentobjects.Experiment;
+import com.intuit.wasabi.util.LogUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -199,7 +200,7 @@ public class AnalyticsResource {
                         authorizedExperiments.add(experiment);
                         allowed.add(applicationName);
                     } catch (AuthenticationException ignored) {
-                        LOGGER.trace("Ignoring Authentication Exception", ignored);
+                        LogUtil.trace(LOGGER, "Ignoring Authentication Exception", ignored);
                     }
                 }
             }
@@ -227,7 +228,7 @@ public class AnalyticsResource {
 
             return httpHeader.headers().entity(experimentResponse).build();
         } catch (Exception exception) {
-            LOGGER.error("getExperimentDetails failed for context={}, page={}, perPage={},"
+            LogUtil.error(LOGGER, "getExperimentDetails failed for context={}, page={}, perPage={},"
                             + " filter={}, sort={}, timezoneOffset={} with error:",
                     context, page, perPage, filter, sort, timezoneOffset,
                     exception);
@@ -275,7 +276,7 @@ public class AnalyticsResource {
 
             return httpHeader.headers().entity(experimentCounts).build();
         } catch (Exception exception) {
-            LOGGER.error("getExperimentCountsParameters failed for experimentID={}, parameters={} with error:",
+            LogUtil.error(LOGGER, "getExperimentCountsParameters failed for experimentID={}, parameters={} with error:",
                     experimentID, parameters, exception);
             throw exception;
         }
@@ -314,7 +315,7 @@ public class AnalyticsResource {
 
             return getExperimentCountsParameters(experimentID, parameters, authorizationHeader);
         } catch (Exception exception) {
-            LOGGER.error("getExperimentCounts failed for experimentID={}, context={} with error:",
+            LogUtil.error(LOGGER, "getExperimentCounts failed for experimentID={}, context={} with error:",
                     experimentID, context, exception);
             throw exception;
         }
@@ -371,7 +372,7 @@ public class AnalyticsResource {
 
             return httpHeader.headers().entity(experimentCumulativeCounts).build();
         } catch (Exception exception) {
-            LOGGER.error("getExperimentCountsDailiesParameters failed for experimentID={}, parameters={} with error:",
+            LogUtil.error(LOGGER, "getExperimentCountsDailiesParameters failed for experimentID={}, parameters={} with error:",
                     experimentID, parameters, exception);
             throw exception;
         }
@@ -410,7 +411,7 @@ public class AnalyticsResource {
 
             return getExperimentCountsDailiesParameters(experimentID, parameters, authorizationHeader);
         } catch (Exception exception) {
-            LOGGER.error("getExperimentCountsDailies failed for experimentID={}, context={} with error:",
+            LogUtil.error(LOGGER, "getExperimentCountsDailies failed for experimentID={}, context={} with error:",
                     experimentID, context, exception);
             throw exception;
         }
@@ -456,7 +457,7 @@ public class AnalyticsResource {
 
             return httpHeader.headers().entity(experimentStatistics).build();
         } catch (Exception exception) {
-            LOGGER.error("getExperimentStatisticsParameters failed for experimentID={}, parameters={} with error:",
+            LogUtil.error(LOGGER, "getExperimentStatisticsParameters failed for experimentID={}, parameters={} with error:",
                     experimentID, parameters, exception);
             throw exception;
         }
@@ -496,7 +497,7 @@ public class AnalyticsResource {
 
             return getExperimentStatisticsParameters(experimentID, parameters, authorizationHeader);
         } catch (Exception exception) {
-            LOGGER.error("getExperimentStatistics failed for experimentID={}, context={} with error:",
+            LogUtil.error(LOGGER, "getExperimentStatistics failed for experimentID={}, context={} with error:",
                     experimentID, context, exception);
             throw exception;
         }
@@ -548,7 +549,7 @@ public class AnalyticsResource {
 
             return httpHeader.headers().entity(experimentCumulativeStatistics).build();
         } catch (Exception exception) {
-            LOGGER.error("getExperimentStatisticsDailiesParameters failed for "
+            LogUtil.error(LOGGER, "getExperimentStatisticsDailiesParameters failed for "
                             + "experimentID={}, parameters={} with error:",
                     experimentID, parameters, exception);
             throw exception;
@@ -588,7 +589,7 @@ public class AnalyticsResource {
 
             return getExperimentStatisticsDailiesParameters(experimentID, parameters, authorizationHeader);
         } catch (Exception exception) {
-            LOGGER.error("getExperimentStatisticsDailies failed for experimentID={}, context={} with error:",
+            LogUtil.error(LOGGER, "getExperimentStatisticsDailies failed for experimentID={}, context={} with error:",
                     experimentID, context, exception);
             throw exception;
         }
@@ -628,7 +629,7 @@ public class AnalyticsResource {
 
             return httpHeader.headers().entity(assignmentCounts).build();
         } catch (Exception exception) {
-            LOGGER.error("getAssignmentCounts failed for experimentID={}, context={} with error:",
+            LogUtil.error(LOGGER, "getAssignmentCounts failed for experimentID={}, context={} with error:",
                     experimentID, context, exception);
             throw exception;
         }
@@ -673,7 +674,7 @@ public class AnalyticsResource {
 
             return httpHeader.headers().entity(assignmentCounts).build();
         } catch (Exception exception) {
-            LOGGER.error("getAssignmentCountsByApp failed for applicationName={}, "
+            LogUtil.error(LOGGER, "getAssignmentCountsByApp failed for applicationName={}, "
                             + "experimentLabel={}, context={} with error:",
                     applicationName, experimentLabel, context,
                     exception);

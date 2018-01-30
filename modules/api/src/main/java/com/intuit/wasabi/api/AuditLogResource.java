@@ -24,6 +24,7 @@ import com.intuit.wasabi.auditlogobjects.AuditLogEntry;
 import com.intuit.wasabi.authorization.Authorization;
 import com.intuit.wasabi.authorizationobjects.Permission;
 import com.intuit.wasabi.experimentobjects.Application;
+import com.intuit.wasabi.util.LogUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -170,7 +171,7 @@ public class AuditLogResource {
 
             return httpHeader.headers().entity(response).build();
         } catch (Exception exception) {
-            LOGGER.error("getLogsForApplication failed for applicationName={}, page={}, perPage={},"
+            LogUtil.error(LOGGER, "getLogsForApplication failed for applicationName={}, page={}, perPage={},"
                             + " filter={}, sort={}, timezoneOffset={} with error:",
                     applicationName, page, perPage, filter, sort, timezoneOffset,
                     exception);
@@ -236,7 +237,7 @@ public class AuditLogResource {
             return getLogsForApplication(authorizationHeader, null, page, perPage,
                     filter, sort, timezoneOffset);
         } catch (Exception exception) {
-            LOGGER.error("getLogsForAllApplications failed for page:{}, perPage={}, filter={},"
+            LogUtil.error(LOGGER, "getLogsForAllApplications failed for page:{}, perPage={}, filter={},"
                             + " sort={}, timezoneOffset={} with error:",
                     page, perPage, filter, sort, timezoneOffset,
                     exception);

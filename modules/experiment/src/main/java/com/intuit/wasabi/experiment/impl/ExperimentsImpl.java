@@ -38,6 +38,7 @@ import com.intuit.wasabi.repository.CassandraRepository;
 import com.intuit.wasabi.repository.DatabaseRepository;
 import com.intuit.wasabi.repository.ExperimentRepository;
 import com.intuit.wasabi.repository.RepositoryException;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import javax.inject.Inject;
@@ -146,7 +147,7 @@ public class ExperimentsImpl implements Experiments {
      */
     @Override
     public void createExperiment(NewExperiment newExperiment, UserInfo user) {
-        LOGGER.debug("Create experiment started: experiment={}, UserInfo={} ", newExperiment, user);
+        LogUtil.debug(LOGGER, "Create experiment started: experiment={}, UserInfo={} ", newExperiment, user);
 
         //Step#1: Validate new experiment
         validator.validateNewExperiment(newExperiment);
@@ -155,19 +156,19 @@ public class ExperimentsImpl implements Experiments {
             //Step#2: Create experiment in MySQL first (before Cassandra) so that duplicate experiment
             //concern would be addressed automatically. As, AppName and experiment label have a unique constraint
             //set in MySQL table.
-            LOGGER.debug("Creating an experiment in MySQL...");
+            LogUtil.debug(LOGGER, "Creating an experiment in MySQL...");
             databaseRepository.createExperiment(newExperiment);
 
             //Step#3: Create experiment in Cassandra
             try {
                 cassandraRepository.createExperiment(newExperiment);
             } catch (Exception exceptionFromCassandra) {
-                LOGGER.error("Exception occurred while creating an experiment in Cassandra... Experiment={}, UserInfo={}", newExperiment, user, exceptionFromCassandra);
+                LogUtil.error(LOGGER, "Exception occurred while creating an experiment in Cassandra... Experiment={}, UserInfo={}", newExperiment, user, exceptionFromCassandra);
                 // Erase from MySQL
                 try {
                     databaseRepository.deleteExperiment(newExperiment);
                 } catch (Exception mysqlRollbackException) {
-                    LOGGER.error("An attempt to rollback of experiment in MySQL is failed...", mysqlRollbackException);
+                    LogUtil.error(LOGGER, "An attempt to rollback of experiment in MySQL is failed...", mysqlRollbackException);
                 }
                 throw exceptionFromCassandra;
             }
@@ -176,11 +177,11 @@ public class ExperimentsImpl implements Experiments {
             eventLog.postEvent(new ExperimentCreateEvent(user, newExperiment));
 
         } catch (Exception experimentCreateException) {
-            LOGGER.error("Exception occurred while creating an experiment... Experiment={}, UserInfo={}", newExperiment, user, experimentCreateException);
+            LogUtil.error(LOGGER, "Exception occurred while creating an experiment... Experiment={}, UserInfo={}", newExperiment, user, experimentCreateException);
             throw experimentCreateException;
         }
 
-        LOGGER.info("event=EXPERIMENT_METADATA_CHANGE, message=EXPERIMENT_CREATED, applicationName={}, configuration={}",newExperiment.getApplicationName(),newExperiment);
+        LogUtil.info(LOGGER, "event=EXPERIMENT_METADATA_CHANGE, message=EXPERIMENT_CREATED, applicationName={}, configuration={}",newExperiment.getApplicationName(),newExperiment);
     }
 
     /**
@@ -486,12 +487,12 @@ public class ExperimentsImpl implements Experiments {
         if (experiment.getRule() != null && experiment.getRule().length() != 0) {
             newRule = new RuleBuilder().parseExpression(experiment.getRule());
             ruleCache.setRule(experiment.getID(), newRule);
-            LOGGER.debug("Segmentation rule of " + experiment.getID() + " updated from "
+            LogUtil.debug(LOGGER, "Segmentation rule of " + experiment.getID() + " updated from "
                     + (oldRule != null ? oldRule.getExpressionRepresentation() : null) +
                     " to " + (newRule != null ? newRule.getExpressionRepresentation() : null));
         } else {
             ruleCache.clearRule(experiment.getID());
-            LOGGER.debug("Segmentation rule of " + experiment.getID() + " cleared "
+            LogUtil.debug(LOGGER, "Segmentation rule of " + experiment.getID() + " cleared "
                     + (oldRule != null ? oldRule.getExpressionRepresentation() : null));
         }
     }
@@ -525,7 +526,7 @@ public class ExperimentsImpl implements Experiments {
         Experiment.Builder builder = Experiment.from(experiment);
         boolean requiresUpdate = buildUpdatedExperiment(experiment, updates, builder, changeList);
 
-        LOGGER.info("event=EXPERIMENT_METADATA_CHANGE, message=UPDATING_EXPERIMENT, applicationName={}, configuration={}", oldExperiment.getApplicationName(), oldExperiment);
+        LogUtil.info(LOGGER, "event=EXPERIMENT_METADATA_CHANGE, message=UPDATING_EXPERIMENT, applicationName={}, configuration={}", oldExperiment.getApplicationName(), oldExperiment);
 
         if (requiresUpdate) {
 
@@ -586,7 +587,7 @@ public class ExperimentsImpl implements Experiments {
                 }
             }
         }
-        LOGGER.info("event=EXPERIMENT_METADATA_CHANGE, Message=EXPERIMENT_UPDATED, applicationName={}, configuration={}", experiment.getApplicationName(), experiment);
+        LogUtil.info(LOGGER, "event=EXPERIMENT_METADATA_CHANGE, Message=EXPERIMENT_UPDATED, applicationName={}, configuration={}", experiment.getApplicationName(), experiment);
 
         return experiment;
     }
@@ -609,10 +610,10 @@ public class ExperimentsImpl implements Experiments {
             eventLog.postEvent(new ExperimentChangeEvent(experiment, "state",
                     experiment.getState().toString(), state.toString()));
         } catch (Exception exception) {
-            LOGGER.error("Updating experiment state for experiment:{} failed with error:", experiment, exception);
+            LogUtil.error(LOGGER, "Updating experiment state for experiment:{} failed with error:", experiment, exception);
             throw exception;
         }
-        LOGGER.info("event=EXPERIMENT_METADATA_CHANGE, message=EXPERIMENT_STATE_UPDATED, applicationName={}, configuration=[experimentName={}, oldState={}, newState={}]",
+        LogUtil.info(LOGGER, "event=EXPERIMENT_METADATA_CHANGE, message=EXPERIMENT_STATE_UPDATED, applicationName={}, configuration=[experimentName={}, oldState={}, newState={}]",
                 experiment.getApplicationName(), experiment.getLabel(), experiment.getState(), state);
     }
 }

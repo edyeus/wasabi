@@ -30,6 +30,7 @@ import com.intuit.wasabi.events.EventsMBean;
 import com.intuit.wasabi.experimentobjects.Application;
 import com.intuit.wasabi.experimentobjects.Context;
 import com.intuit.wasabi.experimentobjects.Experiment;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import java.util.HashMap;
@@ -114,7 +115,7 @@ public class EventsImpl implements Events, EventsMBean {
         try {
             mysqlExecutor.execute(makeEventEnvelope(assignment, event));
         } catch (Exception e) {
-            LOGGER.warn("Mysql error: Unable to record event " + event.toString() + " for the user "
+            LogUtil.warn(LOGGER, "Mysql error: Unable to record event " + event.toString() + " for the user "
                     + assignment.getUserID().toString() + " for context " + assignment.getContext(), e);
         }
     }

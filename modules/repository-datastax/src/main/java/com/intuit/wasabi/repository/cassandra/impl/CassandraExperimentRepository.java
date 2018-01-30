@@ -54,6 +54,7 @@ import com.intuit.wasabi.repository.cassandra.accessor.index.StateExperimentInde
 import com.intuit.wasabi.repository.cassandra.pojo.index.ExperimentByAppNameLabel;
 import com.intuit.wasabi.repository.cassandra.pojo.index.ExperimentTagsByApplication;
 import com.intuit.wasabi.repository.cassandra.pojo.index.StateExperimentIndex;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import java.nio.ByteBuffer;
@@ -239,7 +240,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
      */
     @Override
     public Experiment getExperiment(Experiment.ID experimentID) {
-        LOGGER.debug("Getting experiment", experimentID);
+        LogUtil.debug(LOGGER, "Getting experiment", experimentID);
 
         return internalGetExperiment(experimentID);
     }
@@ -249,7 +250,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
      */
     protected Experiment internalGetExperiment(Experiment.ID experimentID) {
 
-        LOGGER.debug("Getting experiment {}", experimentID);
+        LogUtil.debug(LOGGER, "Getting experiment {}", experimentID);
 
         Preconditions.checkNotNull(experimentID, "Parameter \"experimentID\" cannot be null");
 
@@ -258,7 +259,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
             com.intuit.wasabi.repository.cassandra.pojo.Experiment experimentPojo = experimentAccessor
                     .getExperimentById(experimentID.getRawID()).one();
 
-            LOGGER.debug("Experiment retrieved {}", experimentPojo);
+            LogUtil.debug(LOGGER, "Experiment retrieved {}", experimentPojo);
 
             if (experimentPojo == null)
                 return null;
@@ -268,7 +269,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
 
             return ExperimentHelper.makeExperiment(experimentPojo);
         } catch (Exception e) {
-            LOGGER.error("Exception while getting experiment {}", experimentID);
+            LogUtil.error(LOGGER, "Exception while getting experiment {}", experimentID);
             throw new RepositoryException("Could not retrieve experiment with ID \"" + experimentID + "\"", e);
         }
     }
@@ -285,7 +286,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
             //Send calls asynchronously
             appNames.forEach(appName -> {
                 experimentsFutureMap.put(appName, experimentAccessor.asyncGetExperimentByAppName(appName.toString()));
-                LOGGER.debug("Sent experimentAccessor.asyncGetExperimentByAppName({})", appName);
+                LogUtil.debug(LOGGER, "Sent experimentAccessor.asyncGetExperimentByAppName({})", appName);
             });
 
             //Process the Futures in the order that are expected to arrive earlier
@@ -297,12 +298,12 @@ public class CassandraExperimentRepository implements ExperimentRepository {
                 });
                 experimentMap.put(appName, appExperiments);
             }
-            LOGGER.debug("experimentMap=> {}", experimentMap);
+            LogUtil.debug(LOGGER, "experimentMap=> {}", experimentMap);
         } catch (Exception e) {
-            LOGGER.error("Error while getExperimentsForApps {}", appNames, e);
+            LogUtil.error(LOGGER, "Error while getExperimentsForApps {}", appNames, e);
             throw new RepositoryException("Error while getExperimentsForApps", e);
         }
-        LOGGER.debug("Returning experimentMap {}", experimentMap);
+        LogUtil.debug(LOGGER, "Returning experimentMap {}", experimentMap);
         return experimentMap;
     }
 
@@ -314,7 +315,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
     public Experiment getExperiment(Application.Name appName,
                                     Experiment.Label experimentLabel) {
 
-        LOGGER.debug("Getting App {} with label {}", new Object[]{appName, experimentLabel});
+        LogUtil.debug(LOGGER, "Getting App {} with label {}", new Object[]{appName, experimentLabel});
 
         return internalGetExperiment(appName, experimentLabel);
     }
@@ -325,7 +326,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
     protected Experiment internalGetExperiment(Application.Name appName,
                                                Experiment.Label experimentLabel) {
 
-        LOGGER.debug("Getting experiment by app {} with label {} ", new Object[]{appName, experimentLabel});
+        LogUtil.debug(LOGGER, "Getting experiment by app {} with label {} ", new Object[]{appName, experimentLabel});
 
         Preconditions.checkNotNull(appName, "Parameter \"appName\" cannot be null");
         Preconditions.checkNotNull(experimentLabel, "Parameter \"experimentLabel\" cannot be null");
@@ -344,12 +345,12 @@ public class CassandraExperimentRepository implements ExperimentRepository {
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error while getting experiment by app {} with label {} ", new Object[]{appName, experimentLabel}, e);
+            LogUtil.error(LOGGER, "Error while getting experiment by app {} with label {} ", new Object[]{appName, experimentLabel}, e);
 
             throw new RepositoryException("Could not retrieve experiment \"" + appName + "\".\"" + experimentLabel + "\"", e);
         }
 
-        LOGGER.debug("Returning experiment {}", experiment);
+        LogUtil.debug(LOGGER, "Returning experiment {}", experiment);
 
         return experiment;
     }
@@ -359,7 +360,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
      */
     @Override
     public Experiment.ID createExperiment(NewExperiment newExperiment) {
-        LOGGER.debug("Create experiment started... Experiment={}", newExperiment);
+        LogUtil.debug(LOGGER, "Create experiment started... Experiment={}", newExperiment);
 
         final Date NOW = new Date();
         final Experiment.State DRAFT = State.DRAFT;
@@ -369,7 +370,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
             BatchStatement batchStmt = new BatchStatement(BatchStatement.Type.LOGGED);
 
             //Step#1: Create an entry in the experiment table
-            LOGGER.debug("Adding experiment table statement into the batch..");
+            LogUtil.debug(LOGGER, "Adding experiment table statement into the batch..");
             batchStmt.add(experimentAccessor.insertExperiment(
                     newExperiment.getId().getRawID(),
                     (newExperiment.getDescription() != null) ? newExperiment.getDescription() : "",
@@ -393,37 +394,37 @@ public class CassandraExperimentRepository implements ExperimentRepository {
                     newExperiment.getTags()));
 
             //Step#2: Create an entry in the applicationList table
-            LOGGER.debug("Adding applicationList table statement into the batch..");
+            LogUtil.debug(LOGGER, "Adding applicationList table statement into the batch..");
             batchStmt.add(applicationListAccessor.insert(newExperiment.getApplicationName().toString()));
 
             //Step#3: Create an entry in the experiment_tag table
-            LOGGER.debug("Adding experiment_tag table statement into the batch..");
+            LogUtil.debug(LOGGER, "Adding experiment_tag table statement into the batch..");
             batchStmt.add(updateExperimentTags(newExperiment.getApplicationName(), newExperiment.getId(), newExperiment.getTags()));
 
             //Step#4: Create/update an entry in the application table with experiment priorities
-            LOGGER.debug("Adding application table statement into the batch..");
+            LogUtil.debug(LOGGER, "Adding application table statement into the batch..");
             batchStmt.add(prioritiesAccessor.appendToPriorities(newArrayList(newExperiment.getId().getRawID()), newExperiment.getApplicationName().toString()));
 
             //Step#5: Create an entry in the experiment_label_index table
-            LOGGER.debug("Adding experiment_label_index table statement into the batch..");
+            LogUtil.debug(LOGGER, "Adding experiment_label_index table statement into the batch..");
             batchStmt.add(experimentLabelIndexAccessor.insertOrUpdateStatementBy(newExperiment.getId().getRawID(), NOW,
                     newExperiment.getStartTime(), newExperiment.getEndTime(), DRAFT.name(), newExperiment.getApplicationName().toString(),
                     newExperiment.getLabel().toString()));
 
             //Step#6: Create an entry in the state_experiment_index table
-            LOGGER.debug("Adding state_experiment_index table statement into the batch..");
+            LogUtil.debug(LOGGER, "Adding state_experiment_index table statement into the batch..");
             batchStmt.add(updateStateIndexStatement(newExperiment.getID(), ExperimentState.NOT_DELETED));
 
             //Now execute batch statement
-            LOGGER.debug("Executing the batch statement.. batchStmt={}", batchStmt);
+            LogUtil.debug(LOGGER, "Executing the batch statement.. batchStmt={}", batchStmt);
             driver.getSession().execute(batchStmt);
 
         } catch (Exception e) {
-            LOGGER.error("Error while creating experiment {}", newExperiment, e);
+            LogUtil.error(LOGGER, "Error while creating experiment {}", newExperiment, e);
             throw new RepositoryException("Exception while creating experiment " + newExperiment + " message " + e, e);
         }
 
-        LOGGER.debug("Create experiment finished...");
+        LogUtil.debug(LOGGER, "Create experiment finished...");
         return newExperiment.getId();
     }
 
@@ -451,7 +452,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
     @Override
     public void createIndicesForNewExperiment(NewExperiment newExperiment) {
         // Point the experiment index to this experiment
-        LOGGER.debug("Create indices for new experiment Experiment {}", newExperiment);
+        LogUtil.debug(LOGGER, "Create indices for new experiment Experiment {}", newExperiment);
 
         updateExperimentLabelIndex(newExperiment.getID(),
                 newExperiment.getApplicationName(), newExperiment.getLabel(),
@@ -461,7 +462,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
         try {
             updateStateIndex(newExperiment.getID(), ExperimentState.NOT_DELETED);
         } catch (Exception e) {
-            LOGGER.error("Create indices for new experiment Experiment {} failed", newExperiment, e);
+            LogUtil.error(LOGGER, "Create indices for new experiment Experiment {} failed", newExperiment, e);
             // remove the created ExperimentLabelIndex
             removeExperimentLabelIndex(newExperiment.getApplicationName(),
                     newExperiment.getLabel());
@@ -475,7 +476,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
      */
     @Override
     public Map<Experiment.ID, BucketList> getBucketList(Collection<Experiment.ID> experimentIds) {
-        LOGGER.debug("Getting buckets list by experimentIDs {}", experimentIds);
+        LogUtil.debug(LOGGER, "Getting buckets list by experimentIDs {}", experimentIds);
         Map<Experiment.ID, BucketList> bucketMap = new HashMap<>();
         try {
             Map<Experiment.ID, ListenableFuture<Result<com.intuit.wasabi.repository.cassandra.pojo.Bucket>>> bucketFutureMap = new HashMap<>();
@@ -492,11 +493,11 @@ public class CassandraExperimentRepository implements ExperimentRepository {
                 );
             }
         } catch (Exception e) {
-            LOGGER.error("getBucketList for {} failed", experimentIds, e);
+            LogUtil.error(LOGGER, "getBucketList for {} failed", experimentIds, e);
             throw new RepositoryException("Could not fetch buckets for the list of experiments", e);
         }
 
-        LOGGER.debug("Returning bucketMap {}", bucketMap);
+        LogUtil.debug(LOGGER, "Returning bucketMap {}", bucketMap);
         return bucketMap;
     }
 
@@ -505,7 +506,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
      */
     @Override
     public BucketList getBucketList(Experiment.ID experimentID) {
-        LOGGER.debug("Getting buckets list by one experimentId {}", experimentID);
+        LogUtil.debug(LOGGER, "Getting buckets list by one experimentId {}", experimentID);
 
         BucketList bucketList = new BucketList();
 
@@ -519,12 +520,12 @@ public class CassandraExperimentRepository implements ExperimentRepository {
             }
 
         } catch (Exception e) {
-            LOGGER.error("Getting bucket list by one experiment id {} failed", experimentID, e);
+            LogUtil.error(LOGGER, "Getting bucket list by one experiment id {} failed", experimentID, e);
             throw new RepositoryException("Could not fetch buckets for experiment \"" + experimentID
                     + "\" ", e);
         }
 
-        LOGGER.debug("Returning buckets list by one experimentId {} bucket {}",
+        LogUtil.debug(LOGGER, "Returning buckets list by one experimentId {} bucket {}",
                 new Object[]{experimentID, bucketList});
 
         return bucketList;
@@ -536,7 +537,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
     @Override
     public Experiment updateExperiment(Experiment experiment) {
 
-        LOGGER.debug("Updating experiment  {}", experiment);
+        LogUtil.debug(LOGGER, "Updating experiment  {}", experiment);
 
         validator.validateExperiment(experiment);
 
@@ -574,7 +575,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
             updateStateIndex(experiment);
 
         } catch (Exception e) {
-            LOGGER.error("Error while experiment updating experiment  {}", experiment, e);
+            LogUtil.error(LOGGER, "Error while experiment updating experiment  {}", experiment, e);
             throw new RepositoryException("Could not update experiment with ID \"" + experiment.getID() + "\"", e);
         }
 
@@ -587,7 +588,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
     @Override
     public Experiment updateExperimentState(Experiment experiment, State state) {
 
-        LOGGER.debug("Updating experiment  {} state {} ", new Object[]{experiment, state});
+        LogUtil.debug(LOGGER, "Updating experiment  {} state {} ", new Object[]{experiment, state});
 
         validator.validateExperiment(experiment);
 
@@ -607,7 +608,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
             updateStateIndex(experiment);
 
         } catch (Exception e) {
-            LOGGER.error("Error while updating experiment  {} state {} ", new Object[]{experiment, state}, e);
+            LogUtil.error(LOGGER, "Error while updating experiment  {} state {} ", new Object[]{experiment, state}, e);
             throw new RepositoryException("Could not update experiment with ID \""
                     + experiment.getID() + "\"" + " to state " + state.toString(), e);
         }
@@ -620,7 +621,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
      */
     @Override
     public List<Experiment.ID> getExperiments() {
-        LOGGER.debug("Getting experiment ids which are live {}", ExperimentState.NOT_DELETED);
+        LogUtil.debug(LOGGER, "Getting experiment ids which are live {}", ExperimentState.NOT_DELETED);
 
         try {
             // Get all experiments that are live
@@ -631,7 +632,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
 
             return experimentIds;
         } catch (Exception e) {
-            LOGGER.error("Error while getting experiment ids which are live {}", ExperimentState.NOT_DELETED, e);
+            LogUtil.error(LOGGER, "Error while getting experiment ids which are live {}", ExperimentState.NOT_DELETED, e);
             throw new RepositoryException("Could not retrieve experiments", e);
         }
     }
@@ -641,7 +642,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
      */
     @Override
     public List<Experiment> getExperiments(Application.Name appName) {
-        LOGGER.debug("Getting experiments for application {}", appName);
+        LogUtil.debug(LOGGER, "Getting experiments for application {}", appName);
 
         try {
             Result<com.intuit.wasabi.repository.cassandra.pojo.Experiment> experimentPojos =
@@ -656,7 +657,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
 
             return experiments;
         } catch (Exception e) {
-            LOGGER.error("Error while getting experiments for app {}", appName, e);
+            LogUtil.error(LOGGER, "Error while getting experiments for app {}", appName, e);
             throw new RepositoryException("Could not retrieve experiments for app " + appName, e);
         }
     }
@@ -666,12 +667,12 @@ public class CassandraExperimentRepository implements ExperimentRepository {
      */
     @Override
     public void deleteExperiment(NewExperiment newExperiment) {
-        LOGGER.debug("Deleting experiment {}", newExperiment);
+        LogUtil.debug(LOGGER, "Deleting experiment {}", newExperiment);
 
         try {
             experimentAccessor.deleteExperiment(newExperiment.getID().getRawID());
         } catch (Exception e) {
-            LOGGER.debug("Error while deleting experiment {}", newExperiment, e);
+            LogUtil.debug(LOGGER, "Error while deleting experiment {}", newExperiment, e);
             throw new RepositoryException("Could not delete experiment "
                     + "with id \"" + newExperiment.getId() + "\"", e);
         }
@@ -683,7 +684,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
     @Override
     public ExperimentList getExperiments(Collection<Experiment.ID> experimentIDs) {
 
-        LOGGER.debug("Getting experiments {}", experimentIDs);
+        LogUtil.debug(LOGGER, "Getting experiments {}", experimentIDs);
 
         ExperimentList result = new ExperimentList();
 
@@ -694,7 +695,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
                 result.setExperiments(experiments);
             }
         } catch (Exception e) {
-            LOGGER.error("Error while getting experiments {}", experimentIDs, e);
+            LogUtil.error(LOGGER, "Error while getting experiments {}", experimentIDs, e);
             throw new RepositoryException("Could not retrieve the experiments for the collection of experimentIDs", e);
         }
 
@@ -713,7 +714,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
             //Send calls asynchronously
             experimentIds.forEach(expId -> {
                 experimentsFutureMap.put(expId, experimentAccessor.asyncGetExperimentById(expId.getRawID()));
-                LOGGER.debug("Sent experimentAccessor.asyncGetExperimentById({})", expId);
+                LogUtil.debug(LOGGER, "Sent experimentAccessor.asyncGetExperimentById({})", expId);
             });
 
             //Process the Futures in the order that are expected to arrive earlier
@@ -726,10 +727,10 @@ public class CassandraExperimentRepository implements ExperimentRepository {
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error while preparing experimentMap for {}", experimentIds, e);
+            LogUtil.error(LOGGER, "Error while preparing experimentMap for {}", experimentIds, e);
             throw new RepositoryException("Error while preparing experimentMap", e);
         }
-        LOGGER.debug("Returning experimentMap {}", experimentMap);
+        LogUtil.debug(LOGGER, "Returning experimentMap {}", experimentMap);
         return experimentMap;
     }
 
@@ -814,7 +815,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
     @Override
     public void createBucket(Bucket newBucket) {
 
-        LOGGER.debug("Creating bucket {}", newBucket);
+        LogUtil.debug(LOGGER, "Creating bucket {}", newBucket);
 
         Preconditions.checkNotNull(newBucket, "Parameter \"newBucket\" cannot be null");
 
@@ -830,7 +831,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
                     STATE.name());
 
         } catch (Exception e) {
-            LOGGER.error("Error creating bucket {}", newBucket, e);
+            LogUtil.error(LOGGER, "Error creating bucket {}", newBucket, e);
             throw new RepositoryException("Could not create bucket \"" + newBucket + "\" because " + e, e);
         }
     }
@@ -925,7 +926,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
     @Override
     public Bucket updateBucketState(Bucket bucket, Bucket.State desiredState) {
 
-        LOGGER.debug("Updating bucket {} state {}", new Object[]{bucket, desiredState});
+        LogUtil.debug(LOGGER, "Updating bucket {} state {}", new Object[]{bucket, desiredState});
 
         try {
             bucketAccessor.updateState(desiredState.name(), bucket
@@ -937,7 +938,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
 
             return BucketHelper.makeBucket(bucketPojo.one());
         } catch (Exception e) {
-            LOGGER.error("Error while updating bucket {} state {}", new Object[]{bucket, desiredState}, e);
+            LogUtil.error(LOGGER, "Error while updating bucket {} state {}", new Object[]{bucket, desiredState}, e);
             throw new RepositoryException("Exception while updating bucket state " +
                     bucket + " state " + desiredState, e);
         }
@@ -950,7 +951,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
     public BucketList updateBucketBatch(Experiment.ID experimentID,
                                         BucketList bucketList) {
 
-        LOGGER.debug("bucket update {} for experiment id {}", new Object[]{bucketList, experimentID});
+        LogUtil.debug(LOGGER, "bucket update {} for experiment id {}", new Object[]{bucketList, experimentID});
 
         ArrayList<Object> args = new ArrayList<>();
 
@@ -987,7 +988,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
         }
         CQL += "APPLY BATCH;";
 
-        LOGGER.debug("bucket update {} for experiment id {} statement{} with args {}",
+        LogUtil.debug(LOGGER, "bucket update {} for experiment id {} statement{} with args {}",
                 new Object[]{bucketList, experimentID, CQL, args});
 
         try {
@@ -1070,7 +1071,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
     @Override
     public BucketList getBuckets(Experiment.ID experimentID, boolean checkExperiment) {
 
-        LOGGER.debug("Getting buckets for {}", experimentID);
+        LogUtil.debug(LOGGER, "Getting buckets for {}", experimentID);
 
         Preconditions.checkNotNull(experimentID,
                 "Parameter \"experimentID\" cannot be null");
@@ -1092,14 +1093,14 @@ public class CassandraExperimentRepository implements ExperimentRepository {
             BucketList bucketList = new BucketList();
             bucketList.setBuckets(buckets);
 
-            LOGGER.debug("Returning buckets {} for experiment {}", new Object[]{
+            LogUtil.debug(LOGGER, "Returning buckets {} for experiment {}", new Object[]{
                     bucketList, experimentID});
 
             return bucketList;
         } catch (ExperimentNotFoundException e) {
             throw e;
         } catch (Exception e) {
-            LOGGER.error("Error while getting buckets for {}", experimentID, e);
+            LogUtil.error(LOGGER, "Error while getting buckets for {}", experimentID, e);
             throw new RepositoryException("Unable to get buckets for " + experimentID, e);
         }
     }
@@ -1108,7 +1109,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
                                               Application.Name appName, Experiment.Label experimentLabel,
                                               Date startTime, Date endTime, Experiment.State state) {
 
-        LOGGER.debug("update experiment label index experiment id {} app {} label {} "
+        LogUtil.debug(LOGGER, "update experiment label index experiment id {} app {} label {} "
                         + " start time {} end time {} state {} ",
                 new Object[]{experimentID, appName, experimentLabel, startTime, endTime, state});
 
@@ -1128,7 +1129,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
                     experimentLabel.toString());
 
         } catch (Exception e) {
-            LOGGER.debug("Error while updating experiment label index experiment id {} app {} label {} "
+            LogUtil.debug(LOGGER, "Error while updating experiment label index experiment id {} app {} label {} "
                             + " start time {} end time {} state {} ",
                     new Object[]{experimentID, appName, experimentLabel, startTime, endTime, state}, e);
             throw new RepositoryException("Could not index experiment \"" + experimentID + "\"", e);
@@ -1137,14 +1138,14 @@ public class CassandraExperimentRepository implements ExperimentRepository {
     }
 
     protected void removeExperimentLabelIndex(Application.Name appName, Experiment.Label experimentLabel) {
-        LOGGER.debug("Removing experiment label index for app {}, label {} ", new Object[]{
+        LogUtil.debug(LOGGER, "Removing experiment label index for app {}, label {} ", new Object[]{
                 appName, experimentLabel});
 
         try {
             experimentLabelIndexAccessor.deleteBy(appName.toString(),
                     experimentLabel.toString());
         } catch (Exception e) {
-            LOGGER.error("Error while removing experiment label index for app {}, label {} ", new Object[]{
+            LogUtil.error(LOGGER, "Error while removing experiment label index for app {}, label {} ", new Object[]{
                     appName, experimentLabel}, e);
             throw new RepositoryException("Could not remove index for " +
                     "experiment \"" + appName + "\".\"" + experimentLabel + "\"", e);
@@ -1156,13 +1157,13 @@ public class CassandraExperimentRepository implements ExperimentRepository {
      */
     @Override
     public void updateStateIndex(Experiment experiment) {
-        LOGGER.debug("update state index experiment {} ", experiment);
+        LogUtil.debug(LOGGER, "update state index experiment {} ", experiment);
 
         try {
             updateStateIndex(experiment.getID(),
                     experiment.getState() != State.DELETED ? ExperimentState.NOT_DELETED : ExperimentState.DELETED);
         } catch (Exception e) {
-            LOGGER.error("update state index experiment {} ", experiment, e);
+            LogUtil.error(LOGGER, "update state index experiment {} ", experiment, e);
             throw new RepositoryException("Exception while updating state index: " + e, e);
         }
     }
@@ -1172,20 +1173,20 @@ public class CassandraExperimentRepository implements ExperimentRepository {
     }
 
     protected BatchStatement updateStateIndexStatement(Experiment.ID experimentID, ExperimentState state) {
-        LOGGER.debug("update state index experiment id {} state {} ", new Object[]{experimentID, state});
+        LogUtil.debug(LOGGER, "update state index experiment id {} state {} ", new Object[]{experimentID, state});
         BatchStatement batchStmt = new BatchStatement();
 
         try {
             switch (state) {
                 case DELETED:
-                    LOGGER.debug("update state index insert experiment id {} state {} ",
+                    LogUtil.debug(LOGGER, "update state index insert experiment id {} state {} ",
                             new Object[]{experimentID, ExperimentState.DELETED.name()});
 
                     Statement insertStatement1 = stateExperimentIndexAccessor.insert(ExperimentState.DELETED.name(),
                             experimentID.getRawID(), ByteBuffer.wrap("".getBytes()));
                     batchStmt.add(insertStatement1);
 
-                    LOGGER.debug("update state index delete experiment id {} state {} ",
+                    LogUtil.debug(LOGGER, "update state index delete experiment id {} state {} ",
                             new Object[]{experimentID, ExperimentState.NOT_DELETED.name()});
 
                     Statement deleteStatement1 = stateExperimentIndexAccessor.deleteBy(ExperimentState.NOT_DELETED.name(),
@@ -1195,14 +1196,14 @@ public class CassandraExperimentRepository implements ExperimentRepository {
                     break;
 
                 case NOT_DELETED:
-                    LOGGER.debug("update state index insert experiment id {} state {} ",
+                    LogUtil.debug(LOGGER, "update state index insert experiment id {} state {} ",
                             new Object[]{experimentID, ExperimentState.NOT_DELETED.name()});
 
                     Statement insert2 = stateExperimentIndexAccessor.insert(ExperimentState.NOT_DELETED.name(),
                             experimentID.getRawID(), ByteBuffer.wrap("".getBytes()));
                     batchStmt.add(insert2);
 
-                    LOGGER.debug("update state index delete experiment id {} state {} ",
+                    LogUtil.debug(LOGGER, "update state index delete experiment id {} state {} ",
                             new Object[]{experimentID, ExperimentState.DELETED.name()});
 
                     Statement delete2 = stateExperimentIndexAccessor.deleteBy(ExperimentState.DELETED.name(),
@@ -1216,7 +1217,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
 
             return batchStmt;
         } catch (Exception e) {
-            LOGGER.error("Error while updating state index experiment id {} state {} ",
+            LogUtil.error(LOGGER, "Error while updating state index experiment id {} state {} ",
                     new Object[]{experimentID, state}, e);
             throw new RepositoryException("Unable to update experiment " + experimentID + " with state " + state);
         }
@@ -1227,11 +1228,11 @@ public class CassandraExperimentRepository implements ExperimentRepository {
      */
     @Override
     public Statement createApplication(Application.Name applicationName) {
-        LOGGER.debug("Creating application {}", applicationName);
+        LogUtil.debug(LOGGER, "Creating application {}", applicationName);
         try {
             return applicationListAccessor.insert(applicationName.toString());
         } catch (Exception e) {
-            LOGGER.error("Error while creating application {}", applicationName, e);
+            LogUtil.error(LOGGER, "Error while creating application {}", applicationName, e);
             throw new RepositoryException("Unable to insert into top level application list: \""
                     + applicationName.toString() + "\"" + e);
         }
@@ -1243,7 +1244,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
     @Override
     public Map<Application.Name, Set<String>> getTagListForApplications(Collection<Application.Name> applicationNames) {
 
-        LOGGER.debug("Retrieving Experiment Tags for applications {}", applicationNames);
+        LogUtil.debug(LOGGER, "Retrieving Experiment Tags for applications {}", applicationNames);
 
         try {
             List<ListenableFuture<Result<ExperimentTagsByApplication>>> futures = new ArrayList<>();
@@ -1269,7 +1270,7 @@ public class CassandraExperimentRepository implements ExperimentRepository {
 
             return result;
         } catch (Exception e) {
-            LOGGER.error("Error while retieving ExperimentTags for {}", applicationNames, e);
+            LogUtil.error(LOGGER, "Error while retieving ExperimentTags for {}", applicationNames, e);
             throw new RepositoryException("Unable to get ExperimentTags for applications: \""
                     + applicationNames.toString() + "\"" + e);
         }

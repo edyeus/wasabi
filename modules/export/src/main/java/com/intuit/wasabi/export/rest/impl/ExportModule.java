@@ -17,6 +17,7 @@ package com.intuit.wasabi.export.rest.impl;
 
 import com.google.inject.AbstractModule;
 import com.intuit.wasabi.export.rest.Driver;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import java.util.Properties;
@@ -34,7 +35,7 @@ public class ExportModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        LOGGER.debug("installing module: {}", ExportModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installing module: {}", ExportModule.class.getSimpleName());
 
         Properties properties = create(PROPERTY_NAME, ExportModule.class);
 
@@ -49,6 +50,6 @@ public class ExportModule extends AbstractModule {
         bind(Driver.class).to(DefaultRestDriver.class).in(SINGLETON);
         bind(Driver.Configuration.class).to(DefaultDriverConfiguration.class);
 
-        LOGGER.debug("installed module: {}", ExportModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installed module: {}", ExportModule.class.getSimpleName());
     }
 }

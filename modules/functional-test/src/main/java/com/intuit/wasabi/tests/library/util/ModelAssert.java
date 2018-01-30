@@ -17,6 +17,7 @@ package com.intuit.wasabi.tests.library.util;
 
 import com.intuit.wasabi.tests.library.util.serialstrategies.SerializationStrategy;
 import com.intuit.wasabi.tests.model.ModelItem;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 import org.testng.Assert;
 
@@ -54,7 +55,7 @@ public class ModelAssert {
             logString += String.format("\n\tStrategy: %s",
                     (strategy == null ? ((ModelItem) expected).getSerializationStrategy() : strategy));
         }
-        LOGGER.info(logString);
+        LogUtil.info(LOGGER, logString);
     }
 
     /**

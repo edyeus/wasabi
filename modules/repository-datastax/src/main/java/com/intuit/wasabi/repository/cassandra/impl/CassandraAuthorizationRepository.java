@@ -40,6 +40,7 @@ import com.intuit.wasabi.repository.cassandra.accessor.UserRoleAccessor;
 import com.intuit.wasabi.repository.cassandra.pojo.AppRole;
 import com.intuit.wasabi.repository.cassandra.pojo.ApplicationList;
 import com.intuit.wasabi.userdirectory.UserDirectory;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,10 +93,10 @@ public class CassandraAuthorizationRepository implements AuthorizationRepository
     UserInfo lookupUser(UserInfo.Username userID) {
         UserInfo userInfo;
         try {
-            LOGGER.debug("Workforce-getApplicationUsers: looking up user {}", userID.toString());
+            LogUtil.debug(LOGGER, "Workforce-getApplicationUsers: looking up user {}", userID.toString());
             userInfo = userDirectory.lookupUser(userID);
         } catch (AuthenticationException e) {
-            LOGGER.warn(String.format("Workforce-getApplicationUsers: problem looking up user %s", userID.toString()), e);
+            LogUtil.warn(LOGGER, String.format("Workforce-getApplicationUsers: problem looking up user %s", userID.toString()), e);
             userInfo = UserInfo.newInstance(userID)
                     .withEmail("")
                     .withFirstName("")
@@ -394,7 +395,7 @@ public class CassandraAuthorizationRepository implements AuthorizationRepository
     @Override
     public void assignUserToSuperAdminRole(UserInfo candidateUser) {
 
-        LOGGER.debug("Adding user {} as superadmin", candidateUser);
+        LogUtil.debug(LOGGER, "Adding user {} as superadmin", candidateUser);
 
         String superAdminRole = Role.SUPERADMIN.toString().toLowerCase();
         String userID = candidateUser.getUsername().toString();
@@ -407,7 +408,7 @@ public class CassandraAuthorizationRepository implements AuthorizationRepository
 
     @Override
     public void removeUserFromSuperAdminRole(UserInfo candidateUser) {
-        LOGGER.debug("Removing user {} from user admin role", candidateUser);
+        LogUtil.debug(LOGGER, "Removing user {} from user admin role", candidateUser);
 
         String userID = candidateUser.getUsername().toString();
         userRoleAccessor.deleteUserRoleBy(userID, ALL_APPLICATIONS);
@@ -417,25 +418,25 @@ public class CassandraAuthorizationRepository implements AuthorizationRepository
     @Override
     public List<UserRole> getSuperAdminRoleList() {
 
-        LOGGER.debug("Getting super admin role list");
+        LogUtil.debug(LOGGER, "Getting super admin role list");
         List<com.intuit.wasabi.repository.cassandra.pojo.UserRole> allUserRoles =
                 userRoleAccessor.getAllUserRoles().all();
 
-        LOGGER.debug("Received all roles {}", allUserRoles);
+        LogUtil.debug(LOGGER, "Received all roles {}", allUserRoles);
 
         List<UserRole> superAdmins = allUserRoles.stream().filter(
                 userRole -> Role.SUPERADMIN.toString().equalsIgnoreCase(
                         userRole.getRole().toString()) && ALL_APPLICATIONS.equals(userRole.getAppName())).map(
                 userRole -> getRoleWithUserInfo(userRole)).collect(Collectors.toList());
 
-        LOGGER.debug("Returning {} roles", superAdmins);
+        LogUtil.debug(LOGGER, "Returning {} roles", superAdmins);
 
         return superAdmins;
     }
 
     private UserRole getRoleWithUserInfo(com.intuit.wasabi.repository.cassandra.pojo.UserRole userRole) {
 
-        LOGGER.debug("Getting user info for user role={}", userRole);
+        LogUtil.debug(LOGGER, "Getting user info for user role={}", userRole);
 
         Application.Name appName = userRole.getAppName().equals(ALL_APPLICATIONS) ? WILDCARD :
                 Application.Name.valueOf(userRole.getAppName());
@@ -457,7 +458,7 @@ public class CassandraAuthorizationRepository implements AuthorizationRepository
                     .withUserID(UserInfo.Username.valueOf(userRole.getUserId())).build();
         }
 
-        LOGGER.debug("Role with user info for user role={} is {}", userRole, roleWithUserInfo);
+        LogUtil.debug(LOGGER, "Role with user info for user role={} is {}", userRole, roleWithUserInfo);
 
         return roleWithUserInfo;
     }

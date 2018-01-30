@@ -17,6 +17,7 @@ package com.intuit.wasabi.eventlog.impl;
 
 import com.intuit.wasabi.eventlog.EventLogListener;
 import com.intuit.wasabi.eventlog.events.EventLogEvent;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -52,10 +53,10 @@ import static org.slf4j.LoggerFactory.getLogger;
      */
     @Override
     public void run() {
-        LOGGER.debug("posting event: {}", event);
+        LogUtil.debug(LOGGER, "posting event: {}", event);
 
         recipient.postEvent(event);
 
-        LOGGER.debug("posted event: {}", event);
+        LogUtil.debug(LOGGER, "posted event: {}", event);
     }
 }

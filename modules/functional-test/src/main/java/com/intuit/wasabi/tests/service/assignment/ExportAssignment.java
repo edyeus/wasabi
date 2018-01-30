@@ -24,6 +24,7 @@ import com.intuit.wasabi.tests.model.Assignment;
 import com.intuit.wasabi.tests.model.Experiment;
 import com.intuit.wasabi.tests.model.factory.AssignmentFactory;
 import com.intuit.wasabi.tests.model.factory.ExperimentFactory;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +65,7 @@ public class ExportAssignment extends TestBase {
     public void t_assign(String user, String event) {
         String url = "/assignments/applications/" + experiment.applicationName + "/experiments/" + experiment.label + "/users/" + user;
         response = apiServerConnector.doPost(url);
-        LOGGER.debug("experiment not found status=" + response.getStatusCode()
+        LogUtil.debug(LOGGER, "experiment not found status=" + response.getStatusCode()
                 + " response=" + response.asString());
         assertReturnCode(response, HttpStatus.SC_OK);
         Assignment assignment = AssignmentFactory.createFromJSONString(response.asString());
@@ -75,7 +76,7 @@ public class ExportAssignment extends TestBase {
     @Test(groups = {"verify"}, dependsOnGroups = {"assign", "setup"})
     public void t_verify() {
         response = apiServerConnector.doGet("/experiments/" + experiment.id + "/assignments");
-        LOGGER.debug("status=" + response.getStatusCode()
+        LogUtil.debug(LOGGER, "status=" + response.getStatusCode()
                 + " response=" + response.asString());
         Map<String, String[]> result = new HashMap<>();
         int row = 0;

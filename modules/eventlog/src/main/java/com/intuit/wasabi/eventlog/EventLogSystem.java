@@ -16,6 +16,7 @@
 package com.intuit.wasabi.eventlog;
 
 import com.google.inject.Inject;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -46,7 +47,7 @@ public class EventLogSystem {
      */
     public void start() {
         eventLogThread.start();
-        LOGGER.info("Started " + eventLogThread.getName() + " with ID " + eventLogThread.getId() + ".");
+        LogUtil.info(LOGGER, "Started " + eventLogThread.getName() + " with ID " + eventLogThread.getId() + ".");
     }
 
     /**
@@ -54,12 +55,12 @@ public class EventLogSystem {
      */
     public void stop() {
         eventLogThread.interrupt();
-        LOGGER.info("Interrupted " + eventLogThread.getName() + " with ID " + eventLogThread.getId() + ".");
+        LogUtil.info(LOGGER, "Interrupted " + eventLogThread.getName() + " with ID " + eventLogThread.getId() + ".");
         try {
             eventLogThread.join(5000);
-            LOGGER.info(eventLogThread.getName() + " with ID " + eventLogThread.getId() + " joined.");
+            LogUtil.info(LOGGER, eventLogThread.getName() + " with ID " + eventLogThread.getId() + " joined.");
         } catch (InterruptedException e) {
-            LOGGER.warn("Was interrupted while joining " + eventLogThread.getName() + ".", e);
+            LogUtil.warn(LOGGER, "Was interrupted while joining " + eventLogThread.getName() + ".", e);
         }
     }
 }

@@ -25,6 +25,7 @@ import com.intuit.wasabi.experiment.impl.PagesImpl;
 import com.intuit.wasabi.experiment.impl.PrioritiesImpl;
 import com.intuit.wasabi.experimentobjects.ExperimentValidator;
 import com.intuit.wasabi.repository.cassandra.CassandraRepositoryModule;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import static com.google.inject.Scopes.SINGLETON;
@@ -39,7 +40,7 @@ public class ExperimentsModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        LOGGER.debug("installing module: {}", ExperimentsModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installing module: {}", ExperimentsModule.class.getSimpleName());
 
         install(new EventLogModule());
         install(new CassandraRepositoryModule());
@@ -52,6 +53,6 @@ public class ExperimentsModule extends AbstractModule {
         bind(Favorites.class).to(FavoritesImpl.class).in(SINGLETON);
         bind(ExperimentValidator.class).in(SINGLETON);
 
-        LOGGER.debug("installed module: {}", ExperimentsModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installed module: {}", ExperimentsModule.class.getSimpleName());
     }
 }

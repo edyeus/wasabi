@@ -21,6 +21,7 @@ import com.google.gson.JsonParser;
 import com.intuit.wasabi.tests.library.TestBase;
 import com.intuit.wasabi.tests.model.Experiment;
 import com.intuit.wasabi.tests.model.factory.ExperimentFactory;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.testng.Assert;
@@ -140,7 +141,7 @@ public class IntegrationAuthorization extends TestBase {
             JsonElement jsonElement = jobject.get("applicationName");
             String applicationName = jsonElement.getAsString();
             if (applicationName.equals(experiment.applicationName)) {
-                LOGGER.info("Found application=" + experiment.applicationName);
+                LogUtil.info(LOGGER, "Found application=" + experiment.applicationName);
                 foundApp = true;
                 break;
             }

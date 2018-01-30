@@ -20,6 +20,7 @@ import com.intuit.wasabi.authentication.AuthenticationModule;
 import com.intuit.wasabi.eventlog.EventLogModule;
 import com.intuit.wasabi.exceptions.AuthenticationException;
 import com.intuit.wasabi.repository.cassandra.CassandraRepositoryModule;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import java.util.Properties;
@@ -44,7 +45,7 @@ public class AuthorizationModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        LOGGER.debug("installing module: {}", AuthorizationModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installing module: {}", AuthorizationModule.class.getSimpleName());
 
         install(new AuthenticationModule());
         install(new EventLogModule());
@@ -63,6 +64,6 @@ public class AuthorizationModule extends AbstractModule {
             throw new AuthenticationException("unable to find authorization class: " + authorizationClassName, e);
         }
 
-        LOGGER.debug("installed module: {}", AuthorizationModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installed module: {}", AuthorizationModule.class.getSimpleName());
     }
 }

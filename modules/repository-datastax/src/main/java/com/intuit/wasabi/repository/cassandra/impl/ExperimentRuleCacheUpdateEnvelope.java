@@ -19,6 +19,7 @@ import com.intuit.hyrule.Rule;
 import com.intuit.hyrule.RuleBuilder;
 import com.intuit.wasabi.assignmentobjects.RuleCache;
 import com.intuit.wasabi.experimentobjects.Experiment;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import java.text.SimpleDateFormat;
@@ -55,18 +56,18 @@ public class ExperimentRuleCacheUpdateEnvelope implements Runnable {
                         !cassandraRule.equals(ruleCache.getRule(experimentID))) {
                     Rule oldRule = ruleCache.getRule(experimentID);
                     ruleCache.setRule(experimentID, cassandraRule);
-                    LOGGER.info(getUTCTime() + " Segmentation rule of " + experimentID + " updated from " +
+                    LogUtil.info(LOGGER, getUTCTime() + " Segmentation rule of " + experimentID + " updated from " +
                             (oldRule != null ? oldRule.getExpressionRepresentation() : null) + " to " +
                             cassandraRule.getExpressionRepresentation());
                 }
             } else if (isEmpty(cassandraRuleString) && ruleCache.getRule(experimentID) != null) {
                 Rule oldRule = ruleCache.getRule(experimentID);
                 ruleCache.setRule(experimentID, null);
-                LOGGER.info(getUTCTime() + " Segmentation rule of " + experimentID + " updated from " +
+                LogUtil.info(LOGGER, getUTCTime() + " Segmentation rule of " + experimentID + " updated from " +
                         oldRule.getExpressionRepresentation() + " to null");
             }
         } catch (Exception e) {
-            LOGGER.warn("RuleCache update error on [" + cassandraRuleString + "] : ", e);
+            LogUtil.warn(LOGGER, "RuleCache update error on [" + cassandraRuleString + "] : ", e);
         }
 
     }

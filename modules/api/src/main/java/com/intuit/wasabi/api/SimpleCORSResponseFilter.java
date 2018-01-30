@@ -17,6 +17,7 @@ package com.intuit.wasabi.api;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.intuit.wasabi.util.LogUtil;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerResponse;
 import com.sun.jersey.spi.container.ContainerResponseFilter;
@@ -48,14 +49,14 @@ public class SimpleCORSResponseFilter implements ContainerResponseFilter {
     @Inject
     public SimpleCORSResponseFilter(final @Named(APPLICATION_ID) String applicationName,
                                     final @Named(ACCESS_CONTROL_MAX_AGE_DELTA_SECONDS) String deltaSeconds) {
-        LOGGER.info("Instantiated response filter {}", getClass().getName());
+        LogUtil.info(LOGGER, "Instantiated response filter {}", getClass().getName());
         this.applicationName = applicationName;
         this.deltaSeconds = deltaSeconds;
     }
 
     @Override
     public ContainerResponse filter(ContainerRequest containerRequest, ContainerResponse containerResponse) {
-        LOGGER.trace("CORS filter called for request: {}", containerRequest);
+        LogUtil.trace(LOGGER, "CORS filter called for request: {}", containerRequest);
 
         Response.ResponseBuilder response = Response.fromResponse(containerResponse.getResponse());
 

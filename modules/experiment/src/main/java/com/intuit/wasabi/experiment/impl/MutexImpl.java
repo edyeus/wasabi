@@ -28,6 +28,7 @@ import com.intuit.wasabi.experimentobjects.ExperimentList;
 import com.intuit.wasabi.experimentobjects.exceptions.InvalidExperimentStateException;
 import com.intuit.wasabi.repository.MutexRepository;
 import com.intuit.wasabi.repository.RepositoryException;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,7 +109,7 @@ public class MutexImpl implements Mutex {
         mutexRepository.deleteExclusion(expID_1, expID_2);
         eventLog.postEvent(new ExperimentChangeEvent(user, exp_1, "mutex", exp_2.getLabel().toString(), null));
 
-        LOGGER.info("event=EXPERIMENT_METADATA_CHANGE, message=MUTUAL_EXCLUSION_DELETED, applicationName={}, configuration=[experiment1={}, experiment2={}]",
+        LogUtil.info(LOGGER, "event=EXPERIMENT_METADATA_CHANGE, message=MUTUAL_EXCLUSION_DELETED, applicationName={}, configuration=[experiment1={}, experiment2={}]",
                 exp_1.getApplicationName(), exp_1.getLabel(), exp_2.getLabel());
     }
 
@@ -204,13 +205,13 @@ public class MutexImpl implements Mutex {
                 eventLog.postEvent(new ExperimentChangeEvent(user, baseExp, "mutex",
                         null, pairExp.getLabel() == null ? null : pairExp.getLabel().toString()));
             } catch (RepositoryException rExp) {
-                LOGGER.error("Unable to store data in repository: ", rExp);
+                LogUtil.error(LOGGER, "Unable to store data in repository: ", rExp);
                 tempResult.put("status", "FAILED");
                 tempResult.put("reason", "Repository exception");
                 results.add(tempResult);
                 continue;
             }
-            LOGGER.info("event=EXPERIMENT_METADATA_CHANGE, message=MUTUAL_EXCLUSION_CREATED, applicationName={}, configuration=[experiment1={}, experiment2={}]",
+            LogUtil.info(LOGGER, "event=EXPERIMENT_METADATA_CHANGE, message=MUTUAL_EXCLUSION_CREATED, applicationName={}, configuration=[experiment1={}, experiment2={}]",
                     baseExp.getApplicationName(), baseExp.getLabel(), pairExp.getLabel());
             tempResult.put("status", "SUCCESS");
             results.add(tempResult);

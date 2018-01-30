@@ -36,6 +36,7 @@ import com.intuit.wasabi.analyticsobjects.statistics.Estimate;
 import com.intuit.wasabi.analyticsobjects.statistics.ExperimentStatistics;
 import com.intuit.wasabi.analyticsobjects.statistics.Progress;
 import com.intuit.wasabi.experimentobjects.Bucket;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -78,7 +79,7 @@ public class AnalysisToolsImpl implements AnalysisTools {
             jointRate = metric.estimateRate(uniqueImpressions, container.getJointActionCounts().getUniqueUserCount());
         } catch (IllegalArgumentException iae) {
             if (LOGGER.isWarnEnabled())
-                LOGGER.warn("BinomialMetric.estimateRate called with invalid arguments by " +
+                LogUtil.warn(LOGGER, "BinomialMetric.estimateRate called with invalid arguments by " +
                         "AnalyticsService.generateRates: ", iae);
 
             jointRate = new Estimate(NaN, NaN, NaN);
@@ -94,7 +95,7 @@ public class AnalysisToolsImpl implements AnalysisTools {
                 rate = metric.estimateRate(uniqueImpressions, action.getUniqueUserCount());
             } catch (IllegalArgumentException iae) {
                 if (LOGGER.isWarnEnabled())
-                    LOGGER.warn("BinomialMetric.estimateRate called with invalid arguments by " +
+                    LogUtil.warn(LOGGER, "BinomialMetric.estimateRate called with invalid arguments by " +
                             "AnalyticsService.generateRates: ", iae);
 
                 rate = new Estimate(NaN, NaN, NaN);
@@ -129,7 +130,7 @@ public class AnalysisToolsImpl implements AnalysisTools {
                         rateDifference = metric.estimateRateDifference(bucketImpressions, bucketUniqueCounts,
                                 otherBucketImpressions, otherBucketUniqueCounts);
                     } catch (IllegalArgumentException iae) {
-                        LOGGER.warn("BinomialMetric.estimateRateDifference called with invalid arguments by AnalyticsService.generateBucketComparisons: ", iae);
+                        LogUtil.warn(LOGGER, "BinomialMetric.estimateRateDifference called with invalid arguments by AnalyticsService.generateBucketComparisons: ", iae);
 
                         rateDifference = new Estimate(NaN, NaN, NaN);
                     }
@@ -144,7 +145,7 @@ public class AnalysisToolsImpl implements AnalysisTools {
                         effects = metric.distinguishableEffectSizes(bucketImpressions, bucketUniqueCounts,
                                 otherBucketImpressions, otherBucketUniqueCounts);
                     } catch (IllegalArgumentException iae) {
-                        LOGGER.warn("BinomialMetric.distinguishableEffectSizes called with invalid arguments by AnalyticsService.generateBucketComparisons: ", iae);
+                        LogUtil.warn(LOGGER, "BinomialMetric.distinguishableEffectSizes called with invalid arguments by AnalyticsService.generateBucketComparisons: ", iae);
 
                         effects = new DistinguishableEffectSize(NaN, NaN);
                     }
@@ -176,7 +177,7 @@ public class AnalysisToolsImpl implements AnalysisTools {
                             rateDifference = metric.estimateRateDifference(bucketImpressions,
                                     bucketUniqueCounts, otherBucketImpressions, otherBucketUniqueCounts);
                         } catch (IllegalArgumentException iae) {
-                            LOGGER.warn("BinomialMetric.estimateRateDifference called with invalid arguments by AnalyticsService.generateBucketComparisons: ", iae);
+                            LogUtil.warn(LOGGER, "BinomialMetric.estimateRateDifference called with invalid arguments by AnalyticsService.generateBucketComparisons: ", iae);
                             rateDifference = new Estimate(NaN, NaN, NaN);
                         }
 
@@ -187,7 +188,7 @@ public class AnalysisToolsImpl implements AnalysisTools {
                             effects = metric.distinguishableEffectSizes(bucketImpressions,
                                     bucketUniqueCounts, otherBucketImpressions, otherBucketUniqueCounts);
                         } catch (IllegalArgumentException iae) {
-                            LOGGER.warn("BinomialMetric.distinguishableEffectSizes called with invalid arguments by AnalyticsService.generateBucketComparisons: ", iae);
+                            LogUtil.warn(LOGGER, "BinomialMetric.distinguishableEffectSizes called with invalid arguments by AnalyticsService.generateBucketComparisons: ", iae);
 
                             effects = new DistinguishableEffectSize(NaN, NaN);
                         }
@@ -242,7 +243,7 @@ public class AnalysisToolsImpl implements AnalysisTools {
                 throw new IllegalArgumentException("incorrect mode specified: " + mode.toString());
             }
         } catch (IllegalArgumentException iae) {
-            LOGGER.warn("BinomialMetric.fractionOfData called with invalid arguments by AnalyticsService.generateBucketComparisons: ", iae);
+            LogUtil.warn(LOGGER, "BinomialMetric.fractionOfData called with invalid arguments by AnalyticsService.generateBucketComparisons: ", iae);
             fractionData = NaN;
         }
         return fractionData;

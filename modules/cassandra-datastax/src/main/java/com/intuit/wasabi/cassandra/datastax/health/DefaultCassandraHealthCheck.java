@@ -18,6 +18,7 @@ package com.intuit.wasabi.cassandra.datastax.health;
 import com.codahale.metrics.health.HealthCheck;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.exceptions.NoHostAvailableException;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -59,7 +60,7 @@ public class DefaultCassandraHealthCheck extends HealthCheck {
             this.session.execute(SELECT_NOW_FROM_SYSTEM_LOCAL);
             res = true;
         } catch (NoHostAvailableException ex) {
-            LOGGER.error("No hosts available", ex);
+            LogUtil.error(LOGGER, "No hosts available", ex);
             msg = ex.getMessage();
         }
 

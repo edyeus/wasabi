@@ -33,6 +33,7 @@ import com.intuit.wasabi.experimentobjects.Application;
 import com.intuit.wasabi.experimentobjects.Experiment;
 import com.intuit.wasabi.repository.AuthorizationRepository;
 import com.intuit.wasabi.repository.RepositoryException;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -150,7 +151,7 @@ public class DefaultAuthorization implements Authorization {
                         oldRole == null || "superadmin".equalsIgnoreCase(oldRole.toString()) ? null : oldRole.toString(),
                         userRole.getRole().toString()));
             } catch (RepositoryException e) {
-                LOGGER.info("RepoitoryException for setting user Role in DefaultAuthorization ", e);
+                LogUtil.info(LOGGER, "RepoitoryException for setting user Role in DefaultAuthorization ", e);
                 status.put("roleAssignmentStatus", "FAILED");
                 status.put("reason", "RepositoryException");
             }
@@ -194,7 +195,7 @@ public class DefaultAuthorization implements Authorization {
         }
 
         final String encodedUserPassword = authHeader.get().substring(authHeader.get().lastIndexOf(SPACE));
-        LOGGER.trace("Base64 decoded username and password is: {}", encodedUserPassword);
+        LogUtil.trace(LOGGER, "Base64 decoded username and password is: {}", encodedUserPassword);
         String usernameAndPassword;
         try {
             usernameAndPassword = new String(Base64.decodeBase64(encodedUserPassword.getBytes()));
@@ -221,11 +222,11 @@ public class DefaultAuthorization implements Authorization {
     @Override
     public void assignUserToSuperAdminRole(final UserInfo candidateUserInfo, final UserInfo assigningUserInfo) {
 
-        LOGGER.debug("Assigning super admin role to user={} by user={} ", candidateUserInfo, assigningUserInfo);
+        LogUtil.debug(LOGGER, "Assigning super admin role to user={} by user={} ", candidateUserInfo, assigningUserInfo);
 
         UserRoleList userRoleList = getUserRoleList(candidateUserInfo.getUsername());
 
-        LOGGER.debug("User role list {}", userRoleList);
+        LogUtil.debug(LOGGER, "User role list {}", userRoleList);
 
         boolean isSuperAdmin =
                 userRoleList.getRoleList().stream().anyMatch((UserRole ur) -> ur.getRole().equals(Role.SUPERADMIN));
@@ -241,11 +242,11 @@ public class DefaultAuthorization implements Authorization {
     @Override
     public void removeUserFromSuperAdminRole(final UserInfo candidateUserInfo, final UserInfo assigningUserInfo) {
 
-        LOGGER.debug("Removing user={} from superadmin by assigningUser={}", candidateUserInfo, assigningUserInfo);
+        LogUtil.debug(LOGGER, "Removing user={} from superadmin by assigningUser={}", candidateUserInfo, assigningUserInfo);
 
         List<UserRole> allSuperAdmins = getSuperAdminRoleList();
 
-        LOGGER.debug("Current superadmins {}", allSuperAdmins);
+        LogUtil.debug(LOGGER, "Current superadmins {}", allSuperAdmins);
 
         Preconditions.checkArgument(allSuperAdmins.size() > 1,
                 "Cannot delete. SuperAdmins less than 1");
@@ -263,7 +264,7 @@ public class DefaultAuthorization implements Authorization {
 
     @Override
     public List<UserRole> getSuperAdminRoleList() {
-        LOGGER.debug("Getting all super admins");
+        LogUtil.debug(LOGGER, "Getting all super admins");
 
         return authorizationRepository.getSuperAdminRoleList();
     }

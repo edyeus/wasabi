@@ -41,6 +41,7 @@ import com.intuit.wasabi.tests.model.factory.BucketFactory;
 import com.intuit.wasabi.tests.model.factory.EventFactory;
 import com.intuit.wasabi.tests.model.factory.ExperimentFactory;
 import com.intuit.wasabi.tests.model.factory.UserFactory;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.testng.Assert;
@@ -293,7 +294,7 @@ public class SmokeTest extends TestBase {
         for (int i = 1; i <= users.size(); ++i) {
             expectedEventCount += impressionsFactorPerUser * i;
         }
-        LOGGER.info("Expecting " + expectedEventCount + " events.");
+        LogUtil.info(LOGGER, "Expecting " + expectedEventCount + " events.");
         List<Event> events = postEvents(experiment);
         Assert.assertEquals(events.size(), expectedEventCount, "Received impressions do not match the number of expected impressions.");
         Event action = EventFactory.createAction();

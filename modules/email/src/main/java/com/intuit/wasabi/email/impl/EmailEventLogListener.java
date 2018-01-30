@@ -24,6 +24,7 @@ import com.intuit.wasabi.eventlog.events.BucketEvent;
 import com.intuit.wasabi.eventlog.events.EventLogEvent;
 import com.intuit.wasabi.eventlog.events.ExperimentEvent;
 import com.intuit.wasabi.eventlog.impl.EventLogImpl;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -81,7 +82,7 @@ public class EmailEventLogListener implements EventLogListener {
         String msg = emailTextProcessor.getMessage(event);
         Set<String> addressees = emailTextProcessor.getAddressees(event);
 
-        LOGGER.info("Sending email with subject:{}, message:{}, addressees:{}", subject, msg, addressees);
+        LogUtil.info(LOGGER, "Sending email with subject:{}, message:{}, addressees:{}", subject, msg, addressees);
 
         emailService.doSend(subject, msg, addressees.toArray(new String[addressees.size()]));
 

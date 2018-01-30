@@ -73,4 +73,28 @@ public class UserFeedback {
     public String getUserId() {
         return userId;
     }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setSubmitted(Date submitted) {
+        this.submitted = submitted;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public void setContactOkay(boolean contactOkay) {
+        this.contactOkay = contactOkay;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+    }
 }

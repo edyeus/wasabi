@@ -30,6 +30,7 @@ import com.intuit.wasabi.authorizationobjects.UserRole;
 import com.intuit.wasabi.authorizationobjects.UserRoleList;
 import com.intuit.wasabi.exceptions.AuthenticationException;
 import com.intuit.wasabi.experimentobjects.Application;
+import com.intuit.wasabi.util.LogUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -102,7 +103,7 @@ public class AuthorizationResource {
             return httpHeader.headers().entity(ImmutableMap.<String, Object>builder().put("permissions",
                     authorization.getPermissionsFromRole(toRole(role))).build()).build();
         } catch (Exception exception) {
-            LOGGER.error("getRolePermissions failed for role={} with error:", role, exception);
+            LogUtil.error(LOGGER, "getRolePermissions failed for role={} with error:", role, exception);
             throw exception;
         }
     }
@@ -143,13 +144,13 @@ public class AuthorizationResource {
                     authPermissionsList.addPermissions(userPermissions);
                 } catch (AuthenticationException ignored) {
                     // FIXME: ?are we right in intentionally swallowing this excpetion?
-                    LOGGER.trace("AuthenticationException in getUserPermissions", ignored);
+                    LogUtil.trace(LOGGER, "AuthenticationException in getUserPermissions", ignored);
                 }
             }
 
             return httpHeader.headers().entity(authPermissionsList).build();
         } catch (Exception exception) {
-            LOGGER.error("getUserPermissions failed for userID={} with error:", userID, exception);
+            LogUtil.error(LOGGER, "getUserPermissions failed for userID={} with error:", userID, exception);
             throw exception;
         }
     }
@@ -190,7 +191,7 @@ public class AuthorizationResource {
 
             return httpHeader.headers().entity(userPermissions).build();
         } catch (Exception exception) {
-            LOGGER.error("getUserAppPermissions failed for userID={}, applicationName={} with error:",
+            LogUtil.error(LOGGER, "getUserAppPermissions failed for userID={}, applicationName={} with error:",
                     userID, applicationName, exception);
             throw exception;
         }
@@ -222,7 +223,7 @@ public class AuthorizationResource {
             return httpHeader.headers().
                     entity(ImmutableMap.<String, Object>builder().put("assignmentStatuses", status).build()).build();
         } catch (Exception exception) {
-            LOGGER.error("assignUserRoles failed for userRoleList={} with error:", userRoleList, exception);
+            LogUtil.error(LOGGER, "assignUserRoles failed for userRoleList={} with error:", userRoleList, exception);
             throw exception;
         }
     }
@@ -248,7 +249,7 @@ public class AuthorizationResource {
             final String authorizationHeader) {
 
         try {
-            LOGGER.debug("Assign userID={} to super admin", userID);
+            LogUtil.debug(LOGGER, "Assign userID={} to super admin", userID);
 
             // Check for assigning user is superadmin
             Username assigningUser = authorization.getUser(authorizationHeader);
@@ -269,7 +270,7 @@ public class AuthorizationResource {
 
             return httpHeader.headers(Status.NO_CONTENT).build();
         } catch (Exception exception) {
-            LOGGER.error("assignUserToSuperAdmin failed for userID={} with error:", userID, exception);
+            LogUtil.error(LOGGER, "assignUserToSuperAdmin failed for userID={} with error:", userID, exception);
             throw exception;
         }
     }
@@ -295,7 +296,7 @@ public class AuthorizationResource {
             final String authorizationHeader) {
 
         try {
-            LOGGER.debug("Removing user {} from superadmin ", userID);
+            LogUtil.debug(LOGGER, "Removing user {} from superadmin ", userID);
 
             // Check for assigning user is superadmin
             Username assigningUser = authorization.getUser(authorizationHeader);
@@ -309,7 +310,7 @@ public class AuthorizationResource {
             authorization.removeUserFromSuperAdminRole(candidateUserInfo, assigningUserInfo);
             return httpHeader.headers(Status.NO_CONTENT).build();
         } catch (Exception exception) {
-            LOGGER.error("removeUserFromSuperAdmin failed for usedID={} with error:", userID, exception);
+            LogUtil.error(LOGGER, "removeUserFromSuperAdmin failed for usedID={} with error:", userID, exception);
             throw exception;
         }
     }
@@ -331,7 +332,7 @@ public class AuthorizationResource {
             final String authorizationHeader) {
 
         try {
-            LOGGER.debug("Getting super admins role");
+            LogUtil.debug(LOGGER, "Getting super admins role");
 
             // Check for  user is superadmin
             Username requestingUser = authorization.getUser(authorizationHeader);
@@ -340,11 +341,11 @@ public class AuthorizationResource {
 
             List<UserRole> userRoles = authorization.getSuperAdminRoleList();
 
-            LOGGER.debug("Super admin user roles received {}", userRoles);
+            LogUtil.debug(LOGGER, "Super admin user roles received {}", userRoles);
 
             return httpHeader.headers().entity(userRoles).build();
         } catch (Exception exception) {
-            LOGGER.error("getAllSuperAdminRoleList failed with error:", exception);
+            LogUtil.error(LOGGER, "getAllSuperAdminRoleList failed with error:", exception);
             throw exception;
         }
     }
@@ -385,13 +386,13 @@ public class AuthorizationResource {
                     authRoles.addRole(userRole);
                 } catch (AuthenticationException ignored) {
                     // FIXME: ?are we right in intentionally swallowing this exception?
-                    LOGGER.trace("AuthenticationException in getUserRole", ignored);
+                    LogUtil.trace(LOGGER, "AuthenticationException in getUserRole", ignored);
                 }
             }
 
             return httpHeader.headers().entity(authRoles).build();
         } catch (Exception exception) {
-            LOGGER.error("getUserRole failed for userID={} with error:", userID, exception);
+            LogUtil.error(LOGGER, "getUserRole failed for userID={} with error:", userID, exception);
             throw exception;
         }
     }
@@ -422,7 +423,7 @@ public class AuthorizationResource {
             return httpHeader.headers()
                     .entity(ImmutableMap.<String, Object>builder().put("assignmentStatuses", statuses).build()).build();
         } catch (Exception exception) {
-            LOGGER.error("updateUserRoles failed for userRoleList={} with error:", userRoleList, exception);
+            LogUtil.error(LOGGER, "updateUserRoles failed for userRoleList={} with error:", userRoleList, exception);
             throw exception;
         }
     }
@@ -440,7 +441,7 @@ public class AuthorizationResource {
                 authorization.checkUserPermissions(subject, userRole.getApplicationName(), ADMIN);
                 status.add(authorization.setUserRole(userRole, admin));
             } catch (AuthenticationException e) {
-                LOGGER.error("Unable to check user permissions", e);
+                LogUtil.error(LOGGER, "Unable to check user permissions", e);
 
                 status.add(ImmutableMap.<String, String>builder()
                         .put("applicationName", userRole.getApplicationName().toString())
@@ -489,7 +490,7 @@ public class AuthorizationResource {
 
             return httpHeader.headers(NO_CONTENT).build();
         } catch (Exception exception) {
-            LOGGER.error("deleteUserRoles failed for applicationName={}, userID={} with error:",
+            LogUtil.error(LOGGER, "deleteUserRoles failed for applicationName={}, userID={} with error:",
                     applicationName, userID, exception);
             throw exception;
         }
@@ -525,7 +526,7 @@ public class AuthorizationResource {
 
             return httpHeader.headers().entity(authorization.getApplicationUsers(applicationName)).build();
         } catch (Exception exception) {
-            LOGGER.error("getApplicationUsersByRole failed for applicationName={} with error:",
+            LogUtil.error(LOGGER, "getApplicationUsersByRole failed for applicationName={} with error:",
                     applicationName, exception);
             throw exception;
         }
@@ -564,7 +565,7 @@ public class AuthorizationResource {
 
             return httpHeader.headers().entity(userRoleList).build();
         } catch (Exception exception) {
-            LOGGER.error("getUserList failed with error:", exception);
+            LogUtil.error(LOGGER, "getUserList failed with error:", exception);
             throw exception;
         }
     }

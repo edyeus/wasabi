@@ -24,6 +24,7 @@ import com.intuit.wasabi.tests.model.Experiment;
 import com.intuit.wasabi.tests.model.factory.ApplicationFactory;
 import com.intuit.wasabi.tests.model.factory.BucketFactory;
 import com.intuit.wasabi.tests.model.factory.ExperimentFactory;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -68,7 +69,7 @@ public class PrioritiesTest extends TestBase {
     @Test(dependsOnMethods = {"t_prepareApp"})
     public void t_createAndValidatePriorityList() {
 
-        LOGGER.info("Creating %d experiments.", Constants.EXP_SPAWN_COUNT);
+        LogUtil.info(LOGGER, "Creating %d experiments.", Constants.EXP_SPAWN_COUNT);
 
         for (int i = 0; i < Constants.EXP_SPAWN_COUNT; ++i) {
             experiment = ExperimentFactory.createExperiment().setApplication(priorityApp);
@@ -78,16 +79,16 @@ public class PrioritiesTest extends TestBase {
             toCleanUp.add(experiment);
         }
 
-        LOGGER.info("Making the first experiment mutually exclusive with the others.");
+        LogUtil.info(LOGGER, "Making the first experiment mutually exclusive with the others.");
         postExclusions(experiments.get(0), experiments.subList(1, experiments.size()));
 
-        LOGGER.info("Setting priorities.");
+        LogUtil.info(LOGGER, "Setting priorities.");
         putApplicationPriorities(priorityApp, experiments);
 
-        LOGGER.info("Retrieving priority list");
+        LogUtil.info(LOGGER, "Retrieving priority list");
         List<Experiment> priorities = getApplicationPriorities(priorityApp);
 
-        LOGGER.info("Checking if the priorities match.");
+        LogUtil.info(LOGGER, "Checking if the priorities match.");
         assertEqualModelItems(priorities, experiments, new DefaultNameExclusionStrategy("creationTime", "modificationTime", "ruleJson", "hypothesisIsCorrect", "results"));
 
     }
@@ -97,7 +98,7 @@ public class PrioritiesTest extends TestBase {
      */
     @Test(dependsOnMethods = {"t_createAndValidatePriorityList"})
     public void t_testNewExperimentAddDeleteFlowOnPriorityList() {
-        LOGGER.info("Adding a new experiment to the application.");
+        LogUtil.info(LOGGER, "Adding a new experiment to the application.");
         Experiment nExperiment = ExperimentFactory.createExperiment().setApplication(priorityApp);
         Experiment created = postExperiment(nExperiment);
 
@@ -105,13 +106,13 @@ public class PrioritiesTest extends TestBase {
         newExpWithPriorityListExp.addAll(experiments);
         newExpWithPriorityListExp.add(created);
 
-        LOGGER.info("Checking that the new experiment automatically gets added to the end of the priority list.");
+        LogUtil.info(LOGGER, "Checking that the new experiment automatically gets added to the end of the priority list.");
         priorities = getApplicationPriorities(priorityApp);
 
         //Once the experiment is added, it automatically reflects at the end of the priority list of the application
         assertEqualModelItems(priorities, newExpWithPriorityListExp, new DefaultNameExclusionStrategy("creationTime", "modificationTime", "ruleJson", "hypothesisIsCorrect", "results"));
 
-        LOGGER.info("Check if deleted experiments disappear from the priority list.");
+        LogUtil.info(LOGGER, "Check if deleted experiments disappear from the priority list.");
         deleteExperiment(created);
 
         priorities = getApplicationPriorities(priorityApp);
@@ -126,7 +127,7 @@ public class PrioritiesTest extends TestBase {
      */
     @Test(dependsOnMethods = {"t_createAndValidatePriorityList"})
     public void t_testAddingExperimentOfDifferentAppToPriorityList() {
-        LOGGER.info("Checking that priority list will not accept experiments from a different application");
+        LogUtil.info(LOGGER, "Checking that priority list will not accept experiments from a different application");
         Experiment experiment = ExperimentFactory.createExperiment().setApplication(newApp);
         Experiment expForDifferentAppCreated = postExperiment(experiment);
         experiment.update(expForDifferentAppCreated);
@@ -136,10 +137,10 @@ public class PrioritiesTest extends TestBase {
         differentAppExpWithPriorityListExp.addAll(experiments);
         differentAppExpWithPriorityListExp.add(expForDifferentAppCreated);
 
-        LOGGER.info("Setting priorities.");
+        LogUtil.info(LOGGER, "Setting priorities.");
         putApplicationPriorities(priorityApp, differentAppExpWithPriorityListExp);
 
-        LOGGER.info("Retrieving priority list");
+        LogUtil.info(LOGGER, "Retrieving priority list");
         priorities = getApplicationPriorities(priorityApp);
 
         //The priority list reflects only the same application experiments, not the new experiment of different application
@@ -152,7 +153,7 @@ public class PrioritiesTest extends TestBase {
      */
     @Test(dependsOnMethods = {"t_createAndValidatePriorityList"})
     public void t_testAddingInvalidUUIDExperimentToPriorityList() {
-        LOGGER.info("Checking that priority list will not accept invalid uuids");
+        LogUtil.info(LOGGER, "Checking that priority list will not accept invalid uuids");
         Experiment invalidUUIDExperiment = new Experiment();
         invalidUUIDExperiment.id = "bbbac42e-50c5-4c9a-a398-8588bf6bbe33";
         toCleanUp.add(invalidUUIDExperiment);
@@ -161,10 +162,10 @@ public class PrioritiesTest extends TestBase {
         invalidUUIDExpWithPriorityListExp.addAll(experiments);
         invalidUUIDExpWithPriorityListExp.add(invalidUUIDExperiment);
 
-        LOGGER.info("Setting priorities.");
+        LogUtil.info(LOGGER, "Setting priorities.");
         putApplicationPriorities(priorityApp, invalidUUIDExpWithPriorityListExp);
 
-        LOGGER.info("Retrieving priority list");
+        LogUtil.info(LOGGER, "Retrieving priority list");
         priorities = getApplicationPriorities(priorityApp);
 
         //The priority List reflects only the normal experiments, not the one with invalid uuid
@@ -177,7 +178,7 @@ public class PrioritiesTest extends TestBase {
      */
     @Test(dependsOnMethods = {"t_createAndValidatePriorityList"})
     public void t_testAddingTerminatedExperimentToPriorityList() {
-        LOGGER.info("Checking that priority list will not accept experiments in TERMINATED or DELETED states");
+        LogUtil.info(LOGGER, "Checking that priority list will not accept experiments in TERMINATED or DELETED states");
         experiment = ExperimentFactory.createExperiment().setApplication(priorityApp);
         Experiment experimentToBeTerminated = postExperiment(experiment);
         toCleanUp.add(experimentToBeTerminated);
@@ -198,10 +199,10 @@ public class PrioritiesTest extends TestBase {
         terminatedExpWithPriorityListExp.addAll(experiments);
         terminatedExpWithPriorityListExp.add(experimentToBeTerminated);
 
-        LOGGER.info("Setting priorities.");
+        LogUtil.info(LOGGER, "Setting priorities.");
         putApplicationPriorities(priorityApp, terminatedExpWithPriorityListExp);
 
-        LOGGER.info("Retrieving priority list");
+        LogUtil.info(LOGGER, "Retrieving priority list");
         priorities = getApplicationPriorities(priorityApp);
 
         //The priority List reflects only the normal experiments, not the terminated one

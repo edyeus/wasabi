@@ -27,6 +27,7 @@ import com.intuit.wasabi.tests.model.factory.ApplicationFactory;
 import com.intuit.wasabi.tests.model.factory.BucketFactory;
 import com.intuit.wasabi.tests.model.factory.ExperimentFactory;
 import com.intuit.wasabi.tests.model.factory.PageFactory;
+import com.intuit.wasabi.util.LogUtil;
 import com.jayway.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.joda.time.DateTime;
@@ -127,7 +128,7 @@ public class IntegrationPages extends TestBase {
     }
 
     private Experiment testExperimentChangeState(Experiment exp, String experimentState) {
-        LOGGER.info("Changing the experiment exp " + exp.id + " state to " + experimentState);
+        LogUtil.info(LOGGER, "Changing the experiment exp " + exp.id + " state to " + experimentState);
         exp.setState(experimentState);
         Assert.assertEquals(exp.state, experimentState, "Experiment state is not changed to " + experimentState);
 
@@ -143,7 +144,7 @@ public class IntegrationPages extends TestBase {
 
         // create experiment with past start and future end times
         Experiment exp = postExperiment(createExperiment(pastStartTime, futureEndTime, expName));
-        LOGGER.info("Creating a new experiment with past start and future end times");
+        LogUtil.info(LOGGER, "Creating a new experiment with past start and future end times");
 
         // extract experiment parameters from the JSON out object, Invalid experiment created
         Assert.assertNotNull(exp.id, "Experiment creation failed (No id).");
@@ -152,7 +153,7 @@ public class IntegrationPages extends TestBase {
 
         // create a bucket, 100% allocation, and explicitly supply label, description and payload
         Bucket bucket = postBucket(BucketFactory.createBucket(exp).setLabel(bucketLabel).setDescription(bucketDescription).setPayload(bucketPayload).setAllocationPercent(ALLOCATION_PERCENT));
-        LOGGER.info("Testing non-default bucket description and payload...");
+        LogUtil.info(LOGGER, "Testing non-default bucket description and payload...");
         Assert.assertEquals(bucket.description, bucketDescription, "Bucket description does not match the supplied description");
         Assert.assertEquals(bucket.payload, bucketPayload, "Bucket payload does not match the supplied payload string");
 
@@ -199,7 +200,7 @@ public class IntegrationPages extends TestBase {
 
         // create experiment with past start and end times
         Experiment exp = postExperiment(createExperiment(pastStartTime, pastEndTime, "a"));
-        LOGGER.info("Creating a new experiment with past start and end times to test for failures");
+        LogUtil.info(LOGGER, "Creating a new experiment with past start and end times to test for failures");
 
         // extract experiment parameters from the JSON out object
         Assert.assertNotNull(exp.id, "Experiment creation failed (No id).");
@@ -225,7 +226,7 @@ public class IntegrationPages extends TestBase {
 
         // create experiment b with past start and future end times
         Experiment exp = postExperiment(createExperiment(pastStartTime, futureEndTime, "b"));
-        LOGGER.info("Creating a new experiment with past start and future end times");
+        LogUtil.info(LOGGER, "Creating a new experiment with past start and future end times");
 
         // extract experiment parameters from the JSON out object, Invalid experiment created
         Assert.assertNotNull(exp.id, "Experiment creation failed (No id).");
@@ -237,11 +238,11 @@ public class IntegrationPages extends TestBase {
         String bucketDescription = "red bucket";
         String bucketPayload = "HTML-JS-red";
         Bucket bucket = postBucket(BucketFactory.createBucket(exp).setLabel(bucketLabel).setDescription(bucketDescription).setPayload(bucketPayload));
-        LOGGER.info("Testing non-default bucket description and payload...");
+        LogUtil.info(LOGGER, "Testing non-default bucket description and payload...");
         Assert.assertEquals(bucket.description, bucketDescription, "Bucket description does not match the supplied description");
         Assert.assertEquals(bucket.payload, bucketPayload, "Bucket payload does not match the supplied payload string");
 
-        LOGGER.info("Changing the experiment exp_b state to " + Constants.EXPERIMENT_STATE_DRAFT);
+        LogUtil.info(LOGGER, "Changing the experiment exp_b state to " + Constants.EXPERIMENT_STATE_DRAFT);
         exp.setState(Constants.EXPERIMENT_STATE_DRAFT);
         Assert.assertEquals(exp.state, Constants.EXPERIMENT_STATE_DRAFT, "Experiment state is not changed to Draft");
 
@@ -265,7 +266,7 @@ public class IntegrationPages extends TestBase {
 
         // create experiment c with past start and future end times
         Experiment exp = postExperiment(createExperiment(pastStartTime, futureEndTime, "c"));
-        LOGGER.info("Creating a new experiment with past start and future end times");
+        LogUtil.info(LOGGER, "Creating a new experiment with past start and future end times");
 
         // extract experiment parameters from the JSON out object, Invalid experiment created
         Assert.assertNotNull(exp.id, "Experiment creation failed (No id).");
@@ -277,11 +278,11 @@ public class IntegrationPages extends TestBase {
         String bucketDescription = "blue bucket";
         String bucketPayload = "HTML-JS-blue";
         Bucket bucket = postBucket(BucketFactory.createBucket(exp).setLabel(bucketLabel).setDescription(bucketDescription).setPayload(bucketPayload));
-        LOGGER.info("Testing non-default bucket description and payload...");
+        LogUtil.info(LOGGER, "Testing non-default bucket description and payload...");
         Assert.assertEquals(bucket.description, bucketDescription, "Bucket description does not match the supplied description");
         Assert.assertEquals(bucket.payload, bucketPayload, "Bucket payload does not match the supplied payload string");
 
-        LOGGER.info("Changing the experiment exp_b state to " + Constants.EXPERIMENT_STATE_PAUSED);
+        LogUtil.info(LOGGER, "Changing the experiment exp_b state to " + Constants.EXPERIMENT_STATE_PAUSED);
         exp.setState(Constants.EXPERIMENT_STATE_PAUSED);
         Assert.assertEquals(exp.state, Constants.EXPERIMENT_STATE_PAUSED, "Experiment state is not changed to Paused");
 
@@ -318,14 +319,14 @@ public class IntegrationPages extends TestBase {
 
         // create experiment c with past start and future end times
         Experiment exp = postExperiment(createExperiment(pastStartTime, futureEndTime, "b"));
-        LOGGER.info("Creating a new experiment with past start and future end times");
+        LogUtil.info(LOGGER, "Creating a new experiment with past start and future end times");
 
         // extract experiment parameters from the JSON out object
         Assert.assertNotNull(exp.id, "Experiment creation failed (No id).");
         Assert.assertNotNull(exp.applicationName, "Experiment creation failed (No applicationName).");
         Assert.assertNotNull(exp.label, "Experiment creation failed (No label).");
 
-        LOGGER.info("Changing the experiment exp_b state to " + Constants.EXPERIMENT_STATE_TERMINATED);
+        LogUtil.info(LOGGER, "Changing the experiment exp_b state to " + Constants.EXPERIMENT_STATE_TERMINATED);
         exp.setState(Constants.EXPERIMENT_STATE_TERMINATED);
         Assert.assertEquals(exp.state, Constants.EXPERIMENT_STATE_TERMINATED, "Experiment state is not changed to Terminated");
 
@@ -349,7 +350,7 @@ public class IntegrationPages extends TestBase {
 
         // create experiment b with past start and future end times
         Experiment exp = postExperiment(createExperiment(pastStartTime, futureEndTime, "b"));
-        LOGGER.info("Creating a new experiment with past start and future end times");
+        LogUtil.info(LOGGER, "Creating a new experiment with past start and future end times");
 
         // extract experiment parameters from the JSON out object
         Assert.assertNotNull(exp.id, "Experiment creation failed (No id).");
@@ -395,9 +396,9 @@ public class IntegrationPages extends TestBase {
     @Test(dependsOnMethods = {"t_postPagesByExperimentState_exp_b"})
     public void t_retrievePagesAcrossExperiments() {
 
-        LOGGER.info("Testing retrieving pages of applications across experiments");
+        LogUtil.info(LOGGER, "Testing retrieving pages of applications across experiments");
         Experiment exp_c = testCreateNewExperimentWithBucket("blue", "blue bucket", "HTML-JS-blue", "c");
-        LOGGER.info("Posting a page to experiment exp_c.id '" + exp_c.id + "' in application " + exp_c.applicationName);
+        LogUtil.info(LOGGER, "Posting a page to experiment exp_c.id '" + exp_c.id + "' in application " + exp_c.applicationName);
 
         String newPage = "purchasePage";
         // try to post page for exp c
@@ -405,38 +406,38 @@ public class IntegrationPages extends TestBase {
 
         Response response = postPages(exp_c, page, HttpStatus.SC_CREATED);
         Assert.assertEquals(response.getStatusCode(), 201);
-        LOGGER.info("Verifying if page '" + newPage + "' is found by querying the application " + exp_c.applicationName);
+        LogUtil.info(LOGGER, "Verifying if page '" + newPage + "' is found by querying the application " + exp_c.applicationName);
         boolean found = findExperimentByPage(exp_c, page);
         Assert.assertTrue(found);
 
-        LOGGER.info("Verifying if page '" + newPage + "' is found by querying the experiment " + exp_c.id);
+        LogUtil.info(LOGGER, "Verifying if page '" + newPage + "' is found by querying the experiment " + exp_c.id);
         assertPageTrue(page, exp_c);
 
         // try to post page for exp b
         response = postPages(exp_b, page, HttpStatus.SC_CREATED);
         Assert.assertEquals(response.getStatusCode(), 201);
 
-        LOGGER.info("Verifying if page '" + newPage + "' is found in both exp_b '" + exp_b.id + "' and exp_c '" + exp_c.id + "' by querying the application " + exp_c.applicationName);
+        LogUtil.info(LOGGER, "Verifying if page '" + newPage + "' is found in both exp_b '" + exp_b.id + "' and exp_c '" + exp_c.id + "' by querying the application " + exp_c.applicationName);
         found = findExperimentByPage(exp_b, page);
         Assert.assertTrue(found);
         found = findExperimentByPage(exp_c, page);
         Assert.assertTrue(found);
 
-        LOGGER.info("Deleting page " + page.name + " from exp_c " + exp_c.id);
+        LogUtil.info(LOGGER, "Deleting page " + page.name + " from exp_c " + exp_c.id);
         response = deletePages(exp_c, page);
         Assert.assertEquals(response.getStatusCode(), HttpStatus.SC_NO_CONTENT);
-        LOGGER.info("Verifying page " + page.name + " is not in exp_c " + exp_c.id);
+        LogUtil.info(LOGGER, "Verifying page " + page.name + " is not in exp_c " + exp_c.id);
         found = findExperimentByPage(exp_c, page);
         Assert.assertFalse(found);
 
-        LOGGER.info("Deleting page " + page.name + " from exp_b " + exp_b.id);
+        LogUtil.info(LOGGER, "Deleting page " + page.name + " from exp_b " + exp_b.id);
         response = deletePages(exp_b, page);
         Assert.assertEquals(response.getStatusCode(), HttpStatus.SC_NO_CONTENT);
-        LOGGER.info("Verifying page " + page.name + " is not in exp_b " + exp_b.id);
+        LogUtil.info(LOGGER, "Verifying page " + page.name + " is not in exp_b " + exp_b.id);
         found = findExperimentByPage(exp_b, page);
         Assert.assertFalse(found);
 
-        LOGGER.info("Verifying non of the experiments have " + page.name + ".");
+        LogUtil.info(LOGGER, "Verifying non of the experiments have " + page.name + ".");
         found = findExperimentByPage(exp_b, page);
         Assert.assertFalse(found);
 
@@ -479,41 +480,41 @@ public class IntegrationPages extends TestBase {
 
         //Post pages to exp_X, exp_Y, exp_Z
         String pageName = "ConfirmationPage";
-        LOGGER.info(String.format("Posting page %s to experiment %s, %s and %s", pageName, exp_X.id, exp_Y.id, exp_Z.id));
+        LogUtil.info(LOGGER, String.format("Posting page %s to experiment %s, %s and %s", pageName, exp_X.id, exp_Y.id, exp_Z.id));
         Page page_allowAssignTrue = testPostPage(exp_X, pageName, true /* allowAssignment=true */, false);
         testPostPage(exp_Y, pageName, true, false);
         Page page_allowAssignFalse = testPostPage(exp_Z, pageName, false /* allowAssignment=false */, false);
 
         User testUser = new User("ironman");
-        LOGGER.info(String.format("Generating assignments for a single user %s for the experiments associated to page %s", testUser.userID, page_allowAssignTrue.name));
+        LogUtil.info(LOGGER, String.format("Generating assignments for a single user %s for the experiments associated to page %s", testUser.userID, page_allowAssignTrue.name));
         boolean foundX = false;
         boolean foundY = false;
         boolean foundZ = false;
-        LOGGER.info(String.format("Exp X %s ", exp_X.id));
-        LOGGER.info(String.format("Exp Y %s ", exp_Y.id));
-        LOGGER.info(String.format("Exp Z %s ", exp_Z.id));
+        LogUtil.info(LOGGER, String.format("Exp X %s ", exp_X.id));
+        LogUtil.info(LOGGER, String.format("Exp Y %s ", exp_Y.id));
+        LogUtil.info(LOGGER, String.format("Exp Z %s ", exp_Z.id));
 
         List<Assignment> assignments = postAssignments(new Application(exp_X.applicationName), page_allowAssignTrue, testUser, null, null, true, true);
         for (Assignment a : assignments) {
-            LOGGER.info(String.format("The assignment is %s while exp X %s exp Y %s exp Z %s", a.experimentLabel, exp_X.label, exp_Y.label, exp_Z.label));
+            LogUtil.info(LOGGER, String.format("The assignment is %s while exp X %s exp Y %s exp Z %s", a.experimentLabel, exp_X.label, exp_Y.label, exp_Z.label));
             if (!foundX && a.experimentLabel.equals(exp_X.label)) foundX = true;
             if (!foundY && a.experimentLabel.equals(exp_Y.label)) foundY = true;
             if (!foundZ && a.experimentLabel.equals(exp_Z.label)) foundZ = true;
         }
         Assert.assertEquals(foundX, true, "Assignment to experiment X missing");
         Assert.assertEquals(foundY, true, "Assignment to experiment Y missing");
-        LOGGER.info("Page allowAssignment is set to false for exp_Z. Assignment to exp_Z should be misssing!");
+        LogUtil.info(LOGGER, "Page allowAssignment is set to false for exp_Z. Assignment to exp_Z should be misssing!");
         Assert.assertEquals(foundZ, false, "Assignment to experiment Z missing");
 
-        LOGGER.info("Generating an assignment for a user on experiment Z with a direct assignment call");
+        LogUtil.info(LOGGER, "Generating an assignment for a user on experiment Z with a direct assignment call");
         Assignment assignment = getAssignment(exp_Z, testUser);
         Assert.assertEquals(assignment.status, "NEW_ASSIGNMENT", "Assignment status wrong.");
         Assert.assertTrue(assignment.cache, "Assignment.cache not true.");
 
-        LOGGER.info(String.format("Generating assignments AGAIN for a single user %s for the experiments associated to page %s. This time assignment should be found in exp Z", testUser.userID, page_allowAssignTrue.name));
+        LogUtil.info(LOGGER, String.format("Generating assignments AGAIN for a single user %s for the experiments associated to page %s. This time assignment should be found in exp Z", testUser.userID, page_allowAssignTrue.name));
         assignments = postAssignments(new Application(exp_X.applicationName), page_allowAssignTrue, testUser, null, null, true, true);
         for (Assignment a : assignments) {
-            LOGGER.info(String.format("The assignment is %s while exp X %s exp Y %s exp Z %s", a.experimentLabel, exp_X.label, exp_Y.label, exp_Z.label));
+            LogUtil.info(LOGGER, String.format("The assignment is %s while exp X %s exp Y %s exp Z %s", a.experimentLabel, exp_X.label, exp_Y.label, exp_Z.label));
             if (!foundX && a.experimentLabel.equals(exp_X.label)) foundX = true;
             if (!foundY && a.experimentLabel.equals(exp_Y.label)) foundY = true;
             if (!foundZ && a.experimentLabel.equals(exp_Z.label)) foundZ = true;
@@ -541,31 +542,31 @@ public class IntegrationPages extends TestBase {
     @Test(dependsOnMethods = {"t_batchExperimentPages"})
     public void t_batchExperimentPages_Issue_JBA_227() {
 
-        LOGGER.info("Creating the second valid new experiment AA");
+        LogUtil.info(LOGGER, "Creating the second valid new experiment AA");
         Experiment exp_aa = testCreateNewExperimentWithBucket("red", "red bucket", "HTML-JS-red", "AA", 10, 20);
-        LOGGER.info("Creating the second valid new experiment BB");
+        LogUtil.info(LOGGER, "Creating the second valid new experiment BB");
         Experiment exp_bb = testCreateNewExperimentWithBucket("blue", "blue bucket", "HTML-JS-blue", "BB", 11, 21);
-        LOGGER.info("Creating the second valid new experiment CC");
+        LogUtil.info(LOGGER, "Creating the second valid new experiment CC");
         Experiment exp_cc = testCreateNewExperimentWithBucket("green", "green bucket", "HTML-JS-green", "CC", 13, 23);
 
         // Post pages to exp_AA, exp_BB, exp_CC
         String testPage1Name = "testPage1";
-        LOGGER.info(String.format("Posting page %s to experiment %s, %s and %s", testPage1Name, exp_aa.id, exp_bb.id, exp_cc.id));
+        LogUtil.info(LOGGER, String.format("Posting page %s to experiment %s, %s and %s", testPage1Name, exp_aa.id, exp_bb.id, exp_cc.id));
         Page testPage1 = testPostPage(exp_aa, testPage1Name, false /* allowAssignment=true */, false);
         testPostPage(exp_bb, testPage1Name, false/* allowAssignment=false */, false);
         String otherPageName = "otherPage";
         Page otherPage = testPostPage(exp_cc, otherPageName, false /* allowAssignment=false */, false);
 
-        LOGGER.info("Verifying if page '" + testPage1Name + "' is found in both exp_aa '" + exp_aa.id + "' and exp_bb '" + exp_bb.id + "' by querying the application " + exp_aa.applicationName);
+        LogUtil.info(LOGGER, "Verifying if page '" + testPage1Name + "' is found in both exp_aa '" + exp_aa.id + "' and exp_bb '" + exp_bb.id + "' by querying the application " + exp_aa.applicationName);
         boolean found = findExperimentByPage(exp_aa, testPage1);
         Assert.assertTrue(found);
-        LOGGER.info("Found page " + testPage1Name + " in exp_aa " + exp_aa.id);
+        LogUtil.info(LOGGER, "Found page " + testPage1Name + " in exp_aa " + exp_aa.id);
         found = findExperimentByPage(exp_bb, testPage1);
         Assert.assertTrue(found);
-        LOGGER.info("Found page " + testPage1Name + " in exp_bb " + exp_bb.id);
+        LogUtil.info(LOGGER, "Found page " + testPage1Name + " in exp_bb " + exp_bb.id);
 
         found = findExperimentByPage(exp_cc, testPage1);
-        LOGGER.info("Should not find page " + testPage1Name + " in exp_cc " + exp_cc.id);
+        LogUtil.info(LOGGER, "Should not find page " + testPage1Name + " in exp_cc " + exp_cc.id);
         Assert.assertFalse(found);
 
         deletePages(exp_aa, testPage1);

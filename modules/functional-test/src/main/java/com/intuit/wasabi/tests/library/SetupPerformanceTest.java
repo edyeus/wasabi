@@ -25,6 +25,7 @@ import com.intuit.wasabi.tests.model.factory.ApplicationFactory;
 import com.intuit.wasabi.tests.model.factory.BucketFactory;
 import com.intuit.wasabi.tests.model.factory.ExperimentFactory;
 import com.intuit.wasabi.tests.model.factory.PageFactory;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.testng.Assert;
@@ -104,7 +105,7 @@ public class SetupPerformanceTest extends TestBase {
      */
     @BeforeClass
     protected void init() {
-        LOGGER.info("Init: " + this.getClass().getName());
+        LogUtil.info(LOGGER, "Init: " + this.getClass().getName());
 
         setPropertyFromSystemProperty("application.name", "application-name");
         setPropertyFromSystemProperty("experiment.prefix", "experiment-prefix");
@@ -125,12 +126,12 @@ public class SetupPerformanceTest extends TestBase {
         bucketCount = Integer.valueOf(appProperties.getProperty("buckets-in-experiment", String.valueOf(bucketCount)));
         mutualExclusive = Boolean.valueOf(appProperties.getProperty("mutualexclusions", String.valueOf(mutualExclusive)));
 
-        LOGGER.info("KVP used: applicationName=" + applicationName);
-        LOGGER.info("KVP used: experimentCount=" + experimentCount);
-        LOGGER.info("KVP used: bucketCount=" + bucketCount);
-        LOGGER.info("KVP used: pageName=" + pageName);
-        LOGGER.info("KVP used: experimentPrefix=" + experimentPrefix);
-        LOGGER.info("KVP used: bucketPrefix=" + bucketPrefix);
+        LogUtil.info(LOGGER, "KVP used: applicationName=" + applicationName);
+        LogUtil.info(LOGGER, "KVP used: experimentCount=" + experimentCount);
+        LogUtil.info(LOGGER, "KVP used: bucketCount=" + bucketCount);
+        LogUtil.info(LOGGER, "KVP used: pageName=" + pageName);
+        LogUtil.info(LOGGER, "KVP used: experimentPrefix=" + experimentPrefix);
+        LogUtil.info(LOGGER, "KVP used: bucketPrefix=" + bucketPrefix);
 
         application = ApplicationFactory.createApplication().setName(applicationName);
         page = PageFactory.createPage().setName(pageName);
@@ -170,7 +171,7 @@ public class SetupPerformanceTest extends TestBase {
         experiments.add(index, ExperimentFactory.createExperiment()
                 .setApplication(application));
         experiments.get(index).update(postExperiment(experiments.get(index), HttpStatus.SC_CREATED));
-        LOGGER.info("Created experiment " + experiments.get(index));
+        LogUtil.info(LOGGER, "Created experiment " + experiments.get(index));
         postExperimentPriority(experiments.get(index), 3);
     }
 
@@ -182,7 +183,7 @@ public class SetupPerformanceTest extends TestBase {
     @Test(dependsOnMethods = {"t1_createExperiment"}, dataProvider = "repeatDataProvider")
     public void t2_createBuckets(int index) {
         if (bucketCount < 1) {
-            LOGGER.warn("bucketCount < 1, setting it to 1!");
+            LogUtil.warn(LOGGER, "bucketCount < 1, setting it to 1!");
             bucketCount = 1;
         }
 
@@ -210,7 +211,7 @@ public class SetupPerformanceTest extends TestBase {
     @Test(dependsOnMethods = {"t2_createBuckets"}, dataProvider = "repeatDataProvider")
     public void t3_createPages(int index) {
         if (pageName.equals("NULL")) {
-            LOGGER.info("Page name is \"NULL\", experiment " + experiments.get(index).label + " not added to any page.");
+            LogUtil.info(LOGGER, "Page name is \"NULL\", experiment " + experiments.get(index).label + " not added to any page.");
         } else {
             postPages(experiments.get(index), page);
         }
@@ -222,7 +223,7 @@ public class SetupPerformanceTest extends TestBase {
     @Test(dependsOnMethods = {"t3_createPages"})
     public void t4_mutualExclusions() {
         if (!mutualExclusive) {
-            LOGGER.info("Experiments are not mutually exclusive, test will automatically pass..");
+            LogUtil.info(LOGGER, "Experiments are not mutually exclusive, test will automatically pass..");
             Assert.assertTrue(true);
             return;
         }

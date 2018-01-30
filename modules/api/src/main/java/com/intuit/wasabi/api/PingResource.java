@@ -20,6 +20,7 @@ import com.codahale.metrics.health.HealthCheck;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.intuit.wasabi.util.LogUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -97,7 +98,7 @@ public class PingResource {
             return httpHeader.headers(
                     status ? OK : SERVICE_UNAVAILABLE).type(APPLICATION_JSON_TYPE).entity(componentHealthList).build();
         } catch (Exception exception) {
-            LOGGER.error("ping failed with error:", exception);
+            LogUtil.error(LOGGER, "ping failed with error:", exception);
             throw exception;
         }
     }

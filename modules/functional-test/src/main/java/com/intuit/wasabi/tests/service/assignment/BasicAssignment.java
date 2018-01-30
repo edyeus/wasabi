@@ -22,6 +22,7 @@ import com.intuit.wasabi.tests.model.Experiment;
 import com.intuit.wasabi.tests.model.ExperimentMeta;
 import com.intuit.wasabi.tests.model.factory.AssignmentFactory;
 import com.intuit.wasabi.tests.model.factory.ExperimentFactory;
+import com.intuit.wasabi.util.LogUtil;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +77,7 @@ public class BasicAssignment extends TestBase {
             String url = "assignments/applications/qbo/experiments/" + experimentMeta.getExperiment().label
                     + "/users/" + user;
             response = apiServerConnector.doGet(url);
-            LOGGER.debug("State=DRAFT meta=" + experimentMeta.getMeta() + " status=" + response.getStatusCode()
+            LogUtil.debug(LOGGER, "State=DRAFT meta=" + experimentMeta.getMeta() + " status=" + response.getStatusCode()
                     + " response=" + response.asString());
             assertReturnCode(response, HttpStatus.SC_OK);
             Assert.assertEquals(response.asString().contains("EXPERIMENT_IN_DRAFT_STATE"), true);
@@ -95,7 +96,7 @@ public class BasicAssignment extends TestBase {
             String url = "assignments/applications/qbo/experiments/" + experimentMeta.getExperiment().label
                     + "/users/" + user;
             response = apiServerConnector.doGet(url);
-            LOGGER.debug("State=RUNNING meta=" + experimentMeta.getMeta() + " status=" + response.getStatusCode()
+            LogUtil.debug(LOGGER, "State=RUNNING meta=" + experimentMeta.getMeta() + " status=" + response.getStatusCode()
                     + " response=" + response.asString());
             if ("future".equals(experimentMeta.getMeta())) {
                 assertReturnCode(response, HttpStatus.SC_OK);
@@ -136,7 +137,7 @@ public class BasicAssignment extends TestBase {
             String url = "assignments/applications/qbo/experiments/" + experimentMeta.getExperiment().label
                     + "/users/" + user;
             response = apiServerConnector.doGet(url);
-            LOGGER.debug("State=PAUSED meta=" + experimentMeta.getMeta() + " status=" + response.getStatusCode()
+            LogUtil.debug(LOGGER, "State=PAUSED meta=" + experimentMeta.getMeta() + " status=" + response.getStatusCode()
                     + " response=" + response.asString());
             if ("future".equals(experimentMeta.getMeta())) {
                 assertReturnCode(response, HttpStatus.SC_OK);
@@ -176,7 +177,7 @@ public class BasicAssignment extends TestBase {
             String url = "assignments/applications/qbo/experiments/" + experimentMeta.getExperiment().label
                     + "/users/" + user;
             response = apiServerConnector.doGet(url);
-            LOGGER.info("State=RUNNING meta=" + experimentMeta.getMeta() + " status=" + response.getStatusCode()
+            LogUtil.info(LOGGER, "State=RUNNING meta=" + experimentMeta.getMeta() + " status=" + response.getStatusCode()
                     + " response=" + response.asString());
             if ("future".equals(experimentMeta.getMeta())) {
                 assertReturnCode(response, HttpStatus.SC_OK);
@@ -216,10 +217,10 @@ public class BasicAssignment extends TestBase {
         response = apiServerConnector.doGet(url);
         assertReturnCode(response, HttpStatus.SC_OK);
         Assert.assertEquals(response.asString().contains("EXPERIMENT_PAUSED"), true);
-        LOGGER.info("State=PAUSED meta=" + experimentMeta.getMeta() + " status=" + response.getStatusCode()
+        LogUtil.info(LOGGER, "State=PAUSED meta=" + experimentMeta.getMeta() + " status=" + response.getStatusCode()
                 + " response=" + response.asString());
         response = apiServerConnector.doGet(url + "?ignoreSamplingPercent=true");
-        LOGGER.info("Ignore Sampling State=PAUSED meta=" + experimentMeta.getMeta() + " status=" + response.getStatusCode()
+        LogUtil.info(LOGGER, "Ignore Sampling State=PAUSED meta=" + experimentMeta.getMeta() + " status=" + response.getStatusCode()
                 + " response=" + response.asString());
         assertReturnCode(response, HttpStatus.SC_OK);
         Assert.assertEquals(response.asString().contains("EXPERIMENT_PAUSED"), true);
@@ -230,7 +231,7 @@ public class BasicAssignment extends TestBase {
 
         url = "assignments/applications/qbo/experiments/notanexistingexperiment/users/anotheruser";
         response = apiServerConnector.doGet(url);
-        LOGGER.info("experiment not found State=PAUSED meta=" + experimentMeta.getMeta() + " status=" + response.getStatusCode()
+        LogUtil.info(LOGGER, "experiment not found State=PAUSED meta=" + experimentMeta.getMeta() + " status=" + response.getStatusCode()
                 + " response=" + response.asString());
         assertReturnCode(response, HttpStatus.SC_OK);
         Assert.assertEquals(response.asString().contains("EXPERIMENT_NOT_FOUND"), true);

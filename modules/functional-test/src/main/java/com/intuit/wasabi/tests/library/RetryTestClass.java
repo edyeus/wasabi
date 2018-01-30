@@ -18,6 +18,7 @@ package com.intuit.wasabi.tests.library;
 import com.intuit.wasabi.tests.library.util.RetryAnalyzer;
 import com.intuit.wasabi.tests.library.util.RetryListener;
 import com.intuit.wasabi.tests.library.util.RetryTest;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 import org.testng.Assert;
 import org.testng.ITestResult;
@@ -70,7 +71,7 @@ public class RetryTestClass {
      */
     @BeforeMethod
     private void runBeforeMethod(Method method) {
-        LOGGER.info("==============> Invoking " + method);
+        LogUtil.info(LOGGER, "==============> Invoking " + method);
     }
 
     /**
@@ -80,7 +81,7 @@ public class RetryTestClass {
      */
     @AfterMethod
     private void runAfterMethod(ITestResult result) {
-        LOGGER.info(pfr.getResultString(result) + " <===============\n\n\n");
+        LogUtil.info(LOGGER, pfr.getResultString(result) + " <===============\n\n\n");
     }
 
     /**
@@ -91,7 +92,7 @@ public class RetryTestClass {
     @Test(retryAnalyzer = RetryAnalyzer.class)
     @RetryTest(maxTries = 3)
     public void retryTest() {
-        LOGGER.info("retryTest -- counter: " + counter);
+        LogUtil.info(LOGGER, "retryTest -- counter: " + counter);
         Assert.assertTrue(counter++ > 2, "Smaller number than 3!");
     }
 
@@ -103,7 +104,7 @@ public class RetryTestClass {
     @Test(retryAnalyzer = RetryAnalyzer.class)
     @RetryTest(maxTries = 5, warmup = 100)
     public void retryTest2() {
-        LOGGER.info("retryTest2 -- counter: " + counter2);
+        LogUtil.info(LOGGER, "retryTest2 -- counter: " + counter2);
         Assert.assertTrue(counter2++ >= 2, "Smaller number than " + 2 + "!");
     }
 
@@ -116,7 +117,7 @@ public class RetryTestClass {
     @Test
     @RetryTest(warmup = 3000)
     public void warmUpTest() {
-        LOGGER.info("warmUpTest -- always passing, should have ~3 s warmup.");
+        LogUtil.info(LOGGER, "warmUpTest -- always passing, should have ~3 s warmup.");
         Assert.assertTrue(true);
     }
 
@@ -127,7 +128,7 @@ public class RetryTestClass {
      */
     @Test
     public void passTest() {
-        LOGGER.info("passTest -- always passing.");
+        LogUtil.info(LOGGER, "passTest -- always passing.");
         Assert.assertTrue(true);
     }
 
@@ -139,7 +140,7 @@ public class RetryTestClass {
     @Test(retryAnalyzer = RetryAnalyzer.class)
     @RetryTest(maxTries = 2, warmup = 3000)
     public void retryWithWarmUpTest() {
-        LOGGER.info("retryWithWarmUpTest -- fails once, passes then. ~3 s warmup before each try.");
+        LogUtil.info(LOGGER, "retryWithWarmUpTest -- fails once, passes then. ~3 s warmup before each try.");
         warmupvariable = !warmupvariable;
         Assert.assertTrue(warmupvariable, "WarmUpVariable not true");
     }
@@ -152,7 +153,7 @@ public class RetryTestClass {
     @Test(retryAnalyzer = RetryAnalyzer.class)
     @RetryTest(maxTries = 2, warmup = 0)
     public void failRetryTest() {
-        LOGGER.info("failRetryTest -- counter: " + ++counter3 + ". Always fails.");
+        LogUtil.info(LOGGER, "failRetryTest -- counter: " + ++counter3 + ". Always fails.");
         Assert.assertTrue(false);
     }
 
@@ -163,7 +164,7 @@ public class RetryTestClass {
      */
     @Test(dependsOnMethods = {"failRetryTest"})
     public void skippedTest() {
-        LOGGER.error("skippedTest -- This should not appear in your log, it means the skippedTest was not skipped!!");
+        LogUtil.error(LOGGER, "skippedTest -- This should not appear in your log, it means the skippedTest was not skipped!!");
         Assert.assertTrue(true);
     }
 

@@ -18,6 +18,7 @@ package com.intuit.wasabi.feedback;
 import com.google.inject.AbstractModule;
 import com.intuit.wasabi.feedback.impl.FeedbackImpl;
 import com.intuit.wasabi.repository.cassandra.CassandraRepositoryModule;
+import com.intuit.wasabi.util.LogUtil;
 import org.slf4j.Logger;
 
 import static com.google.inject.Scopes.SINGLETON;
@@ -32,12 +33,12 @@ public class FeedbackModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        LOGGER.debug("installing module: {}", FeedbackModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installing module: {}", FeedbackModule.class.getSimpleName());
 
         install(new CassandraRepositoryModule());
 
         bind(Feedback.class).to(FeedbackImpl.class).in(SINGLETON);
 
-        LOGGER.debug("installed module: {}", FeedbackModule.class.getSimpleName());
+        LogUtil.debug(LOGGER, "installed module: {}", FeedbackModule.class.getSimpleName());
     }
 }
